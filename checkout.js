@@ -13,6 +13,21 @@ function initCheckoutPage() {
   setupPaymentMethodListeners();
   setupCouponListener();
   setupFormSubmitListener();
+  initUrgencyTimer();
+}
+
+function initUrgencyTimer() {
+  const timerEl = document.getElementById("cart-timer");
+  if (!timerEl) return;
+
+  let totalSeconds = 39 * 60 + 43;
+  setInterval(() => {
+    if (totalSeconds <= 0) return;
+    totalSeconds--;
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    timerEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }, 1000);
 }
 
 function renderCheckoutSummary() {
@@ -30,7 +45,7 @@ function renderCheckoutSummary() {
 
   if (cart.length === 0) {
     container.innerHTML = `
-      <div class="py-10 text-center space-y-3 bg-surface dark:bg-slate-700/40 rounded-2xl border border-outline-variant/30">
+      <div class="py-12 text-center space-y-3 bg-surface dark:bg-slate-700/40 rounded-2xl border border-outline-variant/30">
         <span class="material-symbols-outlined text-4xl text-outline">shopping_bag</span>
         <h4 class="text-xs font-bold text-on-surface">Your cart is empty</h4>
         <a href="products.html" class="inline-block bg-secondary text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:bg-secondary-container transition">
@@ -43,22 +58,30 @@ function renderCheckoutSummary() {
   }
 
   container.innerHTML = cart.map((item) => `
-    <div class="flex items-center justify-between gap-3 p-3 bg-surface dark:bg-slate-700/50 rounded-2xl border border-outline-variant/20">
-      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded-xl shrink-0 border border-outline-variant/30"/>
-      <div class="min-w-0 flex-grow">
-        <h4 class="text-xs font-bold text-on-surface truncate">${item.name}</h4>
-        <div class="flex items-center gap-2 mt-1">
-          <div class="flex items-center gap-1 bg-surface-container dark:bg-slate-800 rounded-lg px-1.5 py-0.5 border border-outline-variant/30">
-            <button onclick="handleCheckoutQty('${item.id}', -1)" class="w-4 h-4 rounded text-xs font-bold text-on-surface hover:text-secondary flex items-center justify-center">-</button>
-            <span class="text-[11px] font-extrabold px-1">${item.quantity}</span>
-            <button onclick="handleCheckoutQty('${item.id}', 1)" class="w-4 h-4 rounded text-xs font-bold text-on-surface hover:text-secondary flex items-center justify-center">+</button>
+    <div class="p-4 bg-surface dark:bg-slate-800 rounded-none border border-outline-variant/30 flex items-start gap-4 transition hover:border-secondary/40 shadow-xs">
+      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-none shrink-0 border border-outline-variant/20 bg-white dark:bg-slate-700 p-1"/>
+      <div class="flex-grow min-w-0">
+        <div class="flex items-start justify-between gap-2">
+          <h4 class="text-sm md:text-base font-extrabold text-on-surface line-clamp-2 leading-snug">${item.name}</h4>
+          <span class="text-base font-black text-on-surface shrink-0">$${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-outline font-medium">
+          <span class="flex items-center gap-1">• ${item.brand || item.category || 'Standard'}</span>
+          <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">local_shipping</span> 2 days delivery time</span>
+        </div>
+        <div class="flex items-center justify-between mt-3 pt-2 border-t border-outline-variant/10">
+          <div class="flex items-center gap-3 text-xs font-semibold text-outline">
+            <button onclick="handleCheckoutRemove('${item.id}')" class="hover:text-red-500 transition">Remove</button>
+            <span>•</span>
+            <button onclick="showToast('Saved for later', 'wishlist')" class="hover:text-secondary transition">Save for later</button>
           </div>
-          <span class="text-xs font-extrabold text-secondary dark:text-secondary-fixed">$${(item.price * item.quantity).toFixed(2)}</span>
+          <div class="flex items-center bg-surface-container dark:bg-slate-700/80 rounded-xl px-2 py-1 border border-outline-variant/40">
+            <button onclick="handleCheckoutQty('${item.id}', -1)" class="w-6 h-6 rounded-lg text-xs font-bold text-on-surface hover:bg-white dark:hover:bg-slate-600 transition flex items-center justify-center">-</button>
+            <span class="text-xs font-black px-2.5">${item.quantity}</span>
+            <button onclick="handleCheckoutQty('${item.id}', 1)" class="w-6 h-6 rounded-lg text-xs font-bold text-on-surface hover:bg-white dark:hover:bg-slate-600 transition flex items-center justify-center">+</button>
+          </div>
         </div>
       </div>
-      <button onclick="handleCheckoutRemove('${item.id}')" class="text-outline hover:text-red-500 p-1.5 rounded-lg transition" title="Remove Item">
-        <span class="material-symbols-outlined text-sm">delete</span>
-      </button>
     </div>
   `).join("");
 
@@ -207,6 +230,22 @@ function setupCouponListener() {
   });
 }
 
+function setDeliveryType(type) {
+  const homeBtn = document.getElementById("toggle-home-delivery");
+  const pickupBtn = document.getElementById("toggle-pickup");
+  if (!homeBtn || !pickupBtn) return;
+
+  if (type === "home") {
+    homeBtn.className = "delivery-toggle-btn py-2 text-center rounded-lg text-xs font-bold bg-black dark:bg-white text-white dark:text-slate-900 shadow-sm transition";
+    pickupBtn.className = "delivery-toggle-btn py-2 text-center rounded-lg text-xs font-semibold text-outline hover:text-on-surface transition";
+    if (window.showToast) window.showToast("Selected Home Delivery", "info");
+  } else {
+    pickupBtn.className = "delivery-toggle-btn py-2 text-center rounded-lg text-xs font-bold bg-black dark:bg-white text-white dark:text-slate-900 shadow-sm transition";
+    homeBtn.className = "delivery-toggle-btn py-2 text-center rounded-lg text-xs font-semibold text-outline hover:text-on-surface transition";
+    if (window.showToast) window.showToast("Selected DEZZ Pickup Location", "info");
+  }
+}
+
 function setupFormSubmitListener() {
   const form = document.getElementById("checkout-form");
   if (!form) return;
@@ -220,14 +259,20 @@ function setupFormSubmitListener() {
       return;
     }
 
-    const name = document.getElementById("cust-name").value.trim();
+    const firstName = document.getElementById("cust-firstname")?.value.trim() || "";
+    const lastName = document.getElementById("cust-lastname")?.value.trim() || "";
+    const name = `${firstName} ${lastName}`.trim() || document.getElementById("cust-name")?.value.trim() || "Guest Customer";
+
     const email = document.getElementById("cust-email").value.trim();
     const phone = document.getElementById("cust-phone").value.trim();
     const address = document.getElementById("cust-address").value.trim();
+    const apt = document.getElementById("cust-apt")?.value.trim() || "";
     const city = document.getElementById("cust-city").value.trim();
     const state = document.getElementById("cust-state").value.trim();
     const notes = document.getElementById("cust-notes").value.trim();
     
+    const fullAddress = `${address}${apt ? ', ' + apt : ''}, ${city}, ${state}`;
+
     const paymentRadio = document.querySelector('input[name="paymentMethod"]:checked');
     const paymentMethod = paymentRadio ? paymentRadio.value : "Cash on Delivery";
 
@@ -242,7 +287,7 @@ function setupFormSubmitListener() {
       customerName: name,
       customerEmail: email,
       customerPhone: phone,
-      deliveryAddress: `${address}, ${city}, ${state}`,
+      deliveryAddress: fullAddress,
       paymentMethod: paymentMethod,
       orderNotes: notes,
       couponUsed: appliedCoupon,

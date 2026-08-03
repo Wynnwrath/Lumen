@@ -145,11 +145,13 @@
       <!-- Navigation Links -->
       <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
         <a href="index.html" class="text-secondary dark:text-secondary-fixed border-b-2 border-secondary pb-0.5">Home</a>
-        <a href="products.html" class="text-on-surface-variant hover:text-secondary transition-colors flex items-center gap-1">
-          Catalog
+        <a href="products.html" class="text-on-surface-variant hover:text-secondary transition-colors">Catalog</a>
+        <a href="index.html#categories-section" class="text-on-surface-variant hover:text-secondary transition-colors">Categories</a>
+        <a href="index.html#deals-section" class="text-on-surface-variant hover:text-secondary transition-colors">Deals</a>
+        <a href="admin-login.html" class="text-on-surface-variant hover:text-secondary transition-colors flex items-center gap-1 font-bold">
+          <span class="material-symbols-outlined text-base text-secondary">storefront</span>
+          <span>Seller Hub</span>
         </a>
-        <a href="#categories-section" class="text-on-surface-variant hover:text-secondary transition-colors">Categories</a>
-        <a href="#deals-section" class="text-on-surface-variant hover:text-secondary transition-colors">Deals</a>
       </nav>
 
       <!-- Balanced Compact Search Input -->
@@ -168,14 +170,16 @@
 
       <!-- Action Icons -->
       <div class="hidden md:flex items-center gap-4">
-        <button id="wishlist-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2.5 rounded-full relative transition-all" title="Wishlist">
+        
+        <!-- Wishlist Button -->
+        <button id="wishlist-btn-desktop" class="text-primary dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 p-2.5 rounded-full relative transition-all" title="Wishlist">
           <span class="material-symbols-outlined">favorite</span>
           <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
         </button>
 
         <!-- Cart Icon Container with Hover Preview Modal -->
         <div class="relative group" id="cart-hover-container">
-          <a href="checkout.html" id="cart-icon-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2.5 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
+          <a href="checkout.html" id="cart-icon-btn-desktop" class="text-primary dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 p-2.5 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
             <span class="material-symbols-outlined">shopping_cart</span>
             <span id="cart-badge-count-desktop" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
           </a>
@@ -206,6 +210,55 @@
             </div>
           </div>
         </div>
+
+        <!-- User Account Dropdown Container (FAR RIGHT) -->
+        <div class="relative" id="user-menu-container">
+          <button id="user-menu-btn" class="text-primary dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 p-2 rounded-full transition-all flex items-center justify-center gap-1 focus:outline-none" title="User Account">
+            <span class="material-symbols-outlined text-xl">account_circle</span>
+            <span class="material-symbols-outlined text-xs text-outline">expand_more</span>
+          </button>
+
+          <!-- User Menu Dropdown -->
+          <div id="user-menu-dropdown" class="hidden absolute top-full right-0 mt-2 w-60 bg-surface-container-lowest dark:bg-slate-800 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-2 space-y-1">
+            <div class="px-3 py-2.5 bg-surface dark:bg-slate-700/60 rounded-xl border border-outline-variant/20 mb-1">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">
+                  AM
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-xs font-extrabold text-on-surface truncate">Alex Morgan</p>
+                  <p class="text-[10px] text-outline truncate">alex.morgan@lumen.com</p>
+                </div>
+              </div>
+            </div>
+
+            <a href="checkout.html" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition">
+              <span class="material-symbols-outlined text-base text-secondary">person</span>
+              <span>My Profile</span>
+            </a>
+            <a href="checkout.html" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition">
+              <span class="material-symbols-outlined text-base text-secondary">shopping_bag</span>
+              <span>My Orders</span>
+            </a>
+            <a href="admin-login.html" class="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition">
+              <span class="material-symbols-outlined text-base text-secondary">storefront</span>
+              <span>Seller Hub / Admin</span>
+            </a>
+            <button id="user-menu-settings-btn" class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition text-left">
+              <span class="material-symbols-outlined text-base text-secondary">settings</span>
+              <span>Settings</span>
+            </button>
+
+            <div class="border-t border-outline-variant/20 my-1"></div>
+
+            <button id="user-menu-logout-btn" class="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition text-left">
+              <span class="material-symbols-outlined text-base text-red-600 dark:text-red-400">logout</span>
+              <span>Log Out</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
       </div>
 
     </div>
@@ -215,7 +268,7 @@
   <main class="max-w-container-max mx-auto px-6 py-8 space-y-12 flex-grow w-full">
 
     <!-- Dominant Primary Hero Banner -->
-    <section class="relative rounded-3xl overflow-hidden shadow-2xl bg-slate-950 text-white min-h-[460px] md:min-h-[500px] flex items-center p-8 md:p-16 aurora-bg spotlight-card border border-white/10">
+    <section class="relative rounded-none overflow-hidden shadow-2xl bg-slate-950 text-white min-h-[460px] md:min-h-[500px] flex items-center p-8 md:p-16 aurora-bg spotlight-card border border-white/10">
       <div class="absolute inset-0 z-0">
         <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1600&q=80" 
              alt="iPhone 16 Pro Max" 
@@ -236,10 +289,10 @@
           Powered by the revolutionary A18 Pro chip with hardware-accelerated ray tracing and grade-5 titanium architecture.
         </p>
         <div class="flex items-center gap-4 pt-3">
-          <button class="bg-secondary hover:bg-secondary-container text-white px-8 py-3.5 rounded-2xl font-extrabold text-sm transition-all shadow-lg active:scale-95 flex items-center gap-2.5 quick-buy-btn btn-sheen" data-id="p1">
+          <button class="bg-secondary hover:bg-secondary-container text-white px-8 py-3.5 rounded-xl font-extrabold text-sm transition-all shadow-lg active:scale-95 flex items-center gap-2.5 quick-buy-btn btn-sheen" data-id="p1">
             <span class="material-symbols-outlined text-xl">shopping_bag</span> Shop Now
           </button>
-          <button class="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-7 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-sm flex items-center gap-1.5 view-details-btn border border-white/15" data-id="p1">
+          <button class="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-7 py-3.5 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center gap-1.5 view-details-btn border border-white/15" data-id="p1">
             Learn More
           </button>
         </div>
@@ -250,7 +303,7 @@
     <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
       
       <!-- Card 1: Summer Footwear -->
-      <div class="relative rounded-3xl overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
+      <div class="relative rounded-none overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
         <div class="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" 
                alt="Sneaker Deals" 
@@ -270,7 +323,7 @@
       </div>
 
       <!-- Card 2: Next-Gen Audio -->
-      <div class="relative rounded-3xl overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
+      <div class="relative rounded-none overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
         <div class="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80" 
                alt="Sony Headphones" 
@@ -290,7 +343,7 @@
       </div>
 
       <!-- Card 3: Luxury Wearables -->
-      <div class="relative rounded-3xl overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
+      <div class="relative rounded-none overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
         <div class="absolute inset-0 z-0">
           <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" 
                alt="Luxury Smartwatch" 
@@ -312,7 +365,7 @@
     </section>
 
     <!-- High Contrast Brand Logotype Marquee Ticker -->
-    <section class="py-4 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 overflow-hidden shadow-xs">
+    <section class="py-4 bg-slate-100 dark:bg-slate-800/80 rounded-none border border-slate-200 dark:border-slate-700/60 overflow-hidden shadow-xs">
       <div class="marquee-wrapper">
         <div class="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">
           <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> APPLE</span>
@@ -351,48 +404,48 @@
 
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         <!-- Category 1 -->
-        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="electronics">
-          <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-none bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="electronics">
+          <div class="w-14 h-14 rounded-lg bg-blue-500/10 text-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-3xl">devices</span>
           </div>
           <span class="text-xs md:text-sm font-bold text-on-surface text-center">Electronics</span>
         </button>
 
         <!-- Category 2 -->
-        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="fashion">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-none bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="fashion">
+          <div class="w-14 h-14 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-3xl">apparel</span>
           </div>
           <span class="text-xs md:text-sm font-bold text-on-surface text-center">Fashion</span>
         </button>
 
         <!-- Category 3 -->
-        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="luxury">
-          <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-none bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="luxury">
+          <div class="w-14 h-14 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-3xl">diamond</span>
           </div>
           <span class="text-xs md:text-sm font-bold text-on-surface text-center">Luxury</span>
         </button>
 
         <!-- Category 4 -->
-        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="home">
-          <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-none bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="home">
+          <div class="w-14 h-14 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-3xl">chair</span>
           </div>
           <span class="text-xs md:text-sm font-bold text-on-surface text-center">Home Decor</span>
         </button>
 
         <!-- Category 5 -->
-        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="beauty">
-          <div class="w-14 h-14 rounded-2xl bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-none bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="beauty">
+          <div class="w-14 h-14 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-3xl">spa</span>
           </div>
           <span class="text-xs md:text-sm font-bold text-on-surface text-center">Beauty</span>
         </button>
 
         <!-- Category 6 -->
-        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="groceries">
-          <div class="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-none bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="groceries">
+          <div class="w-14 h-14 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
             <span class="material-symbols-outlined text-3xl">nutrition</span>
           </div>
           <span class="text-xs md:text-sm font-bold text-on-surface text-center">Groceries</span>

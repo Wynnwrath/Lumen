@@ -86,7 +86,7 @@ function renderProductDetails() {
   const thumbGallery = document.getElementById("thumbnail-gallery");
   if (images.length > 1) {
     thumbGallery.innerHTML = images.map((img, idx) => `
-      <button onclick="selectGalleryImage(${idx})" class="w-20 h-20 rounded-2xl overflow-hidden border-2 ${idx === 0 ? 'border-secondary' : 'border-transparent opacity-60 hover:opacity-100'} transition-all shrink-0">
+      <button onclick="selectGalleryImage(${idx})" class="w-20 h-20 rounded-none overflow-hidden border-2 ${idx === 0 ? 'border-secondary' : 'border-transparent opacity-60 hover:opacity-100'} transition-all shrink-0">
         <img src="${img}" alt="Thumbnail ${idx + 1}" class="w-full h-full object-cover"/>
       </button>
     `).join("");
@@ -235,14 +235,16 @@ function renderRelatedProducts() {
   }
 
   container.innerHTML = related.map((p) => `
-    <div class="product-card bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group border border-outline-variant/30">
-      <a href="product-detail.html?id=${p.id}" class="aspect-square bg-surface-container dark:bg-slate-700/50 rounded-xl p-3 flex items-center justify-center overflow-hidden block">
-        <img src="${p.images ? p.images[0] : p.image}" alt="${p.name}" class="product-card-img object-cover h-full w-full rounded-lg"/>
-      </a>
-      <div class="mt-3 flex-grow flex flex-col justify-between space-y-2">
+    <div class="product-card bg-surface-container-lowest dark:bg-slate-800 rounded-none shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group border border-outline-variant/30 overflow-hidden">
+      <div class="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
+        <a href="product-detail.html?id=${p.id}" class="w-full h-full block">
+          <img src="${p.images ? p.images[0] : p.image}" alt="${p.name}" class="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"/>
+        </a>
+      </div>
+      <div class="p-4 flex-grow flex flex-col justify-between space-y-2">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">${p.category}</span>
-          <a href="product-detail.html?id=${p.id}" class="text-xs font-semibold text-on-surface line-clamp-2 leading-snug hover:text-secondary transition-colors block">
+          <span class="text-xs font-bold uppercase tracking-wider text-secondary">${p.category}</span>
+          <a href="product-detail.html?id=${p.id}" class="text-sm font-bold text-on-surface line-clamp-2 leading-snug hover:text-secondary transition-colors block mt-0.5">
             ${p.name}
           </a>
         </div>
@@ -568,15 +570,17 @@ function updateHoverModalContent(cart) {
   }
 
   itemsContainer.innerHTML = cart.slice(0, 5).map((item) => `
-    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
-      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg shrink-0"/>
+    <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
+      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-11 h-11 object-cover rounded-lg shrink-0"/>
       <div class="min-w-0 flex-grow">
-        <h5 class="text-[11px] font-bold text-on-surface truncate">${item.name}</h5>
-        <div class="flex items-center gap-1.5 mt-0.5">
-          <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">-</button>
-          <span class="text-[10px] font-bold px-1">${item.quantity}</span>
-          <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">+</button>
-          <span class="text-[10px] text-secondary font-bold ml-1">$${(item.price * item.quantity).toFixed(2)}</span>
+        <h5 class="text-xs font-bold text-on-surface truncate">${item.name}</h5>
+        <div class="flex items-center gap-2 mt-1">
+          <div class="flex items-center gap-1">
+            <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-5 h-5 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold text-on-surface transition">-</button>
+            <span class="text-xs font-extrabold px-1">${item.quantity}</span>
+            <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-5 h-5 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold text-on-surface transition">+</button>
+          </div>
+          <span class="text-xs text-secondary font-extrabold ml-auto">$${(item.price * item.quantity).toFixed(2)}</span>
         </div>
       </div>
       <button onclick="handleHoverRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1" title="Remove Product">

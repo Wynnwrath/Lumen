@@ -38,14 +38,14 @@ function initCatalogPage() {
 }
 
 function populateBrandCheckboxes() {
-  const products = window.lumenStore.getProducts();
+  const products = window.lumenStore.getProducts(true);
   const brands = Array.from(new Set(products.map((p) => p.brand).filter(Boolean))).sort();
   const container = document.getElementById("brand-checkboxes");
   if (!container) return;
 
   container.innerHTML = brands.map((brand) => `
-    <label class="brand-item flex items-center gap-2 text-xs text-on-surface font-medium cursor-pointer hover:text-secondary transition" data-brand="${brand.toLowerCase()}">
-      <input type="checkbox" value="${brand}" class="brand-checkbox rounded border-outline-variant/80 text-secondary focus:ring-secondary"/>
+    <label class="brand-item flex items-center gap-2.5 text-sm text-on-surface font-semibold cursor-pointer hover:text-secondary transition" data-brand="${brand.toLowerCase()}">
+      <input type="checkbox" value="${brand}" class="brand-checkbox rounded border-outline-variant/80 text-secondary focus:ring-secondary accent-secondary"/>
       <span>${brand}</span>
     </label>
   `).join("");
@@ -247,7 +247,7 @@ function renderCatalog() {
   const productsGrid = document.getElementById("catalog-products-grid");
   if (!productsGrid) return;
 
-  const products = window.lumenStore.getProducts();
+  const products = window.lumenStore.getProducts(true);
   const wishlist = window.lumenStore.getWishlist();
 
   // Filter products
@@ -331,28 +331,26 @@ function renderGridProductCard(p, wishlist) {
   }
 
   return `
-    <div class="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30">
+    <div class="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-none shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30 overflow-hidden">
       
-      <!-- Top Image Header Bar -->
-      <div class="flex items-center justify-between w-full mb-2 z-10">
-        <div>${discountBadge}</div>
-        <button onclick="toggleCatalogWishlist('${p.id}')" class="text-outline hover:text-error transition-colors bg-white/80 dark:bg-slate-700/80 backdrop-blur-md rounded-full p-1.5 shadow-sm">
+      <!-- Full-bleed Product Image with Overlaid Badges -->
+      <div class="relative w-full aspect-square bg-surface dark:bg-slate-700/40 overflow-hidden">
+        <a href="product-detail.html?id=${p.id}" class="w-full h-full block">
+          <img src="${mainImg}" alt="${p.name}" class="product-card-img object-cover h-full w-full transition-transform duration-300 group-hover:scale-105"/>
+        </a>
+        <div class="absolute top-2.5 left-2.5 z-10">${discountBadge}</div>
+        <button onclick="toggleCatalogWishlist('${p.id}')" class="absolute top-2.5 right-2.5 z-10 text-outline hover:text-red-500 transition-all bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-full p-1.5 shadow-xs hover:scale-110">
           <span class="material-symbols-outlined text-lg ${isSaved ? 'filled text-red-500' : ''}">favorite</span>
         </button>
       </div>
 
-      <!-- Product Image -->
-      <a href="product-detail.html?id=${p.id}" class="aspect-square bg-surface dark:bg-slate-700/40 rounded-xl p-3 flex items-center justify-center overflow-hidden block relative">
-        <img src="${mainImg}" alt="${p.name}" class="product-card-img object-cover h-full w-full rounded-lg transition-transform duration-300 group-hover:scale-105"/>
-      </a>
-
       <!-- Content Info matching Reference Design -->
-      <div class="mt-3 flex-grow flex flex-col justify-between space-y-2">
+      <div class="p-4 flex-grow flex flex-col justify-between space-y-2">
         <div>
           <!-- Brand & Rating Row -->
           <div class="flex justify-between items-center text-xs mb-1">
-            <span class="font-bold text-outline uppercase tracking-wider text-[10px]">${p.brand || p.category}</span>
-            <div class="flex items-center gap-1 font-bold text-on-surface text-[11px]">
+            <span class="font-bold text-outline uppercase tracking-wider text-xs">${p.brand || p.category}</span>
+            <div class="flex items-center gap-1 font-bold text-on-surface text-xs">
               <span class="material-symbols-outlined text-xs text-amber-400 filled">star</span>
               <span>${p.rating}</span>
             </div>
@@ -365,7 +363,7 @@ function renderGridProductCard(p, wishlist) {
           </div>
 
           <!-- Product Title -->
-          <a href="product-detail.html?id=${p.id}" class="text-xs font-medium text-on-surface-variant line-clamp-2 leading-snug hover:text-secondary transition-colors block mt-1">
+          <a href="product-detail.html?id=${p.id}" class="text-sm font-bold text-on-surface line-clamp-2 leading-snug hover:text-secondary transition-colors block mt-1">
             ${p.name}
           </a>
         </div>
@@ -391,20 +389,20 @@ function renderListProductCard(p, wishlist) {
   const mainImg = p.images ? p.images[0] : p.image;
 
   return `
-    <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-center gap-4 border border-outline-variant/30">
-      <a href="product-detail.html?id=${p.id}" class="w-full sm:w-36 h-36 bg-surface dark:bg-slate-700/40 rounded-xl p-2 shrink-0 overflow-hidden flex items-center justify-center">
-        <img src="${mainImg}" alt="${p.name}" class="object-cover h-full w-full rounded-lg"/>
+    <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-none p-4 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-center gap-4 border border-outline-variant/30">
+      <a href="product-detail.html?id=${p.id}" class="w-full sm:w-36 h-36 bg-surface dark:bg-slate-700/40 rounded-none p-2 shrink-0 overflow-hidden flex items-center justify-center">
+        <img src="${mainImg}" alt="${p.name}" class="object-cover h-full w-full rounded-none"/>
       </a>
 
       <div class="flex-grow space-y-2 w-full">
         <div class="flex justify-between items-start">
           <div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">${p.brand || p.category}</span>
-            <a href="product-detail.html?id=${p.id}" class="text-base font-bold text-on-surface hover:text-secondary transition-colors block">
+            <span class="text-xs font-bold uppercase tracking-wider text-secondary">${p.brand || p.category}</span>
+            <a href="product-detail.html?id=${p.id}" class="text-lg font-bold text-on-surface hover:text-secondary transition-colors block">
               ${p.name}
             </a>
           </div>
-          <button onclick="toggleCatalogWishlist('${p.id}')" class="text-outline hover:text-error transition-colors p-1">
+          <button onclick="toggleCatalogWishlist('${p.id}')" class="text-outline hover:text-red-500 transition-all hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-full p-1.5">
             <span class="material-symbols-outlined text-lg ${isSaved ? 'filled text-red-500' : ''}">favorite</span>
           </button>
         </div>
@@ -633,7 +631,7 @@ function setupLiveSearch() {
       return;
     }
 
-    const products = window.lumenStore.getProducts();
+    const products = window.lumenStore.getProducts(true);
     const matches = products.filter((p) => 
       p.name.toLowerCase().includes(q) || 
       p.category.toLowerCase().includes(q) || 
@@ -657,16 +655,16 @@ function setupLiveSearch() {
                 <img src="${mainImg}" alt="${p.name}" class="w-full h-full object-cover rounded-lg group-hover:scale-105 transition duration-200"/>
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-on-surface truncate group-hover:text-secondary transition">${p.name}</h4>
+                <h4 class="text-sm font-bold text-on-surface truncate group-hover:text-secondary transition">${p.name}</h4>
                 <div class="flex items-center gap-1.5 mt-0.5">
                   <div class="flex text-emerald-600 dark:text-emerald-400 text-xs font-extrabold tracking-tighter">
                     ★★★★★
                   </div>
-                  <span class="text-[11px] font-bold text-on-surface">(${p.reviewsCount || 121})</span>
+                  <span class="text-xs font-bold text-on-surface">(${p.reviewsCount || 121})</span>
                 </div>
               </div>
             </div>
-            <span class="text-xs font-black text-primary dark:text-white shrink-0 ml-3">$${p.price.toFixed(2)}</span>
+            <span class="text-sm font-black text-primary dark:text-white shrink-0 ml-3">$${p.price.toFixed(2)}</span>
           </a>
         `;
       }).join("") + `
@@ -765,15 +763,17 @@ function updateHoverModalContent(cart) {
   }
 
   itemsContainer.innerHTML = cart.slice(0, 5).map((item) => `
-    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
-      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg shrink-0"/>
+    <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
+      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-11 h-11 object-cover rounded-lg shrink-0"/>
       <div class="min-w-0 flex-grow">
-        <h5 class="text-[11px] font-bold text-on-surface truncate">${item.name}</h5>
-        <div class="flex items-center gap-1.5 mt-0.5">
-          <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">-</button>
-          <span class="text-[10px] font-bold px-1">${item.quantity}</span>
-          <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">+</button>
-          <span class="text-[10px] text-secondary font-bold ml-1">$${(item.price * item.quantity).toFixed(2)}</span>
+        <h5 class="text-xs font-bold text-on-surface truncate">${item.name}</h5>
+        <div class="flex items-center gap-2 mt-1">
+          <div class="flex items-center gap-1">
+            <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-5 h-5 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold text-on-surface transition">-</button>
+            <span class="text-xs font-extrabold px-1">${item.quantity}</span>
+            <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-5 h-5 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold text-on-surface transition">+</button>
+          </div>
+          <span class="text-xs text-secondary font-extrabold ml-auto">$${(item.price * item.quantity).toFixed(2)}</span>
         </div>
       </div>
       <button onclick="handleHoverRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1" title="Remove Product">

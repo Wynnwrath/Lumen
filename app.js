@@ -79,7 +79,7 @@ function renderProducts() {
   const productsGrid = document.getElementById("products-grid");
   if (!productsGrid) return;
 
-  const products = window.lumenStore.getProducts();
+  const products = window.lumenStore.getProducts(true);
   const wishlist = window.lumenStore.getWishlist();
 
   // Preview top 4 products on landing page
@@ -102,36 +102,34 @@ function renderProducts() {
     }
 
     return `
-      <div class="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30">
+      <div class="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-none shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30 overflow-hidden">
         
-        <!-- Badges & Wishlist -->
-        <div class="flex items-center justify-between w-full mb-2">
-          <div>${stockBadge}</div>
-          <button onclick="toggleHomeWishlist('${p.id}')" class="text-outline hover:text-error transition-colors bg-white/70 dark:bg-slate-700/70 backdrop-blur-md rounded-full p-1.5 shadow-sm">
+        <!-- Full-bleed Image Container with overlaid Badges & Wishlist -->
+        <div class="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
+          <a href="product-detail.html?id=${p.id}" class="w-full h-full block">
+            <img src="${mainImg}" alt="${p.name}" class="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"/>
+          </a>
+          <div class="absolute top-2.5 left-2.5 z-10">${stockBadge}</div>
+          <button onclick="toggleHomeWishlist('${p.id}')" class="absolute top-2.5 right-2.5 z-10 text-outline hover:text-red-500 transition-all bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-full p-1.5 shadow-xs hover:scale-110">
             <span class="material-symbols-outlined text-lg ${isSaved ? 'filled text-red-500' : ''}">favorite</span>
           </button>
         </div>
 
-        <!-- Image Container linking to Details page -->
-        <a href="product-detail.html?id=${p.id}" class="aspect-square bg-surface-container dark:bg-slate-700/50 rounded-xl p-3 flex items-center justify-center overflow-hidden cursor-pointer block">
-          <img src="${mainImg}" alt="${p.name}" class="product-card-img object-cover h-full w-full rounded-lg"/>
-        </a>
-
         <!-- Content -->
-        <div class="mt-3 flex-grow flex flex-col justify-between space-y-2">
+        <div class="p-4 flex-grow flex flex-col justify-between space-y-2">
           <div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">${p.category}</span>
-            <a href="product-detail.html?id=${p.id}" class="text-sm font-semibold text-on-surface line-clamp-2 leading-snug hover:text-secondary transition-colors block">
+            <span class="text-xs font-bold uppercase tracking-wider text-secondary">${p.category}</span>
+            <a href="product-detail.html?id=${p.id}" class="text-base font-bold text-on-surface line-clamp-2 leading-snug hover:text-secondary transition-colors block mt-0.5">
               ${p.name}
             </a>
             
             <!-- Rating -->
-            <div class="flex items-center gap-1 mt-1">
+            <div class="flex items-center gap-1.5 mt-1">
               <div class="flex text-amber-400 text-xs">
                 <span class="material-symbols-outlined text-sm filled">star</span>
               </div>
-              <span class="text-xs font-semibold text-on-surface">${p.rating}</span>
-              <span class="text-[11px] text-outline">(${p.reviewsCount})</span>
+              <span class="text-xs font-bold text-on-surface">${p.rating}</span>
+              <span class="text-xs text-outline font-medium">(${p.reviewsCount})</span>
             </div>
           </div>
 
@@ -533,16 +531,16 @@ function setupLiveSearch() {
                 <img src="${mainImg}" alt="${p.name}" class="w-full h-full object-cover rounded-lg group-hover:scale-105 transition duration-200"/>
               </div>
               <div class="min-w-0">
-                <h4 class="text-xs font-bold text-on-surface truncate group-hover:text-secondary transition">${p.name}</h4>
+                <h4 class="text-sm font-bold text-on-surface truncate group-hover:text-secondary transition">${p.name}</h4>
                 <div class="flex items-center gap-1.5 mt-0.5">
                   <div class="flex text-emerald-600 dark:text-emerald-400 text-xs font-extrabold tracking-tighter">
                     ★★★★★
                   </div>
-                  <span class="text-[11px] font-bold text-on-surface">(${p.reviewsCount || 121})</span>
+                  <span class="text-xs font-bold text-on-surface">(${p.reviewsCount || 121})</span>
                 </div>
               </div>
             </div>
-            <span class="text-xs font-black text-primary dark:text-white shrink-0 ml-3">$${p.price.toFixed(2)}</span>
+            <span class="text-sm font-black text-primary dark:text-white shrink-0 ml-3">$${p.price.toFixed(2)}</span>
           </a>
         `;
       }).join("") + `
@@ -636,15 +634,17 @@ function updateHoverModalContent(cart) {
   }
 
   itemsContainer.innerHTML = cart.slice(0, 5).map((item) => `
-    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
-      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg shrink-0"/>
+    <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
+      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-11 h-11 object-cover rounded-lg shrink-0"/>
       <div class="min-w-0 flex-grow">
-        <h5 class="text-[11px] font-bold text-on-surface truncate">${item.name}</h5>
-        <div class="flex items-center gap-1.5 mt-0.5">
-          <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">-</button>
-          <span class="text-[10px] font-bold px-1">${item.quantity}</span>
-          <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">+</button>
-          <span class="text-[10px] text-secondary font-bold ml-1">$${(item.price * item.quantity).toFixed(2)}</span>
+        <h5 class="text-xs font-bold text-on-surface truncate">${item.name}</h5>
+        <div class="flex items-center gap-2 mt-1">
+          <div class="flex items-center gap-1">
+            <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-5 h-5 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold text-on-surface transition">-</button>
+            <span class="text-xs font-extrabold px-1">${item.quantity}</span>
+            <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-5 h-5 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-xs font-bold text-on-surface transition">+</button>
+          </div>
+          <span class="text-xs text-secondary font-extrabold ml-auto">$${(item.price * item.quantity).toFixed(2)}</span>
         </div>
       </div>
       <button onclick="handleHoverRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1" title="Remove Product">

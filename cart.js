@@ -88,14 +88,14 @@ function renderCartPage() {
   } else {
     emptyState?.classList.add("hidden");
     container.innerHTML = cart.map((item) => `
-      <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 border border-outline-variant/30 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 transition hover:border-outline-variant/60">
+      <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-none p-4 border border-outline-variant/30 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 transition hover:border-outline-variant/60">
         <div class="flex items-center gap-4 w-full sm:w-1/2 min-w-0">
-          <a href="product-detail.html?id=${item.id}" class="w-20 h-20 bg-surface dark:bg-slate-700 rounded-xl p-2 shrink-0 overflow-hidden flex items-center justify-center border border-outline-variant/20 block">
-            <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-full h-full object-cover rounded-lg"/>
+          <a href="product-detail.html?id=${item.id}" class="w-20 h-20 bg-surface dark:bg-slate-700 rounded-none p-2 shrink-0 overflow-hidden flex items-center justify-center border border-outline-variant/20 block">
+            <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-full h-full object-cover rounded-none"/>
           </a>
           <div class="min-w-0 space-y-1">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">${item.category}</span>
-            <a href="product-detail.html?id=${item.id}" class="text-sm font-bold text-on-surface hover:text-secondary transition truncate block">
+            <span class="text-xs font-bold uppercase tracking-wider text-secondary">${item.category}</span>
+            <a href="product-detail.html?id=${item.id}" class="text-base font-bold text-on-surface hover:text-secondary transition truncate block">
               ${item.name}
             </a>
             <div class="text-xs font-semibold text-outline">Unit Price: <span class="text-on-surface font-bold">$${item.price.toFixed(2)}</span></div>
@@ -458,15 +458,17 @@ function updateHoverModalContent(cart) {
   }
 
   itemsContainer.innerHTML = cart.slice(0, 4).map((item) => `
-    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
-      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-9 h-9 object-cover rounded-lg shrink-0"/>
+    <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
+      <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-11 h-11 object-cover rounded-lg shrink-0"/>
       <div class="min-w-0 flex-grow">
-        <h5 class="text-[11px] font-bold text-on-surface truncate">${item.name}</h5>
-        <div class="flex items-center gap-1.5 mt-0.5">
-          <button onclick="handleCartQty('${item.id}', -1)" class="w-4 h-4 rounded bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface">-</button>
-          <span class="text-[10px] font-bold">${item.quantity}</span>
-          <button onclick="handleCartQty('${item.id}', 1)" class="w-4 h-4 rounded bg-surface-container flex items-center justify-center text-[10px] font-bold text-on-surface">+</button>
-          <span class="text-[10px] text-secondary font-bold ml-1">$${(item.price * item.quantity).toFixed(2)}</span>
+        <h5 class="text-xs font-bold text-on-surface truncate">${item.name}</h5>
+        <div class="flex items-center gap-2 mt-1">
+          <div class="flex items-center gap-1">
+            <button onclick="handleCartQty('${item.id}', -1)" class="w-5 h-5 rounded bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface hover:bg-slate-300 dark:hover:bg-slate-700 transition">-</button>
+            <span class="text-xs font-extrabold px-1">${item.quantity}</span>
+            <button onclick="handleCartQty('${item.id}', 1)" class="w-5 h-5 rounded bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface hover:bg-slate-300 dark:hover:bg-slate-700 transition">+</button>
+          </div>
+          <span class="text-xs text-secondary font-extrabold ml-auto">$${(item.price * item.quantity).toFixed(2)}</span>
         </div>
       </div>
       <button onclick="handleRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1">
