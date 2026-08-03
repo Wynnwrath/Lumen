@@ -92,46 +92,65 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- Announcement Bar -->
-  <div class="bg-primary text-on-primary text-xs py-2 px-4 text-center font-medium flex justify-between items-center max-w-full">
-    <div class="hidden sm:block text-slate-300">Free Express Shipping on Orders Over $100</div>
-    <div class="mx-auto sm:mx-0 font-semibold tracking-wide">✨ Special Launch Offer: Use code <span class="text-secondary-fixed font-bold">LUMEN20</span> for 20% OFF</div>
-    <div class="hidden sm:flex items-center gap-4 text-slate-300">
-      <button id="theme-toggle" class="hover:text-white transition flex items-center gap-1">
-        <span class="material-symbols-outlined text-sm">dark_mode</span> <span id="theme-toggle-label">Dark Mode</span>
-      </button>
-      <a href="#support" class="hover:text-white transition">Need Help?</a>
+  <!-- Top Announcement Bar -->
+  <div class="bg-slate-900 dark:bg-slate-950 text-slate-200 text-xs py-2.5 px-6 font-medium border-b border-slate-800">
+    <div class="flex justify-between items-center w-full max-w-container-max mx-auto">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="material-symbols-outlined text-sm text-secondary-fixed">local_shipping</span> 
+          Free Worldwide Express Shipping on orders over $50
+        </span>
+        <span class="hidden md:inline text-slate-700">|</span>
+        <span class="hidden md:flex items-center gap-1 text-slate-300">
+          <span class="material-symbols-outlined text-sm text-amber-400 filled">star</span> 
+          4.9/5 Rating (12,400+ verified customer reviews)
+        </span>
+      </div>
+      <div class="flex items-center gap-5 text-slate-300">
+        <button id="theme-toggle" class="hover:text-white transition flex items-center gap-1.5 font-semibold">
+          <span class="material-symbols-outlined text-sm">dark_mode</span> 
+          <span id="theme-toggle-label" class="hidden sm:inline">Theme</span>
+        </button>
+        <span class="text-slate-700">|</span>
+        <a href="#support" class="hover:text-white transition font-semibold">Need Help?</a>
+      </div>
     </div>
   </div>
 
   <!-- Navigation Header (Consistent across Lumen) -->
-  <header class="top-0 sticky z-40 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/30">
-    <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-3.5 max-w-container-max mx-auto gap-md md:gap-0">
+  <header class="top-0 sticky z-40 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/30 backdrop-blur-md">
+    <div class="flex flex-wrap md:flex-nowrap items-center justify-between w-full px-6 py-4 max-w-container-max mx-auto gap-4">
       
       <!-- Brand Logo -->
       <div class="flex items-center justify-between w-full md:w-auto">
-        <a href="index.html" class="flex items-center gap-2 group">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-secondary to-secondary-container flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
-            <span class="material-symbols-outlined text-xl">auto_awesome</span>
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-secondary to-secondary-container flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-2xl">auto_awesome</span>
           </div>
-          <span class="text-2xl font-extrabold text-secondary dark:text-secondary-fixed tracking-tight">Lumen</span>
+          <span class="text-2xl font-extrabold text-secondary dark:text-secondary-fixed tracking-tight shiny-text">Lumen</span>
         </a>
         <div class="flex items-center gap-2 md:hidden">
           <button id="mobile-theme-toggle" class="p-2 text-on-surface hover:text-secondary rounded-full">
             <span class="material-symbols-outlined">dark_mode</span>
           </button>
-          <button id="cart-icon-btn-mobile" class="p-2 text-primary dark:text-inverse-primary relative">
+          <a href="checkout.html" id="cart-icon-btn-mobile" class="p-2 text-primary dark:text-inverse-primary relative">
             <span class="material-symbols-outlined">shopping_cart</span>
             <span id="cart-badge-count-mobile" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-          </button>
+          </a>
         </div>
       </div>
 
-      <!-- Search Bar -->
-      <div class="w-full max-w-xl mx-md relative">
-        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
-        <input id="search-input" type="text" placeholder="Search for products, brands and tech..." 
-               class="w-full bg-surface text-on-surface border border-outline-variant/60 focus:border-secondary rounded-full py-2.5 pl-11 pr-10 text-sm font-medium shadow-sm focus:shadow-md transition-all outline-none"/>
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
+        <a href="index.html" class="text-on-surface-variant hover:text-secondary transition-colors">Home</a>
+        <a href="products.html" class="text-secondary dark:text-secondary-fixed border-b-2 border-secondary pb-0.5">Catalog</a>
+      </nav>
+
+      <!-- Balanced Compact Search Input -->
+      <div class="w-full md:w-80 lg:w-96 relative">
+        <span id="search-icon-btn" class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg cursor-pointer hover:text-secondary transition">search</span>
+        <input id="search-input" type="text" placeholder="Search products, brands..." 
+               class="w-full bg-surface text-on-surface border border-outline-variant/60 focus:border-secondary rounded-full py-2 pl-10 pr-9 text-xs font-medium shadow-xs focus:shadow-md transition-all outline-none"/>
         <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary">
           <span class="material-symbols-outlined text-sm">close</span>
         </button>
@@ -141,50 +160,44 @@
         </div>
       </div>
 
-      <!-- Links & Icons -->
-      <div class="hidden md:flex items-center gap-lg">
-        <nav class="flex items-center gap-md">
-          <a href="index.html" class="text-on-surface-variant dark:text-outline-variant hover:text-secondary transition-colors text-sm font-medium">Home</a>
-          <a href="products.html" class="text-secondary dark:text-secondary-fixed-dim font-bold border-b-2 border-secondary pb-1 text-sm">Catalog</a>
-        </nav>
-        <div class="flex items-center gap-sm">
-          <button id="wishlist-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full relative transition-all" title="Wishlist">
-            <span class="material-symbols-outlined">favorite</span>
-            <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-          </button>
-          <!-- Cart Icon Container with Hover Preview Modal -->
-          <div class="relative group" id="cart-hover-container">
-            <a href="cart.html" id="cart-icon-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
-              <span class="material-symbols-outlined">shopping_cart</span>
-              <span id="cart-badge-count-desktop" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-            </a>
+      <!-- Action Icons -->
+      <div class="hidden md:flex items-center gap-4">
+        <button id="wishlist-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2.5 rounded-full relative transition-all" title="Wishlist">
+          <span class="material-symbols-outlined">favorite</span>
+          <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+        </button>
 
-            <!-- Cart Hover Preview Modal Dropdown -->
-            <div id="cart-hover-modal" class="hidden absolute top-full right-0 mt-2 w-80 bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-4 space-y-3">
-              <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Cart Quick Preview</span>
-                <span id="hover-cart-count" class="text-xs font-extrabold text-secondary">0 Items</span>
-              </div>
+        <!-- Cart Icon Container with Hover Preview Modal -->
+        <div class="relative group" id="cart-hover-container">
+          <a href="checkout.html" id="cart-icon-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2.5 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span id="cart-badge-count-desktop" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+          </a>
 
-              <!-- Mini List -->
-              <div id="hover-cart-items" class="max-h-56 overflow-y-auto space-y-2 pr-1"></div>
-
-              <div class="border-t border-outline-variant/20 pt-3 space-y-2">
-                <div class="flex justify-between text-xs font-bold text-on-surface">
-                  <span>Subtotal:</span>
-                  <span id="hover-cart-subtotal" class="text-secondary">$0.00</span>
-                </div>
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                  <a href="cart.html" class="bg-surface-container hover:bg-surface-container-high text-on-surface text-center py-2 rounded-xl text-xs font-bold transition">
-                    View Cart
-                  </a>
-                  <button id="hover-checkout-btn" class="bg-secondary hover:bg-secondary-container text-white py-2 rounded-xl text-xs font-bold transition">
-                    Checkout
-                  </button>
-                </div>
-              </div>
+          <!-- Cart Hover Preview Modal Dropdown -->
+          <div id="cart-hover-modal" class="hidden absolute top-full right-0 mt-2 w-84 bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+              <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Cart Quick Preview</span>
+              <span id="hover-cart-count" class="text-xs font-extrabold text-secondary">0 Items</span>
             </div>
 
+            <!-- Mini List -->
+            <div id="hover-cart-items" class="max-h-60 overflow-y-auto space-y-2 pr-1"></div>
+
+            <div class="border-t border-outline-variant/20 pt-3 space-y-1.5">
+              <div class="flex justify-between text-xs font-bold text-on-surface-variant">
+                <span>Subtotal:</span>
+                <span id="hover-cart-subtotal" class="font-bold text-on-surface">$0.00</span>
+              </div>
+              <div class="flex justify-between text-xs font-black text-on-surface">
+                <span>Total Amount:</span>
+                <span id="hover-cart-total" class="text-secondary dark:text-secondary-fixed">$0.00</span>
+              </div>
+              <button id="hover-checkout-btn" class="w-full mt-2 bg-secondary hover:bg-secondary-container text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5">
+                <span>Proceed to Checkout</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -193,60 +206,61 @@
   </header>
 
   <!-- Main Catalog Content Container -->
-  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg space-y-md flex-grow w-full">
+  <main class="max-w-container-max mx-auto px-6 py-8 space-y-8 flex-grow w-full">
 
-    <!-- Title Row & Horizontal Subcategory Navigation (Matching Reference Layout) -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-outline-variant/30">
-      
-      <!-- Title & Breadcrumb -->
-      <div class="space-y-1">
-        <h1 id="catalog-title" class="text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight">
-          Catalog
-        </h1>
-        <nav class="flex items-center gap-2 text-xs text-outline">
-          <a href="index.html" class="hover:text-secondary transition">Home</a>
-          <span class="material-symbols-outlined text-xs">chevron_right</span>
-          <span id="catalog-breadcrumb" class="font-semibold text-on-surface">All Items</span>
-        </nav>
+    <!-- Header Section: Title & Controls -->
+    <div class="space-y-4 pb-4 border-b border-outline-variant/30">
+      <!-- Title & Sort Control Row -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <!-- Title & Breadcrumb -->
+        <div class="space-y-1 min-w-0">
+          <h1 id="catalog-title" class="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">
+            Catalog
+          </h1>
+          <nav class="flex items-center gap-2 text-xs text-outline">
+            <a href="index.html" class="hover:text-secondary transition">Home</a>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span id="catalog-breadcrumb" class="font-semibold text-on-surface">All Items</span>
+          </nav>
+        </div>
+
+        <!-- Top Right Sort Control -->
+        <div class="flex items-center gap-2 shrink-0 self-start md:self-center">
+          <span class="material-symbols-outlined text-outline text-lg">tune</span>
+          <select id="sort-select" class="bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold rounded-full border border-outline-variant/60 py-2 px-4 focus:border-secondary outline-none cursor-pointer shadow-sm">
+            <option value="rating">Top rated</option>
+            <option value="featured">Featured</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="newest">New Arrivals</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Category Filter Tabs (Horizontal nav like reference design) -->
-      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scroll">
-        <button class="cat-tab active px-4 py-2 rounded-full text-xs font-bold bg-secondary text-white transition shadow-sm" data-category="all">
+      <!-- Category Filter Tabs (Horizontal Nav Bar) -->
+      <div class="flex items-center gap-2 overflow-x-auto w-full pt-1 pb-1 hide-scroll border-t border-outline-variant/10">
+        <button class="cat-tab active px-4 py-2 rounded-full text-xs font-bold bg-secondary text-white transition shadow-sm shrink-0" data-category="all">
           All items
         </button>
-        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition" data-category="electronics">
+        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition shrink-0" data-category="electronics">
           Electronics
         </button>
-        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition" data-category="fashion">
+        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition shrink-0" data-category="fashion">
           Fashion
         </button>
-        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition" data-category="luxury">
+        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition shrink-0" data-category="luxury">
           Luxury
         </button>
-        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition" data-category="home">
+        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition shrink-0" data-category="home">
           Home Decor
         </button>
-        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition" data-category="beauty">
+        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition shrink-0" data-category="beauty">
           Beauty
         </button>
-        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition" data-category="groceries">
+        <button class="cat-tab px-4 py-2 rounded-full text-xs font-medium text-on-surface-variant hover:bg-surface-container transition shrink-0" data-category="groceries">
           Groceries
         </button>
       </div>
-
-      <!-- Top Right Sort Control (Matching Reference Layout) -->
-      <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
-        <span class="material-symbols-outlined text-outline text-lg">tune</span>
-        <select id="sort-select" class="bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold rounded-full border border-outline-variant/60 py-2 px-4 focus:border-secondary outline-none cursor-pointer shadow-sm">
-          <option value="rating">Top rated</option>
-          <option value="featured">Featured</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="newest">New Arrivals</option>
-        </select>
-      </div>
-
     </div>
 
     <!-- Body Section: Left Sidebar Filters + Right Product Grid -->
@@ -348,7 +362,7 @@
         </div>
 
         <!-- Product Cards Container (Grid / List) -->
-        <div id="catalog-products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md">
+        <div id="catalog-products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-md">
           <!-- Dynamically rendered by products.js -->
         </div>
 
@@ -358,56 +372,7 @@
 
   </main>
 
-  <!-- Cart Slide-over Drawer -->
-  <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none">
-    <div id="cart-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-xs opacity-0 transition-opacity duration-300 pointer-events-none"></div>
-    <aside id="cart-panel" class="absolute top-0 right-0 w-full max-w-md h-full bg-surface-container-lowest dark:bg-slate-900 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 pointer-events-auto">
-      
-      <div class="p-5 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container-low dark:bg-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-secondary text-2xl">shopping_cart</span>
-          <h3 class="text-lg font-bold text-on-surface">Your Shopping Cart</h3>
-          <span id="cart-drawer-count" class="bg-secondary/10 text-secondary text-xs px-2 py-0.5 rounded-full font-bold">0 Items</span>
-        </div>
-        <button id="close-cart-btn" class="text-outline hover:text-primary p-1 rounded-full">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
 
-      <div class="p-3 bg-secondary/5 border-b border-secondary/10 px-5">
-        <div class="flex justify-between text-xs font-semibold text-on-surface mb-1">
-          <span id="free-shipping-text">Add $100.00 more for FREE Shipping!</span>
-          <span id="free-shipping-percent">0%</span>
-        </div>
-        <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-          <div id="free-shipping-bar" class="h-full bg-secondary transition-all duration-300 w-0"></div>
-        </div>
-      </div>
-
-      <div id="cart-items-container" class="flex-grow overflow-y-auto p-5 space-y-4">
-        <!-- Rendered by JS -->
-      </div>
-
-      <div class="p-5 border-t border-outline-variant/30 bg-surface-container-low dark:bg-slate-800 space-y-3">
-        <div class="space-y-1.5 text-sm">
-          <div class="flex justify-between text-outline">
-            <span>Subtotal</span>
-            <span id="cart-subtotal" class="font-semibold text-on-surface">$0.00</span>
-          </div>
-          <div class="flex justify-between text-base font-bold text-on-surface pt-2 border-t border-outline-variant/30">
-            <span>Total</span>
-            <span id="cart-total" class="text-secondary dark:text-secondary-fixed">$0.00</span>
-          </div>
-        </div>
-
-        <button id="checkout-btn" class="w-full bg-secondary hover:bg-secondary-container text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 btn-sheen">
-          <span>Proceed to Checkout</span>
-          <span class="material-symbols-outlined text-lg">arrow_forward</span>
-        </button>
-      </div>
-
-    </aside>
-  </div>
 
   <!-- Footer -->
   <footer class="bg-primary-container text-on-primary py-12 border-t border-slate-800 mt-auto">
@@ -453,6 +418,7 @@
 
   <!-- Store API and Page Controller -->
   <script src="store.js"></script>
+  <script src="animations.js"></script>
   <script src="products.js"></script>
 </body>
 </html>

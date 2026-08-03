@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout - Lumen</title>
+  <meta name="description" content="Complete your order at Lumen. Select Cash on Delivery, E-Wallet, or Bank Transfer payment options."/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0f172a",
+            "on-primary": "#ffffff",
+            "primary-container": "#131b2e",
+            "on-primary-container": "#7c839b",
+            "primary-fixed": "#dae2fd",
+            "primary-fixed-dim": "#bec6e0",
+            "secondary": "#0051d5",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#316bf3",
+            "on-secondary-container": "#fefcff",
+            "secondary-fixed": "#dbe1ff",
+            "secondary-fixed-dim": "#b4c5ff",
+            "tertiary": "#000000",
+            "tertiary-container": "#191c1e",
+            "on-tertiary-container": "#818486",
+            "surface": "#f8f9ff",
+            "surface-dim": "#cbdbf5",
+            "surface-bright": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "surface-container-high": "#dce9ff",
+            "surface-container-highest": "#d3e4fe",
+            "surface-variant": "#d3e4fe",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#45464d",
+            "background": "#f8f9ff",
+            "on-background": "#0b1c30",
+            "outline": "#76777d",
+            "outline-variant": "#c6c6cd",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "inverse-surface": "#213145",
+            "inverse-on-surface": "#eaf1ff",
+            "inverse-primary": "#bec6e0"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "xs": "4px",
+            "sm": "8px",
+            "md": "16px",
+            "lg": "24px",
+            "xl": "48px",
+            "gutter": "24px",
+            "margin-mobile": "16px",
+            "margin-desktop": "32px",
+            "container-max": "1280px"
+          },
+          fontFamily: {
+            sans: ["Hanken Grotesk", "sans-serif"],
+            body: ["Hanken Grotesk", "sans-serif"],
+            headline: ["Hanken Grotesk", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen flex flex-col pb-16 md:pb-0">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-slate-900 dark:bg-slate-950 text-slate-200 text-xs py-2.5 px-6 font-medium border-b border-slate-800">
+    <div class="flex justify-between items-center w-full max-w-container-max mx-auto">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="material-symbols-outlined text-sm text-secondary-fixed">local_shipping</span> 
+          Free Express Shipping on orders over $50
+        </span>
+        <span class="hidden md:inline text-slate-700">|</span>
+        <span class="hidden md:flex items-center gap-1 text-slate-300">
+          <span class="material-symbols-outlined text-sm text-amber-400 filled">star</span> 
+          4.9/5 Rating (12,400+ verified customer reviews)
+        </span>
+      </div>
+      <div class="flex items-center gap-5 text-slate-300">
+        <button id="theme-toggle" class="hover:text-white transition flex items-center gap-1.5 font-semibold">
+          <span class="material-symbols-outlined text-sm">dark_mode</span> 
+          <span id="theme-toggle-label" class="hidden sm:inline">Theme</span>
+        </button>
+        <span class="text-slate-700">|</span>
+        <a href="#" class="hover:text-white transition font-semibold">Need Help?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Header -->
+  <header class="top-0 sticky z-40 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/30 backdrop-blur-md">
+    <div class="flex flex-wrap md:flex-nowrap items-center justify-between w-full px-6 py-4 max-w-container-max mx-auto gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-secondary to-secondary-container flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-2xl">auto_awesome</span>
+          </div>
+          <span class="text-2xl font-extrabold text-secondary dark:text-secondary-fixed tracking-tight shiny-text">Lumen</span>
+        </a>
+        <div class="flex items-center gap-2 md:hidden">
+          <button id="mobile-theme-toggle" class="p-2 text-on-surface hover:text-secondary rounded-full">
+            <span class="material-symbols-outlined">dark_mode</span>
+          </button>
+          <a href="checkout.html" class="p-2 text-primary dark:text-inverse-primary relative">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span id="cart-badge-count-mobile" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
+        <a href="index.html" class="text-on-surface-variant hover:text-secondary transition-colors">Home</a>
+        <a href="products.html" class="text-on-surface-variant hover:text-secondary transition-colors">Catalog</a>
+      </nav>
+
+      <!-- Balanced Compact Search Input -->
+      <div class="w-full md:w-80 lg:w-96 relative">
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-3 text-outline text-lg pointer-events-none">search</span>
+          <input id="search-input" type="text" placeholder="Search products..." 
+                 class="w-full bg-surface-container-low dark:bg-slate-800 text-on-surface placeholder-outline text-xs rounded-xl pl-9 pr-8 py-2.5 border border-outline-variant/40 focus:outline-none focus:border-secondary transition-colors"/>
+          <button id="clear-search" class="hidden absolute right-2.5 text-outline hover:text-on-surface text-xs">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+        <div id="search-results-dropdown" class="hidden absolute left-0 right-0 top-full mt-2 bg-surface-container-lowest dark:bg-slate-800 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 max-h-96 overflow-y-auto"></div>
+      </div>
+
+      <!-- User Actions -->
+      <div class="hidden md:flex items-center gap-4">
+        <!-- Wishlist Link -->
+        <a href="products.html" class="p-2.5 text-on-surface hover:text-secondary rounded-full hover:bg-surface-container transition-colors relative" title="Wishlist">
+          <span class="material-symbols-outlined text-xl">favorite</span>
+          <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-pink-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+        </a>
+
+        <!-- Cart Hover Modal Container -->
+        <div id="cart-hover-container" class="relative">
+          <a href="checkout.html" id="cart-icon-btn-desktop" class="p-2.5 text-on-surface hover:text-secondary rounded-full hover:bg-surface-container transition-colors relative flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-xl">shopping_cart</span>
+            <span id="cart-badge-count-desktop" class="bg-secondary text-on-secondary text-[11px] font-extrabold px-2 py-0.5 rounded-full">0</span>
+          </a>
+
+          <!-- Hover Cart Modal -->
+          <div id="cart-hover-modal" class="hidden absolute right-0 top-full mt-2 w-84 bg-surface-container-lowest dark:bg-slate-800 rounded-2xl shadow-2xl border border-outline-variant/30 p-4 z-50 space-y-3">
+            <div class="flex justify-between items-center border-b border-outline-variant/20 pb-2">
+              <span class="text-xs font-bold text-on-surface">Cart Summary</span>
+              <span id="hover-cart-count" class="text-[10px] bg-secondary/10 text-secondary dark:text-secondary-fixed font-bold px-2 py-0.5 rounded-full">0 Items</span>
+            </div>
+            
+            <div id="hover-cart-items" class="max-h-60 overflow-y-auto space-y-2 pr-1">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <div class="border-t border-outline-variant/20 pt-2.5 space-y-1">
+              <div class="flex justify-between text-xs text-on-surface-variant font-medium">
+                <span>Subtotal</span>
+                <span id="hover-cart-subtotal" class="font-bold text-on-surface">$0.00</span>
+              </div>
+              <div class="flex justify-between text-xs font-black text-on-surface">
+                <span>Total Amount</span>
+                <span id="hover-cart-total" class="text-secondary dark:text-secondary-fixed-dim">$0.00</span>
+              </div>
+              <button id="hover-checkout-btn" class="w-full mt-2 bg-secondary hover:bg-secondary-container text-white py-2 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5">
+                <span>Proceed to Checkout</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content Container -->
+  <main class="flex-grow max-w-container-max w-full mx-auto px-4 md:px-6 py-6 md:py-10">
+    
+    <!-- Breadcrumb & Header -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <nav class="flex items-center gap-2 text-xs text-outline mb-1 font-medium">
+          <a href="index.html" class="hover:text-secondary">Home</a>
+          <span>/</span>
+          <a href="products.html" class="hover:text-secondary">Catalog</a>
+          <span>/</span>
+          <span class="text-on-surface font-semibold">Checkout</span>
+        </nav>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">Unified Checkout</h1>
+      </div>
+      
+      <div class="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-2 rounded-xl border border-emerald-200 dark:border-emerald-900/50">
+        <span class="material-symbols-outlined text-base">verified_user</span>
+        <span>Secure 256-Bit Encrypted Checkout</span>
+      </div>
+    </div>
+
+    <!-- MAIN CHECKOUT FLOW VIEW -->
+    <div id="checkout-main-view" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- LEFT COLUMN: CHECKOUT FORM (8 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Checkout Form -->
+        <form id="checkout-form" class="space-y-6">
+          
+          <!-- SECTION 1: Customer Details -->
+          <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-5 md:p-6 shadow-sm border border-outline-variant/30 space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-outline-variant/20">
+              <div class="w-8 h-8 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-sm">1</div>
+              <h2 class="text-base font-bold text-on-surface">Customer & Contact Information</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label for="cust-name" class="block text-xs font-bold text-on-surface mb-1">Customer Full Name <span class="text-red-500">*</span></label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">person</span>
+                  <input type="text" id="cust-name" required placeholder="e.g. Maria Santos"
+                         class="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl pl-9 pr-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"/>
+                </div>
+              </div>
+
+              <div>
+                <label for="cust-email" class="block text-xs font-bold text-on-surface mb-1">Email Address <span class="text-red-500">*</span></label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">mail</span>
+                  <input type="email" id="cust-email" required placeholder="maria@example.com"
+                         class="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl pl-9 pr-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"/>
+                </div>
+              </div>
+
+              <div>
+                <label for="cust-phone" class="block text-xs font-bold text-on-surface mb-1">Contact Number <span class="text-red-500">*</span></label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">call</span>
+                  <input type="tel" id="cust-phone" required placeholder="+63 917 123 4567"
+                         class="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl pl-9 pr-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: Delivery Address -->
+          <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-5 md:p-6 shadow-sm border border-outline-variant/30 space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-outline-variant/20">
+              <div class="w-8 h-8 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-sm">2</div>
+              <h2 class="text-base font-bold text-on-surface">Delivery Address</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label for="cust-address" class="block text-xs font-bold text-on-surface mb-1">Street Address <span class="text-red-500">*</span></label>
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">home</span>
+                  <input type="text" id="cust-address" required placeholder="House/Unit No., Street Name, Barangay"
+                         class="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl pl-9 pr-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"/>
+                </div>
+              </div>
+
+              <div>
+                <label for="cust-city" class="block text-xs font-bold text-on-surface mb-1">City / Municipality <span class="text-red-500">*</span></label>
+                <input type="text" id="cust-city" required placeholder="e.g. Quezon City"
+                       class="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"/>
+              </div>
+
+              <div>
+                <label for="cust-state" class="block text-xs font-bold text-on-surface mb-1">State / Province <span class="text-red-500">*</span></label>
+                <input type="text" id="cust-state" required placeholder="e.g. Metro Manila"
+                       class="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 3: Payment Method -->
+          <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-5 md:p-6 shadow-sm border border-outline-variant/30 space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-outline-variant/20">
+              <div class="w-8 h-8 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-sm">3</div>
+              <div>
+                <h2 class="text-base font-bold text-on-surface">Payment Method</h2>
+                <p class="text-xs text-outline">Select your preferred payment option</p>
+              </div>
+            </div>
+
+            <!-- Payment Radio Buttons -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              
+              <!-- Cash on Delivery -->
+              <label class="payment-option-card flex flex-col justify-between p-4 rounded-xl border-2 border-secondary bg-secondary/5 dark:bg-slate-700/60 cursor-pointer transition relative">
+                <input type="radio" name="paymentMethod" value="Cash on Delivery" checked class="sr-only payment-radio"/>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="material-symbols-outlined text-secondary text-2xl">local_atm</span>
+                  <span class="w-4 h-4 rounded-full border-2 border-secondary bg-secondary flex items-center justify-center">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                  </span>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-on-surface">Cash on Delivery</h3>
+                  <p class="text-[10px] text-outline mt-0.5">Pay cash upon delivery</p>
+                </div>
+              </label>
+
+              <!-- E-Wallet -->
+              <label class="payment-option-card flex flex-col justify-between p-4 rounded-xl border-2 border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800 cursor-pointer transition relative">
+                <input type="radio" name="paymentMethod" value="E-Wallet" class="sr-only payment-radio"/>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="material-symbols-outlined text-blue-600 text-2xl">account_balance_wallet</span>
+                  <span class="radio-indicator w-4 h-4 rounded-full border-2 border-outline-variant"></span>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-on-surface">E-Wallet</h3>
+                  <p class="text-[10px] text-outline mt-0.5">GCash / Maya / PayPal</p>
+                </div>
+              </label>
+
+              <!-- Bank Transfer -->
+              <label class="payment-option-card flex flex-col justify-between p-4 rounded-xl border-2 border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800 cursor-pointer transition relative">
+                <input type="radio" name="paymentMethod" value="Bank Transfer" class="sr-only payment-radio"/>
+                <div class="flex justify-between items-center mb-2">
+                  <span class="material-symbols-outlined text-emerald-600 text-2xl">account_balance</span>
+                  <span class="radio-indicator w-4 h-4 rounded-full border-2 border-outline-variant"></span>
+                </div>
+                <div>
+                  <h3 class="text-xs font-bold text-on-surface">Bank Transfer</h3>
+                  <p class="text-[10px] text-outline mt-0.5">Direct Deposit</p>
+                </div>
+              </label>
+
+            </div>
+
+            <!-- Dynamic Payment Method Details Panel -->
+            <div id="payment-details-panel" class="p-4 rounded-xl bg-surface dark:bg-slate-700/40 border border-outline-variant/30 text-xs text-on-surface-variant space-y-2">
+              <!-- Default COD Instructions -->
+              <div class="flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-amber-500 text-lg shrink-0">info</span>
+                <div>
+                  <p class="font-bold text-on-surface">Cash on Delivery (COD) Selected</p>
+                  <p class="mt-0.5 text-outline">Please prepare the exact cash amount for our courier upon delivery. No advance online payment required.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SECTION 4: Order Notes -->
+          <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-5 md:p-6 shadow-sm border border-outline-variant/30 space-y-4">
+            <div class="flex items-center gap-2.5 pb-3 border-b border-outline-variant/20">
+              <div class="w-8 h-8 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-sm">4</div>
+              <h2 class="text-base font-bold text-on-surface">Order Notes & Instructions (Optional)</h2>
+            </div>
+
+            <div>
+              <label for="cust-notes" class="block text-xs font-bold text-on-surface mb-1">Special Delivery Notes</label>
+              <textarea id="cust-notes" rows="3" placeholder="e.g. Leave with security guard, call before delivery, gate code 1234..."
+                        class="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl p-3 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"></textarea>
+            </div>
+          </div>
+
+          <!-- Submit Order Button -->
+          <button type="submit" id="place-order-btn" class="w-full bg-secondary hover:bg-secondary-container text-white py-4 px-6 rounded-2xl font-extrabold text-sm md:text-base transition-all transform active:scale-95 shadow-lg flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">lock</span>
+            <span>Place Order Now • <span id="btn-total-display">$0.00</span></span>
+          </button>
+
+        </form>
+
+      </div>
+
+      <!-- RIGHT COLUMN: LIVE CART SUMMARY (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-5 md:p-6 shadow-sm border border-outline-variant/30 space-y-5 sticky top-24">
+          
+          <div class="flex justify-between items-center pb-3 border-b border-outline-variant/20">
+            <h2 class="text-base font-bold text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary">shopping_bag</span>
+              <span>Order Summary</span>
+            </h2>
+            <span id="checkout-items-count" class="text-xs bg-secondary/10 text-secondary font-bold px-2.5 py-1 rounded-full">0 Items</span>
+          </div>
+
+          <!-- Selected Products List -->
+          <div id="checkout-items-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+            <!-- Dynamically Rendered Cart Items -->
+          </div>
+
+          <!-- Coupon Input -->
+          <div class="pt-3 border-t border-outline-variant/20">
+            <div class="flex gap-2">
+              <input type="text" id="coupon-input" placeholder="Promo code (e.g. LUMEN10)" 
+                     class="flex-grow bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none uppercase"/>
+              <button id="apply-coupon-btn" class="bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 text-on-surface text-xs font-bold px-3 py-2 rounded-xl transition">
+                Apply
+              </button>
+            </div>
+            <p id="coupon-message" class="text-[11px] font-semibold mt-1 hidden"></p>
+          </div>
+
+          <!-- Financial Breakdown -->
+          <div class="space-y-2 pt-3 border-t border-outline-variant/20 text-xs">
+            <div class="flex justify-between text-on-surface-variant">
+              <span>Subtotal</span>
+              <span id="checkout-subtotal" class="font-bold text-on-surface">$0.00</span>
+            </div>
+            <div id="discount-row" class="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold hidden">
+              <span>Discount</span>
+              <span id="checkout-discount">-$0.00</span>
+            </div>
+            <div class="flex justify-between text-on-surface-variant">
+              <span>Estimated Tax (8%)</span>
+              <span id="checkout-tax" class="font-bold text-on-surface">$0.00</span>
+            </div>
+            <div class="flex justify-between text-on-surface-variant items-center">
+              <span>Shipping Fee</span>
+              <span id="checkout-shipping" class="font-bold text-emerald-600 dark:text-emerald-400">FREE</span>
+            </div>
+            
+            <div class="flex justify-between items-baseline pt-3 border-t border-outline-variant/30 text-base font-extrabold text-on-surface">
+              <span>Total Amount</span>
+              <span id="checkout-total" class="text-xl font-black text-secondary dark:text-secondary-fixed">$0.00</span>
+            </div>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="grid grid-cols-3 gap-2 pt-4 border-t border-outline-variant/20 text-center text-[10px] text-outline font-semibold">
+            <div class="p-2 rounded-xl bg-surface dark:bg-slate-700/30 flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-secondary text-base">verified</span>
+              <span>Quality Guarantee</span>
+            </div>
+            <div class="p-2 rounded-xl bg-surface dark:bg-slate-700/30 flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-secondary text-base">replay_30</span>
+              <span>30-Day Returns</span>
+            </div>
+            <div class="p-2 rounded-xl bg-surface dark:bg-slate-700/30 flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-secondary text-base">support_agent</span>
+              <span>24/7 Support</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SUCCESS CONFIRMATION RECEIPT VIEW (Hidden by default) -->
+    <div id="confirmation-view" class="hidden max-w-3xl mx-auto space-y-6 py-6">
+      
+      <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-3xl p-6 md:p-10 shadow-xl border border-outline-variant/30 text-center space-y-6">
+        
+        <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
+          <span class="material-symbols-outlined text-4xl">check_circle</span>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">Order Confirmed!</h2>
+          <p class="text-xs md:text-sm text-on-surface-variant max-w-md mx-auto">
+            Thank you for shopping with Lumen. Your order has been placed successfully. A confirmation email has been dispatched.
+          </p>
+        </div>
+
+        <div class="inline-flex items-center gap-2 bg-surface dark:bg-slate-700/60 px-4 py-2 rounded-2xl border border-outline-variant/40">
+          <span class="text-xs font-medium text-outline">Order Reference:</span>
+          <span id="receipt-order-id" class="text-xs font-black text-secondary dark:text-secondary-fixed tracking-wider">#LMN-000000</span>
+        </div>
+
+        <!-- Receipt Details Table -->
+        <div class="bg-surface dark:bg-slate-700/40 rounded-2xl p-5 text-left border border-outline-variant/20 space-y-4 text-xs">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-outline-variant/20">
+            <div>
+              <span class="text-outline block text-[10px] uppercase font-bold tracking-wider">Customer</span>
+              <span id="receipt-name" class="font-bold text-on-surface block mt-0.5">-</span>
+              <span id="receipt-email" class="text-outline block">-</span>
+              <span id="receipt-phone" class="text-outline block">-</span>
+            </div>
+            <div>
+              <span class="text-outline block text-[10px] uppercase font-bold tracking-wider">Shipping & Payment</span>
+              <span id="receipt-address" class="font-bold text-on-surface block mt-0.5">-</span>
+              <span id="receipt-payment" class="text-secondary dark:text-secondary-fixed font-bold block mt-1">-</span>
+            </div>
+          </div>
+
+          <!-- Items Breakdown -->
+          <div>
+            <span class="text-outline block text-[10px] uppercase font-bold tracking-wider mb-2">Purchased Items</span>
+            <div id="receipt-items-list" class="space-y-2">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-outline-variant/20 flex justify-between items-baseline text-sm font-extrabold text-on-surface">
+            <span>Total Amount Paid</span>
+            <span id="receipt-total-paid" class="text-lg font-black text-secondary dark:text-secondary-fixed">$0.00</span>
+          </div>
+
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+          <button onclick="window.print()" class="bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 text-on-surface px-5 py-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-base">print</span>
+            <span>Print Receipt</span>
+          </button>
+          <a href="products.html" class="bg-secondary hover:bg-secondary-container text-white px-6 py-3 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-base">shopping_bag</span>
+            <span>Continue Shopping</span>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-surface-container-lowest dark:bg-slate-900 border-t border-outline-variant/30 py-10 mt-auto text-xs text-on-surface-variant">
+    <div class="max-w-container-max mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-secondary flex items-center justify-center text-white font-bold text-sm">L</div>
+          <span class="text-lg font-black text-secondary dark:text-secondary-fixed">Lumen</span>
+        </div>
+        <p class="text-outline">Premium e-commerce shopping experience with instant hover cart previews and fast local checkout.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-on-surface mb-3">Shop Categories</h4>
+        <ul class="space-y-2">
+          <li><a href="products.html?category=electronics" class="hover:text-secondary">Electronics</a></li>
+          <li><a href="products.html?category=fashion" class="hover:text-secondary">Fashion & Apparel</a></li>
+          <li><a href="products.html?category=home" class="hover:text-secondary">Home & Living</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-on-surface mb-3">Customer Support</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="hover:text-secondary">Order Tracking</a></li>
+          <li><a href="#" class="hover:text-secondary">Shipping & Delivery</a></li>
+          <li><a href="#" class="hover:text-secondary">Returns Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-on-surface mb-3">Payment Options</h4>
+        <div class="flex items-center gap-2 text-outline">
+          <span class="material-symbols-outlined">local_atm</span>
+          <span class="material-symbols-outlined">account_balance_wallet</span>
+          <span class="material-symbols-outlined">account_balance</span>
+        </div>
+        <p class="text-[11px] text-outline mt-2">Cash on Delivery, GCash, Maya, PayPal & Bank Transfer accepted.</p>
+      </div>
+    </div>
+    <div class="max-w-container-max mx-auto px-6 mt-8 pt-6 border-t border-outline-variant/20 text-center text-outline text-[11px]">
+      © 2026 Lumen Inc. All rights reserved. Built for seamless shopping.
+    </div>
+  </footer>
+
+  <!-- Core Store & Checkout Controllers -->
+  <script src="store.js"></script>
+  <script src="app.js"></script>
+  <script src="checkout.js"></script>
+</body>
+</html>

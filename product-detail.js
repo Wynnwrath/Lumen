@@ -169,7 +169,6 @@ function setupInteractions() {
     if (result.success) {
       showToast(`Added ${currentQuantity} x "${currentProduct.name}" to cart!`, "cart");
       updateHeaderCounts();
-      openCartDrawer();
     } else if (result.reason === "exceeds_stock") {
       showToast(`Cannot add more. Max stock limit (${result.maxStock}) reached!`, "info");
     }
@@ -180,7 +179,7 @@ function setupInteractions() {
     if (currentProduct.stock <= 0) return;
     window.lumenStore.addToCart(currentProduct.id, currentQuantity);
     updateHeaderCounts();
-    openCartDrawer();
+    window.location.href = "checkout.html";
   });
 
   // Wishlist toggle
@@ -282,6 +281,7 @@ function updateHeaderCounts() {
 
 function renderCartItems(cart, subtotal) {
   const container = document.getElementById("cart-items-container");
+  if (!container) return; // only present on cart.html, not on this page
   if (cart.length === 0) {
     container.innerHTML = `
       <div class="py-12 text-center space-y-3">
@@ -309,21 +309,25 @@ function renderCartItems(cart, subtotal) {
     `).join("");
   }
 
-  document.getElementById("cart-subtotal").textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById("cart-total").textContent = `$${subtotal.toFixed(2)}`;
+  const subtotalEl = document.getElementById("cart-subtotal");
+  const totalEl = document.getElementById("cart-total");
+  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (totalEl) totalEl.textContent = `$${subtotal.toFixed(2)}`;
 
   const freeBar = document.getElementById("free-shipping-bar");
   const freeTxt = document.getElementById("free-shipping-text");
   const freePct = document.getElementById("free-shipping-percent");
-  if (subtotal >= 100) {
-    freeBar.style.width = "100%";
-    freePct.textContent = "100%";
-    freeTxt.textContent = "🎉 Free Express Shipping earned!";
-  } else {
-    const pct = Math.round((subtotal / 100) * 100);
-    freeBar.style.width = `${pct}%`;
-    freePct.textContent = `${pct}%`;
-    freeTxt.textContent = `Add $${(100 - subtotal).toFixed(2)} more for FREE Shipping!`;
+  if (freeBar && freeTxt && freePct) {
+    if (subtotal >= 100) {
+      freeBar.style.width = "100%";
+      freePct.textContent = "100%";
+      freeTxt.textContent = "🎉 Free Express Shipping earned!";
+    } else {
+      const pct = Math.round((subtotal / 100) * 100);
+      freeBar.style.width = `${pct}%`;
+      freePct.textContent = `${pct}%`;
+      freeTxt.textContent = `Add $${(100 - subtotal).toFixed(2)} more for FREE Shipping!`;
+    }
   }
 }
 
@@ -342,24 +346,27 @@ function setupCartDrawerListeners() {
   const backdrop = document.getElementById("cart-backdrop");
   const panel = document.getElementById("cart-panel");
   const closeBtn = document.getElementById("close-cart-btn");
+  const checkoutBtn = document.getElementById("checkout-btn");
+  const drawerOpenTargets = document.getElementById("cart-backdrop");
 
   ["cart-icon-btn-desktop", "cart-icon-btn-mobile"].forEach((id) => {
-    document.getElementById(id)?.addEventListener("click", openCartDrawer);
+    document.getElementById(id)?.addEventListener("click", () => {
+      // cart drawer UI is not present on this page; nothing to open
+    });
   });
 
-  closeBtn.addEventListener("click", closeCartDrawer);
-  backdrop.addEventListener("click", closeCartDrawer);
+  if (closeBtn && drawerOpenTargets) {
+    closeBtn.addEventListener("click", closeCartDrawer);
+    drawerOpenTargets.addEventListener("click", closeCartDrawer);
+  }
 
-  document.getElementById("checkout-btn").addEventListener("click", () => {
+  checkoutBtn?.addEventListener("click", () => {
     const cart = window.lumenStore.getCart();
     if (cart.length === 0) {
       showToast("Your cart is empty!", "info");
       return;
     }
-    const order = window.lumenStore.createOrder({ customerName: "Valued Customer", paymentMethod: "Credit Card" });
-    closeCartDrawer();
-    updateHeaderCounts();
-    showToast(`Order ${order.orderNumber} placed successfully! Thank you for choosing Lumen.`, "success");
+    window.location.href = "cart.html?checkout=true";
   });
 }
 
@@ -531,9 +538,7 @@ function setupHoverCartModal() {
       showToast("Your cart is empty!", "info");
       return;
     }
-    const order = window.lumenStore.createOrder({ customerName: "Valued Customer", paymentMethod: "Credit Card" });
-    updateHeaderCounts();
-    showToast(`Order ${order.orderNumber} placed successfully!`, "success");
+    window.location.href = "checkout.html";
   });
 }
 
@@ -541,33 +546,52 @@ function updateHoverModalContent(cart) {
   const itemsContainer = document.getElementById("hover-cart-items");
   const countEl = document.getElementById("hover-cart-count");
   const subtotalEl = document.getElementById("hover-cart-subtotal");
-  if (!itemsContainer || !countEl || !subtotalEl) return;
+  const totalEl = document.getElementById("hover-cart-total");
+  if (!itemsContainer || !countEl) return;
 
   const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalAmount = subtotal;
 
   countEl.textContent = `${totalQty} ${totalQty === 1 ? 'Item' : 'Items'}`;
-  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (totalEl) totalEl.textContent = `$${totalAmount.toFixed(2)}`;
 
   if (cart.length === 0) {
     itemsContainer.innerHTML = `
-      <div class="py-6 text-center text-xs text-outline font-semibold">
-        Your cart is empty
+      <div class="py-6 text-center text-xs text-outline font-semibold flex flex-col items-center gap-2">
+        <span class="material-symbols-outlined text-3xl text-outline">shopping_bag</span>
+        <span>Your cart is empty</span>
       </div>
     `;
     return;
   }
 
-  itemsContainer.innerHTML = cart.slice(0, 4).map((item) => `
-    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800/60 border border-outline-variant/20">
+  itemsContainer.innerHTML = cart.slice(0, 5).map((item) => `
+    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
       <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg shrink-0"/>
       <div class="min-w-0 flex-grow">
         <h5 class="text-[11px] font-bold text-on-surface truncate">${item.name}</h5>
-        <div class="text-[10px] text-outline font-semibold">${item.quantity} x <span class="text-secondary font-bold">$${item.price.toFixed(2)}</span></div>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">-</button>
+          <span class="text-[10px] font-bold px-1">${item.quantity}</span>
+          <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">+</button>
+          <span class="text-[10px] text-secondary font-bold ml-1">$${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
       </div>
-      <button onclick="handleRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1">
-        <span class="material-symbols-outlined text-sm">close</span>
+      <button onclick="handleHoverRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1" title="Remove Product">
+        <span class="material-symbols-outlined text-sm">delete</span>
       </button>
     </div>
   `).join("");
+}
+
+function handleHoverCartQty(id, delta) {
+  window.lumenStore.updateCartQuantity(id, delta);
+  updateHeaderCounts();
+}
+
+function handleHoverRemoveCart(id) {
+  window.lumenStore.removeFromCart(id);
+  updateHeaderCounts();
 }

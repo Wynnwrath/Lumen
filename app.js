@@ -5,6 +5,7 @@ let currentSearch = "";
 let currentSort = "featured";
 
 document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   renderProducts();
   setupEventListeners();
   updateHeaderCounts();
@@ -18,7 +19,9 @@ function setupEventListeners() {
   document.querySelectorAll(".category-nav-btn, .category-card").forEach((btn) => {
     btn.addEventListener("click", () => {
       const cat = btn.getAttribute("data-category");
-      if (cat) {
+      if (cat === "all") {
+        window.location.href = "index.html";
+      } else if (cat) {
         window.location.href = `products.html?category=${encodeURIComponent(cat)}`;
       } else {
         window.location.href = "products.html";
@@ -26,15 +29,7 @@ function setupEventListeners() {
     });
   });
 
-  // Cart Drawer Toggles
-  ["cart-icon-btn-desktop", "cart-icon-btn-mobile", "cart-icon-btn-dock"].forEach((id) => {
-    document.getElementById(id)?.addEventListener("click", openCartDrawer);
-  });
-
-  document.getElementById("close-cart-btn")?.addEventListener("click", closeCartDrawer);
-  document.getElementById("cart-backdrop")?.addEventListener("click", closeCartDrawer);
-
-  // Checkout action
+  // Navigation / Cart Actions
   document.getElementById("checkout-btn")?.addEventListener("click", handleCheckout);
 
   // Newsletter submission
@@ -48,6 +43,8 @@ function setupEventListeners() {
   ["theme-toggle", "mobile-theme-toggle"].forEach((id) => {
     document.getElementById(id)?.addEventListener("click", toggleTheme);
   });
+
+  bindHomeControls();
 }
 
 function setCategory(category) {
@@ -105,7 +102,7 @@ function renderProducts() {
     }
 
     return `
-      <div class="product-card bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group relative border border-outline-variant/30">
+      <div class="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30">
         
         <!-- Badges & Wishlist -->
         <div class="flex items-center justify-between w-full mb-2">
@@ -158,6 +155,10 @@ function renderProducts() {
       </div>
     `;
   }).join("");
+
+  if (window.refreshLumenAnimations) {
+    window.refreshLumenAnimations();
+  }
 }
 
 function addHomeCart(productId) {
@@ -165,7 +166,6 @@ function addHomeCart(productId) {
   if (res.success) {
     showToast(`Added "${res.item.name}" to cart!`, "cart");
     updateHeaderCounts();
-    openCartDrawer();
   } else if (res.reason === "out_of_stock") {
     showToast("Sorry, this item is out of stock!", "info");
   } else if (res.reason === "exceeds_stock") {
@@ -178,6 +178,142 @@ function toggleHomeWishlist(productId) {
   renderProducts();
   updateHeaderCounts();
   showToast(res.added ? "Saved to wishlist!" : "Removed from wishlist", res.added ? "wishlist" : "info");
+}
+
+// Wire home-page-specific controls that previously had no JS handler.
+function bindHomeControls() {
+  // Hero "Shop Now" → add featured product to cart, then go to checkout
+  document.querySelectorAll(".quick-buy-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const id = btn.getAttribute("data-id") || "p1";
+      const res = window.lumenStore.addToCart(id, 1);
+      if (res && res.success) {
+        showToast(`Added "${res.item.name}" — proceeding to checkout!`, "cart");
+        updateHeaderCounts();
+        window.location.href = "checkout.html";
+      } else if (res && res.reason === "out_of_stock") {
+        showToast("Sorry, this item is out of stock!", "info");
+      }
+    });
+  });
+
+  // Hero "Learn More" -> open product modal for the featured product
+  document.querySelectorAll(".view-details-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      openProductModal(btn.getAttribute("data-id") || "p1");
+    });
+  });
+
+  // Close modal button + backdrop click + Escape
+  const closeBtn = document.getElementById("close-modal-btn");
+  if (closeBtn) closeBtn.addEventListener("click", closeProductModal);
+  const modal = document.getElementById("product-modal");
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeProductModal();
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeProductModal();
+  });
+
+  // Wishlist header icons (desktop + mobile dock) -> toggle featured product
+  document.querySelectorAll("#wishlist-btn-desktop, #wishlist-btn-mobile").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleHomeWishlist("p1");
+    });
+  });
+
+  // Cart dock button -> checkout (with empty-cart guard)
+  const cartDock = document.getElementById("cart-icon-btn-dock");
+  if (cartDock) {
+    cartDock.addEventListener("click", (e) => {
+      e.preventDefault();
+      const cart = window.lumenStore.getCart();
+      if (!cart || cart.length === 0) {
+        showToast("Your cart is empty!", "info");
+      } else {
+        window.location.href = "checkout.html";
+      }
+    });
+  }
+
+  // "View All" reset button
+  const resetBtn = document.getElementById("reset-category-btn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = "products.html";
+    });
+  }
+
+  // Homepage sort dropdown -> catalog with the chosen sort
+  const sortSelect = document.getElementById("sort-select");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      window.location.href = `products.html?sort=${encodeURIComponent(sortSelect.value)}`;
+    });
+  }
+}
+
+// Open product quick-view modal populated from the store.
+function openProductModal(productId) {
+  const modal = document.getElementById("product-modal");
+  const modalBody = document.getElementById("modal-body");
+  if (!modal || !modalBody) return;
+
+  const p = window.lumenStore.getProductById(productId);
+  if (!p) return;
+
+  const mainImg = p.images ? p.images[0] : p.image;
+  const stockNote =
+    p.stock <= 0
+      ? `<span class="text-[10px] font-bold uppercase tracking-wider text-red-500">Out of Stock</span>`
+      : `<span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">In Stock (${p.stock} left)</span>`;
+
+  modalBody.innerHTML = `
+    <div class="flex items-start justify-between gap-4">
+      <img src="${mainImg}" alt="${p.name}" class="w-full max-w-[240px] aspect-square object-cover rounded-2xl bg-surface-container"/>
+      <div class="flex-1 min-w-0">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">${p.category}</span>
+        <h3 class="text-lg font-extrabold text-on-surface mt-1">${p.name}</h3>
+        <div class="flex items-center gap-1 mt-1 text-amber-400">
+          <span class="material-symbols-outlined text-sm filled">star</span>
+          <span class="text-xs font-bold text-on-surface">${p.rating}</span>
+          <span class="text-[11px] text-outline">(${p.reviewsCount} reviews)</span>
+        </div>
+        <div class="mt-3 text-2xl font-black text-primary dark:text-white">$${p.price.toFixed(2)}
+          ${p.originalPrice ? `<span class="text-sm text-outline line-through ml-1">$${p.originalPrice.toFixed(2)}</span>` : ''}
+        </div>
+        <p class="mt-2 text-xs text-on-surface-variant line-clamp-3">${p.description}</p>
+        <div class="mt-3">${stockNote}</div>
+        <div class="mt-4 flex items-center gap-2">
+          <button id="modal-add-to-cart" ${p.stock <= 0 ? 'disabled' : ''} class="flex-1 bg-secondary hover:bg-secondary-container text-white px-4 py-2.5 rounded-xl font-bold text-sm transition active:scale-95">Add to Cart</button>
+          <a href="product-detail.html?id=${p.id}" class="bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 text-on-surface px-4 py-2.5 rounded-xl font-bold text-sm transition">View Details</a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const addBtn = document.getElementById("modal-add-to-cart");
+  if (addBtn) {
+    addBtn.addEventListener("click", () => {
+      const res = window.lumenStore.addToCart(p.id, 1);
+      showToast(res.success ? `Added "${res.item.name}" to cart!` : "Could not add item.", res.success ? "cart" : "info");
+      updateHeaderCounts();
+    });
+  }
+
+  modal.classList.remove("hidden");
+}
+
+function closeProductModal() {
+  const modal = document.getElementById("product-modal");
+  if (modal) modal.classList.add("hidden");
 }
 
 function updateHeaderCounts() {
@@ -196,8 +332,12 @@ function updateHeaderCounts() {
     wishEl.textContent = wishlist.length;
     wishEl.classList.toggle("hidden", wishlist.length === 0);
   }
+  const wishMobileEl = document.getElementById("wishlist-badge-count-mobile");
+  if (wishMobileEl) {
+    wishMobileEl.textContent = wishlist.length;
+    wishMobileEl.classList.toggle("hidden", wishlist.length === 0);
+  }
 
-  renderCartItems(cart, subtotal);
   updateHoverModalContent(cart);
 }
 
@@ -270,10 +410,7 @@ function handleCheckout() {
     showToast("Your cart is empty!", "info");
     return;
   }
-  const order = window.lumenStore.createOrder({ customerName: "Valued Customer", paymentMethod: "Credit Card" });
-  closeCartDrawer();
-  updateHeaderCounts();
-  showToast(`Order ${order.orderNumber} created successfully!`, "success");
+  window.location.href = "cart.html?checkout=true";
 }
 
 function openCartDrawer() {
@@ -336,13 +473,24 @@ function showToast(message, type = "info") {
   }, 3000);
 }
 
+function initTheme() {
+  const savedTheme = localStorage.getItem("lumen_theme") || "light";
+  const isDark = savedTheme === "dark";
+  document.documentElement.classList.toggle("dark", isDark);
+  document.documentElement.classList.toggle("light", !isDark);
+  const label = document.getElementById("theme-toggle-label");
+  if (label) label.textContent = isDark ? "Light Mode" : "Dark Mode";
+}
+
 function toggleTheme() {
   const isDark = document.documentElement.classList.contains("dark");
-  document.documentElement.classList.toggle("dark", !isDark);
-  document.documentElement.classList.toggle("light", isDark);
+  const newTheme = isDark ? "light" : "dark";
+  document.documentElement.classList.toggle("dark", newTheme === "dark");
+  document.documentElement.classList.toggle("light", newTheme !== "dark");
+  localStorage.setItem("lumen_theme", newTheme);
   const label = document.getElementById("theme-toggle-label");
-  if (label) label.textContent = isDark ? "Dark Mode" : "Light Mode";
-  showToast(`Switched to ${isDark ? 'Light' : 'Dark'} mode`, "info");
+  if (label) label.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
+  showToast(`Switched to ${newTheme === 'dark' ? 'Dark' : 'Light'} mode`, "info");
 }
 
 function setupLiveSearch() {
@@ -458,9 +606,7 @@ function setupHoverCartModal() {
       showToast("Your cart is empty!", "info");
       return;
     }
-    const order = window.lumenStore.createOrder({ customerName: "Valued Customer", paymentMethod: "Credit Card" });
-    updateHeaderCounts();
-    showToast(`Order ${order.orderNumber} placed successfully!`, "success");
+    window.location.href = "checkout.html";
   });
 }
 
@@ -468,33 +614,52 @@ function updateHoverModalContent(cart) {
   const itemsContainer = document.getElementById("hover-cart-items");
   const countEl = document.getElementById("hover-cart-count");
   const subtotalEl = document.getElementById("hover-cart-subtotal");
-  if (!itemsContainer || !countEl || !subtotalEl) return;
+  const totalEl = document.getElementById("hover-cart-total");
+  if (!itemsContainer || !countEl) return;
 
   const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalAmount = subtotal; // Total amount display
 
   countEl.textContent = `${totalQty} ${totalQty === 1 ? 'Item' : 'Items'}`;
-  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (totalEl) totalEl.textContent = `$${totalAmount.toFixed(2)}`;
 
   if (cart.length === 0) {
     itemsContainer.innerHTML = `
-      <div class="py-6 text-center text-xs text-outline font-semibold">
-        Your cart is empty
+      <div class="py-6 text-center text-xs text-outline font-semibold flex flex-col items-center gap-2">
+        <span class="material-symbols-outlined text-3xl text-outline">shopping_bag</span>
+        <span>Your cart is empty</span>
       </div>
     `;
     return;
   }
 
-  itemsContainer.innerHTML = cart.slice(0, 4).map((item) => `
-    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800/60 border border-outline-variant/20">
+  itemsContainer.innerHTML = cart.slice(0, 5).map((item) => `
+    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
       <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg shrink-0"/>
       <div class="min-w-0 flex-grow">
         <h5 class="text-[11px] font-bold text-on-surface truncate">${item.name}</h5>
-        <div class="text-[10px] text-outline font-semibold">${item.quantity} x <span class="text-secondary font-bold">$${item.price.toFixed(2)}</span></div>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">-</button>
+          <span class="text-[10px] font-bold px-1">${item.quantity}</span>
+          <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">+</button>
+          <span class="text-[10px] text-secondary font-bold ml-1">$${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
       </div>
-      <button onclick="handleRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1">
-        <span class="material-symbols-outlined text-sm">close</span>
+      <button onclick="handleHoverRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1" title="Remove Product">
+        <span class="material-symbols-outlined text-sm">delete</span>
       </button>
     </div>
   `).join("");
+}
+
+function handleHoverCartQty(id, delta) {
+  window.lumenStore.updateCartQuantity(id, delta);
+  updateHeaderCounts();
+}
+
+function handleHoverRemoveCart(id) {
+  window.lumenStore.removeFromCart(id);
+  updateHeaderCounts();
 }

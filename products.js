@@ -2,6 +2,7 @@
 
 let currentCategory = "all";
 let currentSearch = "";
+let currentSearchQuery = "";
 let currentMaxPrice = 1500;
 let selectedBrands = [];
 let inStockOnly = false;
@@ -10,6 +11,7 @@ let currentSort = "rating";
 let isGridView = true;
 
 document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   initCatalogPage();
   setupCartDrawerListeners();
   updateHeaderCounts();
@@ -22,6 +24,7 @@ function initCatalogPage() {
 
   if (catParam) currentCategory = catParam.toLowerCase();
   if (searchParam) {
+    currentSearchQuery = searchParam;
     currentSearch = searchParam.toLowerCase();
     const searchInput = document.getElementById("search-input");
     if (searchInput) searchInput.value = searchParam;
@@ -72,21 +75,32 @@ function setupCatalogEventListeners() {
     });
   });
 
-  // Search input
+  // Search input listeners
   const searchInput = document.getElementById("search-input");
   const clearSearchBtn = document.getElementById("clear-search");
+  const searchIconBtn = document.getElementById("search-icon-btn");
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
-      currentSearch = e.target.value.toLowerCase().trim();
-      clearSearchBtn?.classList.toggle("hidden", !currentSearch);
+      clearSearchBtn?.classList.toggle("hidden", !e.target.value.trim());
+    });
+  }
+  if (searchIconBtn && searchInput) {
+    searchIconBtn.addEventListener("click", () => {
+      const q = searchInput.value.trim();
+      document.getElementById("search-results-dropdown")?.classList.add("hidden");
+      currentSearchQuery = q;
+      currentSearch = q.toLowerCase();
+      syncCategoryTabUI();
       renderCatalog();
     });
   }
   if (clearSearchBtn) {
     clearSearchBtn.addEventListener("click", () => {
       if (searchInput) searchInput.value = "";
+      currentSearchQuery = "";
       currentSearch = "";
       clearSearchBtn.classList.add("hidden");
+      syncCategoryTabUI();
       renderCatalog();
     });
   }
@@ -150,6 +164,11 @@ function setupCatalogEventListeners() {
 
 function setCatalogCategory(cat) {
   currentCategory = cat;
+  currentSearchQuery = "";
+  currentSearch = "";
+  const searchInput = document.getElementById("search-input");
+  if (searchInput) searchInput.value = "";
+  document.getElementById("clear-search")?.classList.add("hidden");
   syncCategoryTabUI();
   renderCatalog();
 }
@@ -157,7 +176,7 @@ function setCatalogCategory(cat) {
 function syncCategoryTabUI() {
   document.querySelectorAll(".cat-tab").forEach((tab) => {
     const tabCat = tab.getAttribute("data-category");
-    if (tabCat === currentCategory) {
+    if (tabCat === currentCategory && !currentSearch) {
       tab.classList.add("active", "bg-secondary", "text-white", "font-bold", "shadow-sm");
       tab.classList.remove("text-on-surface-variant", "hover:bg-surface-container");
     } else {
@@ -166,12 +185,18 @@ function syncCategoryTabUI() {
     }
   });
 
-  const formatted = currentCategory === "all" ? "All Items" : currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
   const titleEl = document.getElementById("catalog-title");
   const breadcrumbEl = document.getElementById("catalog-breadcrumb");
 
-  if (titleEl) titleEl.textContent = currentCategory === "all" ? "Catalog" : formatted;
-  if (breadcrumbEl) breadcrumbEl.textContent = formatted;
+  if (currentSearch) {
+    const displayQ = currentSearchQuery || currentSearch;
+    if (titleEl) titleEl.textContent = `search result for '${displayQ}'`;
+    if (breadcrumbEl) breadcrumbEl.textContent = `Search: "${displayQ}"`;
+  } else {
+    const formatted = currentCategory === "all" ? "All Items" : currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+    if (titleEl) titleEl.textContent = currentCategory === "all" ? "Catalog" : formatted;
+    if (breadcrumbEl) breadcrumbEl.textContent = formatted;
+  }
 }
 
 function updateViewModeButtons() {
@@ -192,6 +217,7 @@ function updateViewModeButtons() {
 
 function resetAllFilters() {
   currentCategory = "all";
+  currentSearchQuery = "";
   currentSearch = "";
   currentMaxPrice = 1500;
   selectedBrands = [];
@@ -275,6 +301,10 @@ function renderCatalog() {
     productsGrid.className = "flex flex-col gap-4";
     productsGrid.innerHTML = filtered.map((p) => renderListProductCard(p, wishlist)).join("");
   }
+
+  if (window.refreshLumenAnimations) {
+    window.refreshLumenAnimations();
+  }
 }
 
 function renderGridProductCard(p, wishlist) {
@@ -301,7 +331,7 @@ function renderGridProductCard(p, wishlist) {
   }
 
   return `
-    <div class="product-card bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30">
+    <div class="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30">
       
       <!-- Top Image Header Bar -->
       <div class="flex items-center justify-between w-full mb-2 z-10">
@@ -412,7 +442,7 @@ function renderActiveChips() {
 
   const chips = [];
   if (currentCategory !== "all") chips.push({ label: `Category: ${currentCategory}`, type: "cat" });
-  if (currentSearch) chips.push({ label: `"${currentSearch}"`, type: "search" });
+  if (currentSearch) chips.push({ label: `Search: "${currentSearchQuery || currentSearch}"`, type: "search" });
   if (currentMaxPrice < 1500) chips.push({ label: `Under $${currentMaxPrice}`, type: "price" });
   selectedBrands.forEach((b) => chips.push({ label: b, type: "brand", val: b }));
   if (inStockOnly) chips.push({ label: "In Stock Only", type: "instock" });
@@ -431,10 +461,13 @@ function renderActiveChips() {
 function removeChip(type, val) {
   if (type === "cat") setCatalogCategory("all");
   else if (type === "search") {
+    currentSearchQuery = "";
     currentSearch = "";
     const searchInput = document.getElementById("search-input");
     if (searchInput) searchInput.value = "";
     document.getElementById("clear-search")?.classList.add("hidden");
+    syncCategoryTabUI();
+    renderCatalog();
   } else if (type === "price") {
     currentMaxPrice = 1500;
     const slider = document.getElementById("price-range-slider");
@@ -460,7 +493,6 @@ function addCatalogCart(productId) {
   if (res.success) {
     showToast(`Added "${res.item.name}" to cart!`, "cart");
     updateHeaderCounts();
-    openCartDrawer();
   } else if (res.reason === "out_of_stock") {
     showToast("Sorry, this item is out of stock!", "info");
   } else if (res.reason === "exceeds_stock") {
@@ -478,7 +510,6 @@ function toggleCatalogWishlist(productId) {
 function updateHeaderCounts() {
   const cart = window.lumenStore.getCart();
   const totalCount = cart.length;
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   ["cart-badge-count-desktop", "cart-badge-count-mobile", "cart-drawer-count"].forEach((id) => {
     const el = document.getElementById(id);
@@ -492,93 +523,17 @@ function updateHeaderCounts() {
     wishEl.classList.toggle("hidden", wishlist.length === 0);
   }
 
-  renderCartItems(cart, subtotal);
   updateHoverModalContent(cart);
 }
 
-function renderCartItems(cart, subtotal) {
-  const container = document.getElementById("cart-items-container");
-  if (!container) return;
-
-  if (cart.length === 0) {
-    container.innerHTML = `
-      <div class="py-12 text-center space-y-3">
-        <span class="material-symbols-outlined text-4xl text-outline">shopping_bag</span>
-        <p class="text-sm font-semibold text-on-surface">Your cart is empty</p>
-      </div>
-    `;
-  } else {
-    container.innerHTML = cart.map((item) => `
-      <div class="flex items-center gap-3 p-3 bg-surface dark:bg-slate-800 rounded-xl border border-outline-variant/30">
-        <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-14 h-14 object-cover rounded-lg"/>
-        <div class="flex-grow min-w-0">
-          <h4 class="text-xs font-semibold text-on-surface truncate">${item.name}</h4>
-          <p class="text-xs font-extrabold text-secondary dark:text-secondary-fixed mt-0.5">$${(item.price * item.quantity).toFixed(2)}</p>
-          <div class="flex items-center gap-2 mt-2">
-            <button onclick="handleCartQty('${item.id}', -1)" class="w-5 h-5 rounded bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface">-</button>
-            <span class="text-xs font-bold px-1">${item.quantity}</span>
-            <button onclick="handleCartQty('${item.id}', 1)" class="w-5 h-5 rounded bg-surface-container flex items-center justify-center text-xs font-bold text-on-surface">+</button>
-          </div>
-        </div>
-        <button onclick="handleRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1">
-          <span class="material-symbols-outlined text-sm">delete</span>
-        </button>
-      </div>
-    `).join("");
-  }
-
-  document.getElementById("cart-subtotal").textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById("cart-total").textContent = `$${subtotal.toFixed(2)}`;
-
-  const freeBar = document.getElementById("free-shipping-bar");
-  const freeTxt = document.getElementById("free-shipping-text");
-  const freePct = document.getElementById("free-shipping-percent");
-  if (freeBar && freeTxt && freePct) {
-    if (subtotal >= 100) {
-      freeBar.style.width = "100%";
-      freePct.textContent = "100%";
-      freeTxt.textContent = "🎉 Free Express Shipping earned!";
-    } else {
-      const pct = Math.round((subtotal / 100) * 100);
-      freeBar.style.width = `${pct}%`;
-      freePct.textContent = `${pct}%`;
-      freeTxt.textContent = `Add $${(100 - subtotal).toFixed(2)} more for FREE Shipping!`;
-    }
-  }
-}
-
-function handleCartQty(id, delta) {
-  window.lumenStore.updateCartQuantity(id, delta);
-  updateHeaderCounts();
-}
-
-function handleRemoveCart(id) {
-  window.lumenStore.removeFromCart(id);
-  updateHeaderCounts();
-}
-
 function setupCartDrawerListeners() {
-  const drawer = document.getElementById("cart-drawer");
-  const backdrop = document.getElementById("cart-backdrop");
-  const closeBtn = document.getElementById("close-cart-btn");
-
-  ["cart-icon-btn-desktop", "cart-icon-btn-mobile"].forEach((id) => {
-    document.getElementById(id)?.addEventListener("click", openCartDrawer);
-  });
-
-  closeBtn?.addEventListener("click", closeCartDrawer);
-  backdrop?.addEventListener("click", closeCartDrawer);
-
   document.getElementById("checkout-btn")?.addEventListener("click", () => {
     const cart = window.lumenStore.getCart();
     if (cart.length === 0) {
       showToast("Your cart is empty!", "info");
       return;
     }
-    const order = window.lumenStore.createOrder({ customerName: "Valued Customer", paymentMethod: "Credit Card" });
-    closeCartDrawer();
-    updateHeaderCounts();
-    showToast(`Order ${order.orderNumber} placed successfully!`, "success");
+    window.location.href = "checkout.html";
   });
 }
 
@@ -642,13 +597,24 @@ function showToast(message, type = "info") {
   }, 3000);
 }
 
+function initTheme() {
+  const savedTheme = localStorage.getItem("lumen_theme") || "light";
+  const isDark = savedTheme === "dark";
+  document.documentElement.classList.toggle("dark", isDark);
+  document.documentElement.classList.toggle("light", !isDark);
+  const label = document.getElementById("theme-toggle-label");
+  if (label) label.textContent = isDark ? "Light Mode" : "Dark Mode";
+}
+
 function toggleTheme() {
   const isDark = document.documentElement.classList.contains("dark");
-  document.documentElement.classList.toggle("dark", !isDark);
-  document.documentElement.classList.toggle("light", isDark);
+  const newTheme = isDark ? "light" : "dark";
+  document.documentElement.classList.toggle("dark", newTheme === "dark");
+  document.documentElement.classList.toggle("light", newTheme !== "dark");
+  localStorage.setItem("lumen_theme", newTheme);
   const label = document.getElementById("theme-toggle-label");
-  if (label) label.textContent = isDark ? "Dark Mode" : "Light Mode";
-  showToast(`Switched to ${isDark ? 'Light' : 'Dark'} mode`, "info");
+  if (label) label.textContent = newTheme === "dark" ? "Light Mode" : "Dark Mode";
+  showToast(`Switched to ${newTheme === 'dark' ? 'Dark' : 'Light'} mode`, "info");
 }
 
 function setupLiveSearch() {
@@ -724,8 +690,13 @@ function setupLiveSearch() {
 
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       const q = searchInput.value.trim();
-      if (q) window.location.href = `products.html?search=${encodeURIComponent(q)}`;
+      dropdown.classList.add("hidden");
+      currentSearchQuery = q;
+      currentSearch = q.toLowerCase();
+      syncCategoryTabUI();
+      renderCatalog();
     }
   });
 
@@ -764,9 +735,7 @@ function setupHoverCartModal() {
       showToast("Your cart is empty!", "info");
       return;
     }
-    const order = window.lumenStore.createOrder({ customerName: "Valued Customer", paymentMethod: "Credit Card" });
-    updateHeaderCounts();
-    showToast(`Order ${order.orderNumber} placed successfully!`, "success");
+    window.location.href = "checkout.html";
   });
 }
 
@@ -774,33 +743,52 @@ function updateHoverModalContent(cart) {
   const itemsContainer = document.getElementById("hover-cart-items");
   const countEl = document.getElementById("hover-cart-count");
   const subtotalEl = document.getElementById("hover-cart-subtotal");
-  if (!itemsContainer || !countEl || !subtotalEl) return;
+  const totalEl = document.getElementById("hover-cart-total");
+  if (!itemsContainer || !countEl) return;
 
   const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalAmount = subtotal;
 
   countEl.textContent = `${totalQty} ${totalQty === 1 ? 'Item' : 'Items'}`;
-  subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (subtotalEl) subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+  if (totalEl) totalEl.textContent = `$${totalAmount.toFixed(2)}`;
 
   if (cart.length === 0) {
     itemsContainer.innerHTML = `
-      <div class="py-6 text-center text-xs text-outline font-semibold">
-        Your cart is empty
+      <div class="py-6 text-center text-xs text-outline font-semibold flex flex-col items-center gap-2">
+        <span class="material-symbols-outlined text-3xl text-outline">shopping_bag</span>
+        <span>Your cart is empty</span>
       </div>
     `;
     return;
   }
 
-  itemsContainer.innerHTML = cart.slice(0, 4).map((item) => `
-    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800/60 border border-outline-variant/20">
+  itemsContainer.innerHTML = cart.slice(0, 5).map((item) => `
+    <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-surface dark:bg-slate-800 border border-outline-variant/20">
       <img src="${item.images ? item.images[0] : item.image}" alt="${item.name}" class="w-10 h-10 object-cover rounded-lg shrink-0"/>
       <div class="min-w-0 flex-grow">
         <h5 class="text-[11px] font-bold text-on-surface truncate">${item.name}</h5>
-        <div class="text-[10px] text-outline font-semibold">${item.quantity} x <span class="text-secondary font-bold">$${item.price.toFixed(2)}</span></div>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <button onclick="handleHoverCartQty('${item.id}', -1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">-</button>
+          <span class="text-[10px] font-bold px-1">${item.quantity}</span>
+          <button onclick="handleHoverCartQty('${item.id}', 1)" class="w-4 h-4 rounded bg-surface-container hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] font-bold text-on-surface transition">+</button>
+          <span class="text-[10px] text-secondary font-bold ml-1">$${(item.price * item.quantity).toFixed(2)}</span>
+        </div>
       </div>
-      <button onclick="handleRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1">
-        <span class="material-symbols-outlined text-sm">close</span>
+      <button onclick="handleHoverRemoveCart('${item.id}')" class="text-outline hover:text-red-500 p-1" title="Remove Product">
+        <span class="material-symbols-outlined text-sm">delete</span>
       </button>
     </div>
   `).join("");
+}
+
+function handleHoverCartQty(id, delta) {
+  window.lumenStore.updateCartQuantity(id, delta);
+  updateHeaderCounts();
+}
+
+function handleHoverRemoveCart(id) {
+  window.lumenStore.removeFromCart(id);
+  updateHeaderCounts();
 }

@@ -95,45 +95,68 @@
   <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- Top Announcement Bar -->
-  <div class="bg-primary text-on-primary text-xs py-2 px-4 text-center font-medium flex justify-between items-center max-w-full">
-    <div class="hidden sm:block text-slate-300">Free Express Shipping on Orders Over $100</div>
-    <div class="mx-auto sm:mx-0 font-semibold tracking-wide">✨ Special Launch Offer: Use code <span class="text-secondary-fixed font-bold">LUMEN20</span> for 20% OFF</div>
-    <div class="hidden sm:flex items-center gap-4 text-slate-300">
-      <button id="theme-toggle" class="hover:text-white transition flex items-center gap-1">
-        <span class="material-symbols-outlined text-sm">dark_mode</span> <span id="theme-toggle-label">Dark Mode</span>
-      </button>
-      <a href="#support" class="hover:text-white transition">Need Help?</a>
+  <div class="bg-slate-900 dark:bg-slate-950 text-slate-200 text-xs py-2.5 px-6 font-medium border-b border-slate-800">
+    <div class="flex justify-between items-center w-full max-w-container-max mx-auto">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="material-symbols-outlined text-sm text-secondary-fixed">local_shipping</span> 
+          Free Worldwide Express Shipping on orders over $50
+        </span>
+        <span class="hidden md:inline text-slate-700">|</span>
+        <span class="hidden md:flex items-center gap-1 text-slate-300">
+          <span class="material-symbols-outlined text-sm text-amber-400 filled">star</span> 
+          4.9/5 Rating (12,400+ verified customer reviews)
+        </span>
+      </div>
+      <div class="flex items-center gap-5 text-slate-300">
+        <button id="theme-toggle" class="hover:text-white transition flex items-center gap-1.5 font-semibold">
+          <span class="material-symbols-outlined text-sm">dark_mode</span> 
+          <span id="theme-toggle-label" class="hidden sm:inline">Theme</span>
+        </button>
+        <span class="text-slate-700">|</span>
+        <a href="#support" class="hover:text-white transition font-semibold">Need Help?</a>
+      </div>
     </div>
   </div>
 
   <!-- Main Navigation Header -->
-  <header class="top-0 sticky z-40 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/30">
-    <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-3.5 max-w-container-max mx-auto gap-md md:gap-0">
+  <header class="top-0 sticky z-40 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/30 backdrop-blur-md">
+    <div class="flex flex-wrap md:flex-nowrap items-center justify-between w-full px-6 py-4 max-w-container-max mx-auto gap-4">
       
       <!-- Brand Logo -->
       <div class="flex items-center justify-between w-full md:w-auto">
-        <a href="#" class="flex items-center gap-2 group">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-secondary to-secondary-container flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
-            <span class="material-symbols-outlined text-xl">auto_awesome</span>
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-secondary to-secondary-container flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-2xl">auto_awesome</span>
           </div>
-          <span class="text-2xl font-extrabold text-secondary dark:text-secondary-fixed tracking-tight">Lumen</span>
+          <span class="text-2xl font-extrabold text-secondary dark:text-secondary-fixed tracking-tight shiny-text">Lumen</span>
         </a>
         <div class="flex items-center gap-2 md:hidden">
           <button id="mobile-theme-toggle" class="p-2 text-on-surface hover:text-secondary rounded-full">
             <span class="material-symbols-outlined">dark_mode</span>
           </button>
-          <button id="cart-icon-btn-mobile" class="p-2 text-primary dark:text-inverse-primary relative">
+          <a href="checkout.html" id="cart-icon-btn-mobile" class="p-2 text-primary dark:text-inverse-primary relative">
             <span class="material-symbols-outlined">shopping_cart</span>
             <span id="cart-badge-count-mobile" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-          </button>
+          </a>
         </div>
       </div>
 
-      <!-- Search Input -->
-      <div class="w-full max-w-xl mx-md relative">
-        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
-        <input id="search-input" type="text" placeholder="Search for products, brands and tech..." 
-               class="w-full bg-surface text-on-surface border border-outline-variant/60 focus:border-secondary rounded-full py-2.5 pl-11 pr-10 text-sm font-medium shadow-sm focus:shadow-md transition-all outline-none"/>
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold">
+        <a href="index.html" class="text-secondary dark:text-secondary-fixed border-b-2 border-secondary pb-0.5">Home</a>
+        <a href="products.html" class="text-on-surface-variant hover:text-secondary transition-colors flex items-center gap-1">
+          Catalog
+        </a>
+        <a href="#categories-section" class="text-on-surface-variant hover:text-secondary transition-colors">Categories</a>
+        <a href="#deals-section" class="text-on-surface-variant hover:text-secondary transition-colors">Deals</a>
+      </nav>
+
+      <!-- Balanced Compact Search Input -->
+      <div class="w-full md:w-80 lg:w-96 relative">
+        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+        <input id="search-input" type="text" placeholder="Search products, brands..." 
+               class="w-full bg-surface text-on-surface border border-outline-variant/60 focus:border-secondary rounded-full py-2 pl-10 pr-9 text-xs font-medium shadow-xs focus:shadow-md transition-all outline-none"/>
         <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary">
           <span class="material-symbols-outlined text-sm">close</span>
         </button>
@@ -143,52 +166,44 @@
         </div>
       </div>
 
-      <!-- Links & Action Icons -->
-      <div class="hidden md:flex items-center gap-lg">
-        <nav class="flex items-center gap-md">
-          <a href="index.html" class="text-on-surface hover:text-secondary transition-colors text-sm font-medium">Home</a>
-          <a href="products.html" class="bg-secondary/10 text-secondary hover:bg-secondary hover:text-white px-3 py-1.5 rounded-full text-sm font-bold transition flex items-center gap-1">
-            <span class="material-symbols-outlined text-base">grid_view</span> Catalog
+      <!-- Action Icons -->
+      <div class="hidden md:flex items-center gap-4">
+        <button id="wishlist-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2.5 rounded-full relative transition-all" title="Wishlist">
+          <span class="material-symbols-outlined">favorite</span>
+          <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+        </button>
+
+        <!-- Cart Icon Container with Hover Preview Modal -->
+        <div class="relative group" id="cart-hover-container">
+          <a href="checkout.html" id="cart-icon-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2.5 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span id="cart-badge-count-desktop" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
           </a>
-        </nav>
-        <div class="flex items-center gap-sm">
-          <button id="wishlist-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full relative transition-all" title="Wishlist">
-            <span class="material-symbols-outlined">favorite</span>
-            <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-          </button>
-          <!-- Cart Icon Container with Hover Preview Modal -->
-          <div class="relative group" id="cart-hover-container">
-            <a href="cart.html" id="cart-icon-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
-              <span class="material-symbols-outlined">shopping_cart</span>
-              <span id="cart-badge-count-desktop" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
-            </a>
 
-            <!-- Cart Hover Preview Modal Dropdown -->
-            <div id="cart-hover-modal" class="hidden absolute top-full right-0 mt-2 w-80 bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-4 space-y-3">
-              <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
-                <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Cart Quick Preview</span>
-                <span id="hover-cart-count" class="text-xs font-extrabold text-secondary">0 Items</span>
-              </div>
-
-              <!-- Mini List -->
-              <div id="hover-cart-items" class="max-h-56 overflow-y-auto space-y-2 pr-1"></div>
-
-              <div class="border-t border-outline-variant/20 pt-3 space-y-2">
-                <div class="flex justify-between text-xs font-bold text-on-surface">
-                  <span>Subtotal:</span>
-                  <span id="hover-cart-subtotal" class="text-secondary">$0.00</span>
-                </div>
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                  <a href="cart.html" class="bg-surface-container hover:bg-surface-container-high text-on-surface text-center py-2 rounded-xl text-xs font-bold transition">
-                    View Cart
-                  </a>
-                  <button id="hover-checkout-btn" class="bg-secondary hover:bg-secondary-container text-white py-2 rounded-xl text-xs font-bold transition">
-                    Checkout
-                  </button>
-                </div>
-              </div>
+          <!-- Cart Hover Preview Modal Dropdown -->
+          <div id="cart-hover-modal" class="hidden absolute top-full right-0 mt-2 w-84 bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-4 space-y-3">
+            <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+              <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Cart Quick Preview</span>
+              <span id="hover-cart-count" class="text-xs font-extrabold text-secondary">0 Items</span>
             </div>
 
+            <!-- Mini List -->
+            <div id="hover-cart-items" class="max-h-60 overflow-y-auto space-y-2 pr-1"></div>
+
+            <div class="border-t border-outline-variant/20 pt-3 space-y-1.5">
+              <div class="flex justify-between text-xs font-bold text-on-surface-variant">
+                <span>Subtotal:</span>
+                <span id="hover-cart-subtotal" class="font-bold text-on-surface">$0.00</span>
+              </div>
+              <div class="flex justify-between text-xs font-black text-on-surface">
+                <span>Total Amount:</span>
+                <span id="hover-cart-total" class="text-secondary dark:text-secondary-fixed">$0.00</span>
+              </div>
+              <button id="hover-checkout-btn" class="w-full mt-2 bg-secondary hover:bg-secondary-container text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5">
+                <span>Proceed to Checkout</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -196,134 +211,205 @@
     </div>
   </header>
 
-  <!-- Main Content Body -->
-  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg space-y-xl flex-grow w-full">
+  <!-- Main Content Body (Single Spacious Flow, No Sidebars) -->
+  <main class="max-w-container-max mx-auto px-6 py-8 space-y-12 flex-grow w-full">
 
-    <!-- Hero Section -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-md h-auto lg:h-[460px]">
-      <!-- Primary Hero Banner -->
-      <div class="lg:col-span-2 relative rounded-2xl overflow-hidden shadow-lg bg-primary-container text-on-primary group flex items-center p-8 md:p-12">
-        <div class="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1200&q=80" 
-               alt="iPhone 16 Pro Max" 
-               class="w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-700"/>
-          <div class="absolute inset-0 bg-gradient-to-r from-primary-container via-primary-container/70 to-transparent"></div>
-        </div>
-        <div class="relative z-10 max-w-md space-y-4">
-          <span class="inline-block px-3 py-1 bg-secondary text-on-secondary rounded-full text-xs font-bold uppercase tracking-wider shadow-sm animate-fade-up">
-            Featured Highlight
-          </span>
-          <h1 class="text-3xl md:text-5xl font-extrabold text-on-primary leading-tight tracking-tight animate-fade-up" style="animation-delay: 80ms">
-            iPhone 16 Pro Max
-          </h1>
-          <p class="text-xl md:text-2xl font-light text-secondary-fixed animate-fade-up" style="animation-delay: 160ms">
-            From <span class="font-bold text-white">$1,099.00</span>
-          </p>
-          <p class="text-sm md:text-base text-slate-300 animate-fade-up" style="animation-delay: 240ms">
-            A18 Pro chip with hardware-accelerated ray tracing. Supersmart, superfast. Experience the new grade-5 titanium frame.
-          </p>
-          <div class="flex items-center gap-3 pt-2 animate-fade-up" style="animation-delay: 320ms">
-            <button class="bg-secondary hover:bg-secondary-container text-white px-7 py-3 rounded-xl font-bold text-sm transition-all shadow-md active:scale-95 flex items-center gap-2 quick-buy-btn btn-sheen" data-id="p1">
-              <span class="material-symbols-outlined text-lg">shopping_bag</span> Shop Now
-            </button>
-            <button class="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-5 py-3 rounded-xl font-semibold text-sm transition-all shadow-sm flex items-center gap-1 view-details-btn" data-id="p1">
-              Learn More
-            </button>
-          </div>
-        </div>
+    <!-- Dominant Primary Hero Banner -->
+    <section class="relative rounded-3xl overflow-hidden shadow-2xl bg-slate-950 text-white min-h-[460px] md:min-h-[500px] flex items-center p-8 md:p-16 aurora-bg spotlight-card border border-white/10">
+      <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1600&q=80" 
+             alt="iPhone 16 Pro Max" 
+             class="w-full h-full object-cover opacity-80 transition-transform duration-700 hover:scale-105"/>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-transparent"></div>
       </div>
-
-      <!-- Secondary Promo Banner -->
-      <div class="relative rounded-2xl overflow-hidden shadow-lg bg-surface-container-high group flex flex-col justify-between p-8 animate-fade-in-scale" style="animation-delay: 150ms">
-        <div class="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" 
-               alt="Sneaker Deals" 
-               class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"/>
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent"></div>
-        </div>
-        <div class="relative z-10">
-          <span class="px-3 py-1 bg-red-600 text-white text-xs font-extrabold uppercase tracking-wider rounded-md">
-            Flash Sale
-          </span>
-        </div>
-        <div class="relative z-10 space-y-2 text-white">
-          <h3 class="text-2xl font-extrabold leading-tight">Summer Footwear &amp; Apparel</h3>
-          <p class="text-sm text-slate-200">Up to 50% off top athletic brands.</p>
-          <button class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-secondary-fixed hover:text-white transition group-hover:translate-x-1 duration-200 category-nav-btn" data-category="fashion">
-            Explore Deals <span class="material-symbols-outlined text-sm icon-nudge">arrow_forward</span>
+      <div class="relative z-10 max-w-xl space-y-5">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-secondary/90 text-white rounded-full text-xs font-extrabold uppercase tracking-wider shadow-md">
+          <span class="material-symbols-outlined text-sm">auto_awesome</span> Flagship Launch
+        </span>
+        <h1 class="text-4xl md:text-6xl font-black text-white leading-tight tracking-tight">
+          iPhone 16 Pro Max
+        </h1>
+        <p class="text-2xl md:text-3xl font-light text-secondary-fixed">
+          Starting from <span class="font-bold text-white">$1,099.00</span>
+        </p>
+        <p class="text-sm md:text-base text-slate-300 leading-relaxed max-w-md">
+          Powered by the revolutionary A18 Pro chip with hardware-accelerated ray tracing and grade-5 titanium architecture.
+        </p>
+        <div class="flex items-center gap-4 pt-3">
+          <button class="bg-secondary hover:bg-secondary-container text-white px-8 py-3.5 rounded-2xl font-extrabold text-sm transition-all shadow-lg active:scale-95 flex items-center gap-2.5 quick-buy-btn btn-sheen" data-id="p1">
+            <span class="material-symbols-outlined text-xl">shopping_bag</span> Shop Now
+          </button>
+          <button class="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-7 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-sm flex items-center gap-1.5 view-details-btn border border-white/15" data-id="p1">
+            Learn More
           </button>
         </div>
       </div>
     </section>
 
-    <!-- Popular Categories Carousel / Grid -->
-    <section class="space-y-md" data-reveal>
-      <div class="flex justify-between items-center mb-md">
-        <div>
-          <h2 class="text-xl md:text-2xl font-bold text-on-surface">Explore Categories</h2>
-          <p class="text-xs md:text-sm text-outline">Browse our hand-picked curated collections</p>
+    <!-- Secondary Feature Promos Row -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Card 1: Summer Footwear -->
+      <div class="relative rounded-3xl overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
+        <div class="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" 
+               alt="Sneaker Deals" 
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent"></div>
         </div>
-        <button id="reset-category-btn" class="text-secondary text-sm font-semibold hover:underline flex items-center gap-1">
-          View All <span class="material-symbols-outlined text-sm icon-nudge">chevron_right</span>
+        <div class="relative z-10 space-y-2 text-white">
+          <span class="inline-block px-2.5 py-1 bg-red-600 text-white text-[11px] font-extrabold uppercase tracking-wider rounded-md mb-1 shadow-sm">
+            Flash Sale
+          </span>
+          <h3 class="text-xl font-extrabold leading-tight text-white">Summer Footwear &amp; Athletic Gear</h3>
+          <p class="text-xs text-slate-300">Up to 50% off performance Nike apparel.</p>
+          <button class="pt-2 inline-flex items-center gap-1.5 text-xs font-bold text-secondary-fixed hover:text-white transition group-hover:translate-x-1 duration-200 category-nav-btn" data-category="fashion">
+            Explore Deals <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2: Next-Gen Audio -->
+      <div class="relative rounded-3xl overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
+        <div class="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80" 
+               alt="Sony Headphones" 
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent"></div>
+        </div>
+        <div class="relative z-10 space-y-2 text-white">
+          <span class="inline-block px-2.5 py-1 bg-secondary text-white text-[11px] font-extrabold uppercase tracking-wider rounded-md mb-1 shadow-sm">
+            Trending Audio
+          </span>
+          <h3 class="text-xl font-extrabold leading-tight text-white">Premium Acoustic Soundscapes</h3>
+          <p class="text-xs text-slate-300">Industry-leading noise cancellation from $398.</p>
+          <a href="product-detail.html?id=p2" class="pt-2 inline-flex items-center gap-1.5 text-xs font-bold text-secondary-fixed hover:text-white transition group-hover:translate-x-1 duration-200">
+            View Sony XM5 <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3: Luxury Wearables -->
+      <div class="relative rounded-3xl overflow-hidden shadow-lg min-h-[260px] group flex flex-col justify-end p-7 border border-outline-variant/30 spotlight-card">
+        <div class="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" 
+               alt="Luxury Smartwatch" 
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent"></div>
+        </div>
+        <div class="relative z-10 space-y-2 text-white">
+          <span class="inline-block px-2.5 py-1 bg-amber-500 text-slate-950 text-[11px] font-extrabold uppercase tracking-wider rounded-md mb-1 shadow-sm">
+            Luxury Edition
+          </span>
+          <h3 class="text-xl font-extrabold leading-tight text-white">Precision Timepieces &amp; Tech</h3>
+          <p class="text-xs text-slate-300">Titanium cases and Sapphire displays.</p>
+          <a href="product-detail.html?id=p3" class="pt-2 inline-flex items-center gap-1.5 text-xs font-bold text-secondary-fixed hover:text-white transition group-hover:translate-x-1 duration-200">
+            Explore Wearables <span class="material-symbols-outlined text-sm">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- High Contrast Brand Logotype Marquee Ticker -->
+    <section class="py-4 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 overflow-hidden shadow-xs">
+      <div class="marquee-wrapper">
+        <div class="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> APPLE</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> SONY</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> NIKE</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> SAMSUNG</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> DYSON</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> BOSE</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> ROLEX</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> RAY-BAN</span>
+        </div>
+        <div class="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> APPLE</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> SONY</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> NIKE</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> SAMSUNG</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> DYSON</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> BOSE</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> ROLEX</span>
+          <span class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-sm">verified</span> RAY-BAN</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clean Curated Categories Section -->
+    <section id="categories-section" class="space-y-6" data-reveal>
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-on-surface">Explore Categories</h2>
+          <p class="text-xs md:text-sm text-outline">Browse hand-picked collections across top lifestyle &amp; tech domains</p>
+        </div>
+        <button id="reset-category-btn" class="text-secondary text-xs md:text-sm font-bold hover:underline flex items-center gap-1">
+          View All <span class="material-symbols-outlined text-sm">chevron_right</span>
         </button>
       </div>
 
-      <div class="grid grid-cols-3 sm:grid-cols-6 gap-md">
-        <!-- Category Items -->
-        <button class="category-card flex flex-col items-center gap-2 p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group" data-category="electronics">
-          <div class="w-14 h-14 rounded-full bg-blue-50 dark:bg-slate-800 text-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-2xl">devices</span>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <!-- Category 1 -->
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="electronics">
+          <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-3xl">devices</span>
           </div>
-          <span class="text-xs md:text-sm font-semibold text-on-surface text-center">Electronics</span>
+          <span class="text-xs md:text-sm font-bold text-on-surface text-center">Electronics</span>
         </button>
 
-        <button class="category-card flex flex-col items-center gap-2 p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group" data-category="fashion">
-          <div class="w-14 h-14 rounded-full bg-indigo-50 dark:bg-slate-800 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-2xl">apparel</span>
+        <!-- Category 2 -->
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="fashion">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-3xl">apparel</span>
           </div>
-          <span class="text-xs md:text-sm font-semibold text-on-surface text-center">Fashion</span>
+          <span class="text-xs md:text-sm font-bold text-on-surface text-center">Fashion</span>
         </button>
 
-        <button class="category-card flex flex-col items-center gap-2 p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group" data-category="luxury">
-          <div class="w-14 h-14 rounded-full bg-amber-50 dark:bg-slate-800 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-2xl">diamond</span>
+        <!-- Category 3 -->
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="luxury">
+          <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-3xl">diamond</span>
           </div>
-          <span class="text-xs md:text-sm font-semibold text-on-surface text-center">Luxury</span>
+          <span class="text-xs md:text-sm font-bold text-on-surface text-center">Luxury</span>
         </button>
 
-        <button class="category-card flex flex-col items-center gap-2 p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group" data-category="home">
-          <div class="w-14 h-14 rounded-full bg-emerald-50 dark:bg-slate-800 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-2xl">chair</span>
+        <!-- Category 4 -->
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="home">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-3xl">chair</span>
           </div>
-          <span class="text-xs md:text-sm font-semibold text-on-surface text-center">Home Decor</span>
+          <span class="text-xs md:text-sm font-bold text-on-surface text-center">Home Decor</span>
         </button>
 
-        <button class="category-card flex flex-col items-center gap-2 p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group" data-category="beauty">
-          <div class="w-14 h-14 rounded-full bg-pink-50 dark:bg-slate-800 text-pink-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-2xl">spa</span>
+        <!-- Category 5 -->
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="beauty">
+          <div class="w-14 h-14 rounded-2xl bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-3xl">spa</span>
           </div>
-          <span class="text-xs md:text-sm font-semibold text-on-surface text-center">Beauty</span>
+          <span class="text-xs md:text-sm font-bold text-on-surface text-center">Beauty</span>
         </button>
 
-        <button class="category-card flex flex-col items-center gap-2 p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group" data-category="groceries">
-          <div class="w-14 h-14 rounded-full bg-orange-50 dark:bg-slate-800 text-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-2xl">nutrition</span>
+        <!-- Category 6 -->
+        <button class="category-card flex flex-col items-center gap-3 p-5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container border border-outline-variant/40 shadow-xs hover:shadow-md transition-all group" data-category="groceries">
+          <div class="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-3xl">nutrition</span>
           </div>
-          <span class="text-xs md:text-sm font-semibold text-on-surface text-center">Groceries</span>
+          <span class="text-xs md:text-sm font-bold text-on-surface text-center">Groceries</span>
         </button>
       </div>
     </section>
 
-    <!-- Product Showcase Grid -->
-    <section class="space-y-md pt-md" data-reveal>
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-md">
+    <!-- Today's Best Deals / Product Grid Section -->
+    <section id="deals-section" class="space-y-6 pt-4" data-reveal>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
         <div>
-          <h2 id="section-title" class="text-xl md:text-2xl font-bold text-on-surface">Today's Best Deals For You</h2>
+          <h2 id="section-title" class="text-2xl font-bold text-on-surface">Today's Best Deals For You</h2>
           <p id="section-subtitle" class="text-xs md:text-sm text-outline">Unbeatable prices on premium quality products</p>
         </div>
         <div class="flex items-center gap-2">
           <label for="sort-select" class="text-xs text-outline font-semibold">Sort by:</label>
-          <select id="sort-select" class="bg-surface-container-lowest text-on-surface text-xs font-semibold rounded-lg border-outline-variant/60 py-1.5 px-3 focus:border-secondary outline-none">
+          <select id="sort-select" class="bg-surface-container-lowest text-on-surface text-xs font-semibold rounded-xl border-outline-variant/60 py-2 px-3 focus:border-secondary outline-none shadow-xs">
             <option value="featured">Featured</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
@@ -332,16 +418,16 @@
         </div>
       </div>
 
-      <!-- Products Grid -->
-      <div id="products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-md md:gap-lg">
+      <!-- Products Grid (4-Column Layout on Large Displays) -->
+      <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <!-- JavaScript renders product cards dynamically here -->
       </div>
 
       <!-- View Full Catalog CTA Button -->
-      <div class="text-center pt-6">
-        <a href="products.html" class="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-container text-white px-8 py-3.5 rounded-full font-extrabold text-sm shadow-md transition-all hover:scale-105 active:scale-95 btn-sheen">
-          <span>Explore Full Catalog (10+ Items)</span>
-          <span class="material-symbols-outlined text-base">arrow_forward</span>
+      <div class="text-center pt-8">
+        <a href="products.html" class="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-container text-white px-9 py-4 rounded-full font-extrabold text-sm shadow-md transition-all hover:scale-105 active:scale-95 btn-sheen">
+          <span>Explore Full Catalog (10+ Products)</span>
+          <span class="material-symbols-outlined text-lg">arrow_forward</span>
         </a>
       </div>
     </section>
@@ -360,64 +446,7 @@
     </div>
   </div>
 
-  <!-- Cart Slide-over Drawer -->
-  <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none">
-    <div id="cart-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-xs opacity-0 transition-opacity duration-300 pointer-events-none"></div>
-    <aside id="cart-panel" class="absolute top-0 right-0 w-full max-w-md h-full bg-surface-container-lowest dark:bg-slate-900 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 pointer-events-auto">
-      
-      <!-- Cart Header -->
-      <div class="p-5 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container-low dark:bg-slate-800">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-secondary text-2xl">shopping_cart</span>
-          <h3 class="text-lg font-bold text-on-surface">Your Shopping Cart</h3>
-          <span id="cart-drawer-count" class="bg-secondary/10 text-secondary text-xs px-2 py-0.5 rounded-full font-bold">0 Items</span>
-        </div>
-        <button id="close-cart-btn" class="text-outline hover:text-primary p-1 rounded-full">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
 
-      <!-- Free Shipping Progress -->
-      <div class="p-3 bg-secondary/5 border-b border-secondary/10 px-5">
-        <div class="flex justify-between text-xs font-semibold text-on-surface mb-1">
-          <span id="free-shipping-text">Add $100.00 more for FREE Shipping!</span>
-          <span id="free-shipping-percent">0%</span>
-        </div>
-        <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-          <div id="free-shipping-bar" class="h-full bg-secondary transition-all duration-300 w-0"></div>
-        </div>
-      </div>
-
-      <!-- Cart Items List -->
-      <div id="cart-items-container" class="flex-grow overflow-y-auto p-5 space-y-4">
-        <!-- Rendered by JS -->
-      </div>
-
-      <!-- Cart Footer & Checkout -->
-      <div class="p-5 border-t border-outline-variant/30 bg-surface-container-low dark:bg-slate-800 space-y-3">
-        <div class="space-y-1.5 text-sm">
-          <div class="flex justify-between text-outline">
-            <span>Subtotal</span>
-            <span id="cart-subtotal" class="font-semibold text-on-surface">$0.00</span>
-          </div>
-          <div class="flex justify-between text-outline">
-            <span>Estimated Shipping</span>
-            <span id="cart-shipping" class="font-semibold text-emerald-600">Calculated at checkout</span>
-          </div>
-          <div class="flex justify-between text-base font-bold text-on-surface pt-2 border-t border-outline-variant/30">
-            <span>Total</span>
-            <span id="cart-total" class="text-secondary dark:text-secondary-fixed">$0.00</span>
-          </div>
-        </div>
-
-        <button id="checkout-btn" class="w-full bg-secondary hover:bg-secondary-container text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 btn-sheen">
-          <span>Proceed to Checkout</span>
-          <span class="material-symbols-outlined text-lg">arrow_forward</span>
-        </button>
-      </div>
-
-    </aside>
-  </div>
 
   <!-- Footer -->
   <footer class="bg-primary-container text-on-primary py-12 border-t border-slate-800 mt-auto" data-reveal>
@@ -503,6 +532,7 @@
 
   <!-- Application Logic -->
   <script src="store.js"></script>
+  <script src="animations.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
