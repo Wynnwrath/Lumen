@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Shopping Cart - Lumen</title>
+  <meta name="description" content="Review your selected items, apply promo codes, and proceed to checkout at Lumen."/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0f172a",
+            "on-primary": "#ffffff",
+            "primary-container": "#131b2e",
+            "on-primary-container": "#7c839b",
+            "primary-fixed": "#dae2fd",
+            "primary-fixed-dim": "#bec6e0",
+            "secondary": "#0051d5",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#316bf3",
+            "on-secondary-container": "#fefcff",
+            "secondary-fixed": "#dbe1ff",
+            "secondary-fixed-dim": "#b4c5ff",
+            "tertiary": "#000000",
+            "tertiary-container": "#191c1e",
+            "on-tertiary-container": "#818486",
+            "surface": "#f8f9ff",
+            "surface-dim": "#cbdbf5",
+            "surface-bright": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "surface-container-high": "#dce9ff",
+            "surface-container-highest": "#d3e4fe",
+            "surface-variant": "#d3e4fe",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#45464d",
+            "background": "#f8f9ff",
+            "on-background": "#0b1c30",
+            "outline": "#76777d",
+            "outline-variant": "#c6c6cd",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "inverse-surface": "#213145",
+            "inverse-on-surface": "#eaf1ff",
+            "inverse-primary": "#bec6e0"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "xs": "4px",
+            "sm": "8px",
+            "md": "16px",
+            "lg": "24px",
+            "xl": "48px",
+            "gutter": "24px",
+            "margin-mobile": "16px",
+            "margin-desktop": "32px",
+            "container-max": "1280px"
+          },
+          fontFamily: {
+            sans: ["Hanken Grotesk", "sans-serif"],
+            body: ["Hanken Grotesk", "sans-serif"],
+            headline: ["Hanken Grotesk", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen flex flex-col pb-16 md:pb-0">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Announcement Bar -->
+  <div class="bg-primary text-on-primary text-xs py-2 px-4 text-center font-medium flex justify-between items-center max-w-full">
+    <div class="hidden sm:block text-slate-300">Free Express Shipping on Orders Over $100</div>
+    <div class="mx-auto sm:mx-0 font-semibold tracking-wide">✨ Special Launch Offer: Use code <span class="text-secondary-fixed font-bold">LUMEN20</span> for 20% OFF</div>
+    <div class="hidden sm:flex items-center gap-4 text-slate-300">
+      <button id="theme-toggle" class="hover:text-white transition flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">dark_mode</span> <span id="theme-toggle-label">Dark Mode</span>
+      </button>
+      <a href="#support" class="hover:text-white transition">Need Help?</a>
+    </div>
+  </div>
+
+  <!-- Navigation Header -->
+  <header class="top-0 sticky z-40 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/30">
+    <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-3.5 max-w-container-max mx-auto gap-md md:gap-0">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <a href="index.html" class="flex items-center gap-2 group">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-secondary to-secondary-container flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-xl">auto_awesome</span>
+          </div>
+          <span class="text-2xl font-extrabold text-secondary dark:text-secondary-fixed tracking-tight">Lumen</span>
+        </a>
+        <div class="flex items-center gap-2 md:hidden">
+          <button id="mobile-theme-toggle" class="p-2 text-on-surface hover:text-secondary rounded-full">
+            <span class="material-symbols-outlined">dark_mode</span>
+          </button>
+          <a href="cart.html" class="p-2 text-primary dark:text-inverse-primary relative">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span id="cart-badge-count-mobile" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Search Bar with Live Autocomplete Dropdown -->
+      <div class="w-full max-w-xl mx-md relative">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+        <input id="search-input" type="text" placeholder="Search for products, brands and tech..." 
+               class="w-full bg-surface text-on-surface border border-outline-variant/60 focus:border-secondary rounded-full py-2.5 pl-11 pr-10 text-sm font-medium shadow-sm focus:shadow-md transition-all outline-none"/>
+        <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+        <div id="search-results-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-surface-container-lowest dark:bg-slate-800 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 divide-y divide-outline-variant/10 max-h-96 overflow-y-auto"></div>
+      </div>
+
+      <!-- Links & Action Icons with Cart Hover Modal -->
+      <div class="hidden md:flex items-center gap-lg">
+        <nav class="flex items-center gap-md">
+          <a href="index.html" class="text-on-surface-variant dark:text-outline-variant hover:text-secondary transition-colors text-sm font-medium">Home</a>
+          <a href="products.html" class="text-on-surface-variant dark:text-outline-variant hover:text-secondary transition-colors text-sm font-medium">Catalog</a>
+        </nav>
+
+        <div class="flex items-center gap-sm">
+          <button id="wishlist-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full relative transition-all" title="Wishlist">
+            <span class="material-symbols-outlined">favorite</span>
+            <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+          </button>
+
+          <!-- Cart Icon Container with Hover Preview Modal -->
+          <div class="relative group" id="cart-hover-container">
+            <a href="cart.html" id="cart-icon-btn-desktop" class="text-secondary dark:text-secondary-fixed p-2 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
+              <span class="material-symbols-outlined">shopping_cart</span>
+              <span id="cart-badge-count-desktop" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+            </a>
+
+            <!-- Cart Hover Preview Modal Dropdown -->
+            <div id="cart-hover-modal" class="hidden absolute top-full right-0 mt-2 w-80 bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-4 space-y-3 animate-fade-in-scale">
+              <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+                <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Cart Quick Preview</span>
+                <span id="hover-cart-count" class="text-xs font-extrabold text-secondary">0 Items</span>
+              </div>
+
+              <!-- Mini List -->
+              <div id="hover-cart-items" class="max-h-56 overflow-y-auto space-y-2 pr-1">
+                <!-- Populated dynamically -->
+              </div>
+
+              <div class="border-t border-outline-variant/20 pt-3 space-y-2">
+                <div class="flex justify-between text-xs font-bold text-on-surface">
+                  <span>Subtotal:</span>
+                  <span id="hover-cart-subtotal" class="text-secondary">$0.00</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                  <a href="cart.html" class="bg-surface-container hover:bg-surface-container-high text-on-surface text-center py-2 rounded-xl text-xs font-bold transition">
+                    View Cart
+                  </a>
+                  <button id="hover-checkout-btn" class="bg-secondary hover:bg-secondary-container text-white py-2 rounded-xl text-xs font-bold transition">
+                    Checkout
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Cart Content -->
+  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg space-y-md flex-grow w-full">
+
+    <!-- Page Title & Breadcrumb -->
+    <div class="space-y-1 pb-4 border-b border-outline-variant/30 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight flex items-center gap-3">
+          <span class="material-symbols-outlined text-secondary text-3xl md:text-4xl">shopping_cart</span>
+          Shopping Cart
+        </h1>
+        <nav class="flex items-center gap-2 text-xs text-outline mt-1">
+          <a href="index.html" class="hover:text-secondary transition">Home</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <span class="font-semibold text-on-surface">Shopping Cart</span>
+        </nav>
+      </div>
+
+      <a href="products.html" class="text-xs font-bold text-secondary hover:underline flex items-center gap-1 self-start sm:self-auto">
+        <span class="material-symbols-outlined text-sm">west</span> Continue Shopping
+      </a>
+    </div>
+
+    <!-- Free Shipping Goal Progress Banner -->
+    <div class="p-4 rounded-2xl bg-secondary/5 border border-secondary/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <div class="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined">local_shipping</span>
+        </div>
+        <div>
+          <h4 id="page-free-shipping-text" class="text-xs font-bold text-on-surface">Add $100.00 more for FREE Express Shipping!</h4>
+          <p class="text-[11px] text-outline">Calculated automatically on orders over $100</p>
+        </div>
+      </div>
+
+      <div class="w-full sm:w-48 space-y-1">
+        <div class="flex justify-between text-[11px] font-bold text-on-surface">
+          <span>Progress</span>
+          <span id="page-free-shipping-pct">0%</span>
+        </div>
+        <div class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div id="page-free-shipping-bar" class="h-full bg-secondary transition-all duration-300 w-0"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two-Column Layout: Left Items + Right Summary -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- Left Column: Cart Items Table/Cards -->
+      <section class="lg:col-span-8 space-y-4">
+        
+        <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+          
+          <div class="p-4 bg-surface-container-low dark:bg-slate-800/80 border-b border-outline-variant/20 flex justify-between items-center text-xs font-bold text-outline uppercase tracking-wider">
+            <span>Products (<span id="cart-item-count-head">0</span>)</span>
+            <button id="clear-cart-btn" class="text-error hover:underline flex items-center gap-1 font-semibold">
+              <span class="material-symbols-outlined text-sm">delete_sweep</span> Clear Cart
+            </button>
+          </div>
+
+          <div id="cart-page-items-container" class="divide-y divide-outline-variant/20 p-4 space-y-4">
+            <!-- Dynamically populated by cart.js -->
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- Right Column: Order Summary Card -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 shadow-sm p-6 space-y-5 sticky top-24">
+          <h3 class="text-lg font-bold text-on-surface border-b border-outline-variant/20 pb-3">Order Summary</h3>
+
+          <!-- Promo Code Section -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-on-surface block">Promo Code</label>
+            <div class="flex gap-2">
+              <input id="promo-input" type="text" placeholder="Enter code (e.g. LUMEN20)" 
+                     class="flex-1 bg-surface dark:bg-slate-700 text-on-surface border border-outline-variant/60 rounded-xl px-3 py-2 text-xs outline-none focus:border-secondary uppercase"/>
+              <button id="apply-promo-btn" class="bg-primary hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition">
+                Apply
+              </button>
+            </div>
+            <p id="promo-msg" class="text-[11px] font-semibold hidden"></p>
+          </div>
+
+          <hr class="border-outline-variant/20"/>
+
+          <!-- Financial Breakdown -->
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between text-outline">
+              <span>Subtotal</span>
+              <span id="summary-subtotal" class="font-bold text-on-surface">$0.00</span>
+            </div>
+
+            <div class="flex justify-between text-outline">
+              <span>Estimated Shipping</span>
+              <span id="summary-shipping" class="font-bold text-on-surface">$0.00</span>
+            </div>
+
+            <div id="summary-discount-row" class="hidden flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
+              <span>Discount (LUMEN20 - 20%)</span>
+              <span id="summary-discount">-$0.00</span>
+            </div>
+
+            <div class="flex justify-between text-outline">
+              <span>Estimated Tax (8%)</span>
+              <span id="summary-tax" class="font-bold text-on-surface">$0.00</span>
+            </div>
+
+            <hr class="border-outline-variant/20 pt-1"/>
+
+            <div class="flex justify-between items-baseline pt-1">
+              <span class="text-base font-extrabold text-on-surface">Total</span>
+              <span id="summary-total" class="text-2xl font-black text-secondary dark:text-secondary-fixed">$0.00</span>
+            </div>
+          </div>
+
+          <!-- Checkout Button -->
+          <button id="page-checkout-btn" class="w-full bg-secondary hover:bg-secondary-container text-white py-4 rounded-xl font-extrabold text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 btn-sheen">
+            <span>Proceed to Checkout</span>
+            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+          </button>
+
+          <!-- Security & Guarantee Badges -->
+          <div class="pt-3 border-t border-outline-variant/20 grid grid-cols-2 gap-2 text-center text-[10px] text-outline font-medium">
+            <div class="flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-sm text-emerald-600">lock</span>
+              <span>256-Bit SSL Encryption</span>
+            </div>
+            <div class="flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-sm text-secondary">verified</span>
+              <span>30-Day Money Back</span>
+            </div>
+          </div>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-primary-container text-on-primary py-12 border-t border-slate-800 mt-auto">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-sm">auto_awesome</span>
+          </div>
+          <span class="text-2xl font-extrabold text-white tracking-tight">Lumen</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Illuminate your lifestyle with our curated collection of premium tech, fashion, and modern goods.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Company</h4>
+        <ul class="space-y-2 text-xs text-slate-400">
+          <li><a href="index.html" class="hover:text-white transition">Home</a></li>
+          <li><a href="products.html" class="hover:text-white transition">Catalog</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Support</h4>
+        <ul class="space-y-2 text-xs text-slate-400">
+          <li><a href="#" class="hover:text-white transition">Returns Policy</a></li>
+          <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Newsletter</h4>
+        <p class="text-xs text-slate-400 mb-2">Subscribe to get launch deals.</p>
+      </div>
+    </div>
+
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mt-8 pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+      <p>© 2026 Lumen Tech Marketplace. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Store API and Cart Page Controller -->
+  <script src="store.js"></script>
+  <script src="cart.js"></script>
+</body>
+</html>

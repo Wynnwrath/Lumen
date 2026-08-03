@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Details - Lumen</title>
+  <meta name="description" content="View detailed specifications, images, and pricing for premium items on Lumen."/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css"/>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0f172a",
+            "on-primary": "#ffffff",
+            "primary-container": "#131b2e",
+            "on-primary-container": "#7c839b",
+            "primary-fixed": "#dae2fd",
+            "primary-fixed-dim": "#bec6e0",
+            "secondary": "#0051d5",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#316bf3",
+            "on-secondary-container": "#fefcff",
+            "secondary-fixed": "#dbe1ff",
+            "secondary-fixed-dim": "#b4c5ff",
+            "tertiary": "#000000",
+            "tertiary-container": "#191c1e",
+            "on-tertiary-container": "#818486",
+            "surface": "#f8f9ff",
+            "surface-dim": "#cbdbf5",
+            "surface-bright": "#f8f9ff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#eff4ff",
+            "surface-container": "#e5eeff",
+            "surface-container-high": "#dce9ff",
+            "surface-container-highest": "#d3e4fe",
+            "surface-variant": "#d3e4fe",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#45464d",
+            "background": "#f8f9ff",
+            "on-background": "#0b1c30",
+            "outline": "#76777d",
+            "outline-variant": "#c6c6cd",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "inverse-surface": "#213145",
+            "inverse-on-surface": "#eaf1ff",
+            "inverse-primary": "#bec6e0"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "xs": "4px",
+            "sm": "8px",
+            "md": "16px",
+            "lg": "24px",
+            "xl": "48px",
+            "gutter": "24px",
+            "margin-mobile": "16px",
+            "margin-desktop": "32px",
+            "container-max": "1280px"
+          },
+          fontFamily: {
+            sans: ["Hanken Grotesk", "sans-serif"],
+            body: ["Hanken Grotesk", "sans-serif"],
+            headline: ["Hanken Grotesk", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-background text-on-background font-body antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen flex flex-col pb-16 md:pb-0">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Announcement Bar -->
+  <div class="bg-primary text-on-primary text-xs py-2 px-4 text-center font-medium flex justify-between items-center max-w-full">
+    <div class="hidden sm:block text-slate-300">Free Express Shipping on Orders Over $100</div>
+    <div class="mx-auto sm:mx-0 font-semibold tracking-wide">✨ Special Launch Offer: Use code <span class="text-secondary-fixed font-bold">LUMEN20</span> for 20% OFF</div>
+    <div class="hidden sm:flex items-center gap-4 text-slate-300">
+      <button id="theme-toggle" class="hover:text-white transition flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">dark_mode</span> <span id="theme-toggle-label">Dark Mode</span>
+      </button>
+      <a href="#support" class="hover:text-white transition">Need Help?</a>
+    </div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="top-0 sticky z-40 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container border-b border-outline-variant/30">
+    <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-3.5 max-w-container-max mx-auto gap-md md:gap-0">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <a href="index.html" class="flex items-center gap-2 group">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-secondary to-secondary-container flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-xl">auto_awesome</span>
+          </div>
+          <span class="text-2xl font-extrabold text-secondary dark:text-secondary-fixed tracking-tight">Lumen</span>
+        </a>
+        <div class="flex items-center gap-2 md:hidden">
+          <button id="mobile-theme-toggle" class="p-2 text-on-surface hover:text-secondary rounded-full">
+            <span class="material-symbols-outlined">dark_mode</span>
+          </button>
+          <button id="cart-icon-btn-mobile" class="p-2 text-primary dark:text-inverse-primary relative">
+            <span class="material-symbols-outlined">shopping_cart</span>
+            <span id="cart-badge-count-mobile" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="w-full max-w-xl mx-md relative">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+        <input id="search-input" type="text" placeholder="Search for products, brands and tech..." 
+               class="w-full bg-surface text-on-surface border border-outline-variant/60 focus:border-secondary rounded-full py-2.5 pl-11 pr-10 text-sm font-medium shadow-sm focus:shadow-md transition-all outline-none"/>
+        <button id="clear-search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+
+        <!-- Instant Live Search Dropdown Menu -->
+        <div id="search-results-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-surface-container-lowest dark:bg-slate-800 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 divide-y divide-outline-variant/10 max-h-96 overflow-y-auto">
+        </div>
+      </div>
+
+      <!-- Action Nav -->
+      <div class="hidden md:flex items-center gap-lg">
+        <nav class="flex items-center gap-md">
+          <a href="index.html" class="text-on-surface-variant dark:text-outline-variant hover:text-secondary transition-colors text-sm font-medium">Home</a>
+          <a href="index.html#categories" class="text-on-surface-variant dark:text-outline-variant hover:text-secondary transition-colors text-sm font-medium">Categories</a>
+          <a href="index.html#deals" class="text-on-surface-variant dark:text-outline-variant hover:text-secondary transition-colors text-sm font-medium">Deals</a>
+        </nav>
+        <div class="flex items-center gap-sm">
+          <button id="wishlist-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full relative transition-all" title="Wishlist">
+            <span class="material-symbols-outlined">favorite</span>
+            <span id="wishlist-badge-count" class="hidden absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+          </button>
+          <!-- Cart Icon Container with Hover Preview Modal -->
+          <div class="relative group" id="cart-hover-container">
+            <a href="cart.html" id="cart-icon-btn-desktop" class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface p-2 rounded-full relative transition-all flex items-center justify-center" title="Shopping Cart">
+              <span class="material-symbols-outlined">shopping_cart</span>
+              <span id="cart-badge-count-desktop" class="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+            </a>
+
+            <!-- Cart Hover Preview Modal Dropdown -->
+            <div id="cart-hover-modal" class="hidden absolute top-full right-0 mt-2 w-80 bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-4 space-y-3">
+              <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+                <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Cart Quick Preview</span>
+                <span id="hover-cart-count" class="text-xs font-extrabold text-secondary">0 Items</span>
+              </div>
+
+              <!-- Mini List -->
+              <div id="hover-cart-items" class="max-h-56 overflow-y-auto space-y-2 pr-1"></div>
+
+              <div class="border-t border-outline-variant/20 pt-3 space-y-2">
+                <div class="flex justify-between text-xs font-bold text-on-surface">
+                  <span>Subtotal:</span>
+                  <span id="hover-cart-subtotal" class="text-secondary">$0.00</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                  <a href="cart.html" class="bg-surface-container hover:bg-surface-container-high text-on-surface text-center py-2 rounded-xl text-xs font-bold transition">
+                    View Cart
+                  </a>
+                  <button id="hover-checkout-btn" class="bg-secondary hover:bg-secondary-container text-white py-2 rounded-xl text-xs font-bold transition">
+                    Checkout
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-md space-y-lg flex-grow w-full">
+    
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 text-xs text-outline">
+      <a href="index.html" class="hover:text-secondary transition">Home</a>
+      <span class="material-symbols-outlined text-xs">chevron_right</span>
+      <span id="breadcrumb-category" class="capitalize">Electronics</span>
+      <span class="material-symbols-outlined text-xs">chevron_right</span>
+      <span id="breadcrumb-title" class="font-semibold text-on-surface truncate max-w-xs">Product Details</span>
+    </nav>
+
+    <!-- Product Detail Two-Column Section -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: Gallery -->
+      <div class="lg:col-span-6 space-y-4">
+        <div class="aspect-square rounded-3xl bg-surface-container dark:bg-slate-800 overflow-hidden border border-outline-variant/30 shadow-md relative group">
+          <img id="main-product-image" src="" alt="Product Image" class="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"/>
+          <button id="zoom-image-btn" class="absolute top-4 right-4 bg-white/80 dark:bg-slate-900/80 p-2 rounded-full backdrop-blur-md shadow-sm text-on-surface hover:text-secondary transition">
+            <span class="material-symbols-outlined">zoom_in</span>
+          </button>
+        </div>
+
+        <!-- Thumbnail Gallery Carousel -->
+        <div id="thumbnail-gallery" class="flex gap-3 overflow-x-auto pb-2 hide-scroll">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Right Column: Product Info & Actions -->
+      <div class="lg:col-span-6 space-y-6">
+        
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span id="product-category-badge" class="bg-secondary/10 text-secondary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              Category
+            </span>
+            <span id="product-brand" class="text-xs text-outline font-semibold">Brand</span>
+          </div>
+
+          <h1 id="product-title" class="text-2xl md:text-4xl font-extrabold text-on-surface leading-tight tracking-tight">
+            Product Title
+          </h1>
+
+          <!-- Ratings & Reviews summary -->
+          <div class="flex items-center gap-3 mt-3">
+            <div class="flex text-amber-400 text-sm">
+              <span class="material-symbols-outlined text-base filled">star</span>
+              <span class="material-symbols-outlined text-base filled">star</span>
+              <span class="material-symbols-outlined text-base filled">star</span>
+              <span class="material-symbols-outlined text-base filled">star</span>
+              <span class="material-symbols-outlined text-base filled">star_half</span>
+            </div>
+            <span id="product-rating-score" class="text-sm font-bold text-on-surface">4.9</span>
+            <a href="#reviews" id="product-reviews-link" class="text-xs font-semibold text-secondary hover:underline">
+              (1,420 verified reviews)
+            </a>
+          </div>
+        </div>
+
+        <!-- Pricing & Savings -->
+        <div class="p-4 rounded-2xl bg-surface dark:bg-slate-800/60 border border-outline-variant/40 flex items-center justify-between">
+          <div>
+            <div class="flex items-baseline gap-3">
+              <span id="product-price" class="text-3xl font-black text-primary dark:text-white">$0.00</span>
+              <span id="product-original-price" class="text-sm text-outline line-through">$0.00</span>
+            </div>
+            <span id="product-savings-tag" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1 inline-block">
+              Save 10% OFF
+            </span>
+          </div>
+
+          <!-- Stock Status Badge -->
+          <div id="stock-status-container">
+            <!-- Dynamic stock badge rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Description Snippet -->
+        <p id="product-description" class="text-sm text-on-surface-variant leading-relaxed">
+          Product overview description...
+        </p>
+
+        <!-- Actions: Quantity & Add to Cart -->
+        <div class="space-y-4 pt-4 border-t border-outline-variant/30">
+          
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            
+            <!-- Quantity Stepper -->
+            <div class="flex items-center justify-between border border-outline-variant/60 rounded-xl p-1 bg-surface dark:bg-slate-800 w-full sm:w-36">
+              <button id="qty-minus" class="w-10 h-10 rounded-lg hover:bg-surface-container dark:hover:bg-slate-700 flex items-center justify-center font-bold text-on-surface transition active:scale-95">
+                <span class="material-symbols-outlined text-sm">remove</span>
+              </button>
+              <span id="qty-val" class="font-extrabold text-sm text-on-surface px-3">1</span>
+              <button id="qty-plus" class="w-10 h-10 rounded-lg hover:bg-surface-container dark:hover:bg-slate-700 flex items-center justify-center font-bold text-on-surface transition active:scale-95">
+                <span class="material-symbols-outlined text-sm">add</span>
+              </button>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <button id="add-to-cart-btn" class="flex-1 bg-secondary hover:bg-secondary-container text-white py-3.5 px-6 rounded-xl font-bold text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 btn-sheen">
+              <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+              <span>Add to Cart</span>
+            </button>
+
+            <!-- Wishlist Heart Button -->
+            <button id="wishlist-toggle-btn" class="p-3.5 rounded-xl border border-outline-variant/60 hover:border-secondary text-outline hover:text-error transition-all flex items-center justify-center" title="Save to Wishlist">
+              <span id="wishlist-icon" class="material-symbols-outlined">favorite</span>
+            </button>
+          </div>
+
+          <!-- Buy Now Button -->
+          <button id="buy-now-btn" class="w-full bg-primary hover:bg-slate-800 text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-[0.98]">
+            Buy Now
+          </button>
+        </div>
+
+        <!-- Trust Features Grid -->
+        <div class="grid grid-cols-3 gap-3 pt-4">
+          <div class="p-3 rounded-xl bg-surface dark:bg-slate-800/40 border border-outline-variant/30 text-center space-y-1">
+            <span class="material-symbols-outlined text-secondary text-xl">local_shipping</span>
+            <h4 class="text-[11px] font-bold text-on-surface">Free Shipping</h4>
+            <p class="text-[10px] text-outline">Orders over $100</p>
+          </div>
+          <div class="p-3 rounded-xl bg-surface dark:bg-slate-800/40 border border-outline-variant/30 text-center space-y-1">
+            <span class="material-symbols-outlined text-secondary text-xl">verified_user</span>
+            <h4 class="text-[11px] font-bold text-on-surface">2-Yr Warranty</h4>
+            <p class="text-[10px] text-outline">Official coverage</p>
+          </div>
+          <div class="p-3 rounded-xl bg-surface dark:bg-slate-800/40 border border-outline-variant/30 text-center space-y-1">
+            <span class="material-symbols-outlined text-secondary text-xl">published_with_changes</span>
+            <h4 class="text-[11px] font-bold text-on-surface">30-Day Return</h4>
+            <p class="text-[10px] text-outline">Hassle free policy</p>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Technical Specifications Section -->
+    <section class="pt-8 border-t border-outline-variant/30 space-y-4">
+      <h2 class="text-xl font-bold text-on-surface">Technical Specifications</h2>
+      <div class="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 overflow-hidden shadow-sm">
+        <table class="w-full text-sm text-left">
+          <tbody id="specs-table-body" class="divide-y divide-outline-variant/20">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Related Products Recommendations -->
+    <section class="pt-8 space-y-md">
+      <div class="flex justify-between items-center mb-md">
+        <div>
+          <h2 class="text-xl md:text-2xl font-bold text-on-surface">Related Products</h2>
+          <p class="text-xs text-outline">More premium choices in this category</p>
+        </div>
+        <a href="index.html" class="text-secondary text-sm font-semibold hover:underline flex items-center gap-1">
+          Explore All <span class="material-symbols-outlined text-sm">chevron_right</span>
+        </a>
+      </div>
+
+      <div id="related-products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-md md:gap-lg">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Cart Slide-over Drawer -->
+  <div id="cart-drawer" class="fixed inset-0 z-50 pointer-events-none">
+    <div id="cart-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-xs opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+    <aside id="cart-panel" class="absolute top-0 right-0 w-full max-w-md h-full bg-surface-container-lowest dark:bg-slate-900 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 pointer-events-auto">
+      
+      <!-- Cart Header -->
+      <div class="p-5 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container-low dark:bg-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary text-2xl">shopping_cart</span>
+          <h3 class="text-lg font-bold text-on-surface">Your Shopping Cart</h3>
+          <span id="cart-drawer-count" class="bg-secondary/10 text-secondary text-xs px-2 py-0.5 rounded-full font-bold">0 Items</span>
+        </div>
+        <button id="close-cart-btn" class="text-outline hover:text-primary p-1 rounded-full">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <!-- Free Shipping Bar -->
+      <div class="p-3 bg-secondary/5 border-b border-secondary/10 px-5">
+        <div class="flex justify-between text-xs font-semibold text-on-surface mb-1">
+          <span id="free-shipping-text">Add $100.00 more for FREE Shipping!</span>
+          <span id="free-shipping-percent">0%</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div id="free-shipping-bar" class="h-full bg-secondary transition-all duration-300 w-0"></div>
+        </div>
+      </div>
+
+      <!-- Cart Items -->
+      <div id="cart-items-container" class="flex-grow overflow-y-auto p-5 space-y-4">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Cart Footer -->
+      <div class="p-5 border-t border-outline-variant/30 bg-surface-container-low dark:bg-slate-800 space-y-3">
+        <div class="space-y-1.5 text-sm">
+          <div class="flex justify-between text-outline">
+            <span>Subtotal</span>
+            <span id="cart-subtotal" class="font-semibold text-on-surface">$0.00</span>
+          </div>
+          <div class="flex justify-between text-base font-bold text-on-surface pt-2 border-t border-outline-variant/30">
+            <span>Total</span>
+            <span id="cart-total" class="text-secondary dark:text-secondary-fixed">$0.00</span>
+          </div>
+        </div>
+
+        <button id="checkout-btn" class="w-full bg-secondary hover:bg-secondary-container text-white py-3.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 btn-sheen">
+          <span>Proceed to Checkout</span>
+          <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </button>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-primary-container text-on-primary py-12 border-t border-slate-800 mt-auto">
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-white">
+            <span class="material-symbols-outlined text-sm">auto_awesome</span>
+          </div>
+          <span class="text-2xl font-extrabold text-white tracking-tight">Lumen</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Illuminate your lifestyle with our curated collection of premium tech, fashion, and modern goods.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Company</h4>
+        <ul class="space-y-2 text-xs text-slate-400">
+          <li><a href="index.html" class="hover:text-white transition">Home</a></li>
+          <li><a href="index.html#categories" class="hover:text-white transition">Categories</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Support</h4>
+        <ul class="space-y-2 text-xs text-slate-400">
+          <li><a href="#" class="hover:text-white transition">Returns Policy</a></li>
+          <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Newsletter</h4>
+        <p class="text-xs text-slate-400 mb-2">Subscribe to get launch deals.</p>
+      </div>
+    </div>
+
+    <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mt-8 pt-6 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+      <p>© 2026 Lumen Tech Marketplace. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Store API and Page Controller -->
+  <script src="store.js"></script>
+  <script src="product-detail.js"></script>
+</body>
+</html>

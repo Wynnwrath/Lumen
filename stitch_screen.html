@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumen - Modern E-commerce</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#bec6e0",
+                        "secondary-container": "#316bf3",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-surface-variant": "#45464d",
+                        "primary-fixed": "#dae2fd",
+                        "secondary-fixed": "#dbe1ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline-variant": "#c6c6cd",
+                        "surface-container-high": "#dce9ff",
+                        "primary": "#000000",
+                        "tertiary-container": "#191c1e",
+                        "on-secondary-container": "#fefcff",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#0051d5",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#00174b",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#131b2e",
+                        "surface-container": "#e5eeff",
+                        "inverse-surface": "#213145",
+                        "surface-tint": "#565e74",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed": "#131b2e",
+                        "on-error": "#ffffff",
+                        "on-surface": "#0b1c30",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-tertiary-container": "#818486",
+                        "on-primary-container": "#7c839b",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "outline": "#76777d",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary": "#000000",
+                        "background": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "on-tertiary-fixed": "#191c1e",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "on-background": "#0b1c30",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "margin-mobile": "16px",
+                        "md": "16px",
+                        "margin-desktop": "32px",
+                        "unit": "4px",
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "xl": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "headline-xl": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- TopNavBar -->
+<header class="docked full-width top-0 sticky z-50 shadow-sm dark:shadow-none bg-surface-container-lowest dark:bg-primary-container">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto gap-md md:gap-0">
+<!-- Brand -->
+<div class="flex items-center gap-sm shrink-0">
+<img alt="Lumen Logo" class="h-8 w-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlkRWWRhRDlgyEK1wGrqrox3jTeieMHEOviO_STlv5wlRoNl39egtfysn6KenxtBBNOg-Wy1n-rWE_ROiUTc6OpDtujkvgTmmVhyNAMEaVjO1A_MpI3XuodFpnzNN82tgp7mdwLPRGWOx8_0Hc-vprvf3_MqKg07aJs4HVABKca3nunqBPEUV5eho9E-dNZJi06yNIRrdnFAyB395nIXByo1250oYiKIAFnluI9hrvbQFhKv46zEBH"/>
+<span class="text-headline-lg font-headline-lg font-bold text-secondary dark:text-secondary-fixed tracking-tight">Lumen</span>
+</div>
+<!-- Search -->
+<div class="w-full max-w-xl mx-md relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface text-on-surface border border-outline-variant focus:border-secondary rounded-full py-2 pl-xl pr-md text-body-sm font-body-sm shadow-[0px_4px_20px_rgba(15,23,42,0.05)] focus:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all outline-none" placeholder="Search for products, brands and more" type="text"/>
+</div>
+<!-- Links & Icons -->
+<div class="flex items-center gap-lg hidden md:flex">
+<nav class="flex items-center gap-md">
+<a class="text-secondary dark:text-secondary-fixed-dim font-semibold border-b-2 border-secondary pb-1 text-label-md font-label-md" href="#">Electronics</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 px-2 py-1 rounded text-label-md font-label-md" href="#">Fashion</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 px-2 py-1 rounded text-label-md font-label-md" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 px-2 py-1 rounded text-label-md font-label-md" href="#">Beauty</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 px-2 py-1 rounded text-label-md font-label-md" href="#">New Arrivals</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 p-2 rounded-full active:opacity-80 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</button>
+<button class="text-primary dark:text-inverse-primary hover:bg-surface-container-low dark:hover:bg-inverse-surface transition-colors duration-200 p-2 rounded-full relative active:opacity-80 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-lg space-y-xl">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-md h-auto lg:h-[480px]">
+<div class="lg:col-span-2 relative rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] bg-primary-container text-on-primary group cursor-pointer flex items-center p-xl">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" data-alt="A highly detailed cinematic shot of a sleek, modern smartphone levitating against a minimalist dark gray studio background. The lighting is dramatic, highlighting the phone's metallic edges and glossy screen. The atmosphere is premium, cutting-edge, and sophisticated, aligning perfectly with a modern tech-forward e-commerce aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCutR0H1iN1yMX3LXe0IWUUSgcsib-IfeqYEogO9GW0N6FxT6AHBTgjF5t3c2jO5ohPRVxscTnCKD8HwSVrlR_DJfDRKJqhAPyixaQR-tZZ0UA0CmoEc7Q_6D-t1nhrspRRToXYmO60GJzOrvnWcxbRnNs1Tt5P-Ztpe5qJyFnAHUvavMvQQ2SBAYywQtKVnIgGJ7L95rN_9N1hvmQy92V97vCsX6_Eq8B5YwAVE9nomnNdPH6L-pIM"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary-container/90 via-primary-container/50 to-transparent"></div>
+</div>
+<div class="relative z-10 max-w-md space-y-md">
+<span class="inline-block px-3 py-1 bg-secondary text-on-secondary rounded-full text-label-sm font-label-sm uppercase tracking-wider">New Arrivals</span>
+<h1 class="text-headline-xl font-headline-xl text-on-primary leading-tight">iPhone 16 Pro Max</h1>
+<p class="text-headline-md font-headline-md font-light text-inverse-primary">From $ 1,099*</p>
+<p class="text-body-md font-body-md text-surface-dim opacity-80">A18 Pro chip. Superfast. Supersmart.<br/>Experience the new titanium design.</p>
+<button class="bg-on-primary text-primary px-6 py-3 rounded-lg text-label-md font-label-md hover:bg-surface-container-low transition-colors shadow-lg active:scale-95 mt-sm">Shop Now</button>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] bg-surface-container-high group cursor-pointer flex items-center p-lg">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A vivid, high-resolution product shot of a futuristic running shoe in bright cyan and orange. The shoe is dynamically angled over a stylized, minimalist running track. The lighting is crisp and bright, emphasizing speed, energy, and modern athletic wear. The background is slightly blurred to keep focus on the premium sneaker." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN6ptiuw4dIJuRJ0vVuGrj5FmJf8RdEVIQjqiitJdPdKb95cl2g2Ad4ONeHqYlwtvSli1PJfGypVPbAHcuW29v0GBfG1bNWtjUxkL4__yv_B0csJ8WguRLraZfsKoer9mAmp5SiGL2oNGI_CxrSTz7Bq9o5hqnc82uJfmB6xa1gcEXJVx6yst9EMjJWkUz36XKfzedJc-9WtQEfy0m5zgI6HF9-2eOF4O2cYhSj8n_i7bKdMJsIuVF"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden"></div>
+</div>
+<div class="relative z-10 self-end md:self-start w-full">
+<div class="bg-white/90 backdrop-blur-sm p-4 rounded-lg inline-block shadow-lg">
+<span class="text-error font-bold text-headline-md">SALE</span><br/>
+<span class="text-primary font-headline-lg font-bold leading-none">UP TO<br/>50% OFF</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Circular Categories -->
+<section class="space-y-md">
+<div class="flex justify-between items-end mb-lg">
+<h2 class="text-headline-md font-headline-md text-on-surface">Explore Popular Categories</h2>
+<a class="text-secondary text-label-md font-label-md hover:underline flex items-center gap-1" href="#">View All <span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span></a>
+</div>
+<div class="flex overflow-x-auto hide-scroll gap-lg pb-4 snap-x">
+<!-- Category Items -->
+<a class="flex flex-col items-center gap-sm shrink-0 w-24 group snap-start" href="#">
+<div class="w-20 h-20 rounded-full bg-surface-container overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] group-hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex items-center justify-center p-2">
+<img class="w-full h-full object-contain group-hover:scale-110 transition-transform" data-alt="A premium wireless over-ear headphone in a soft pastel pink color, resting on a clean white surface with minimal shadows. The lighting is soft and diffused, creating a luxurious and modern tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsoedaiBBksRprsZEcGGusyzumxYc0EA9vjbjA0zPMD79HqPuTNt7gztucX0LNVSfDpqNTw3BU8C8pi_QL9mFbhn_cTf_p6EyiROeGvRtHEFynXdObIjuC5dZAhzdVZXghYEjTvzzm1oZQMMokKISDJEJJs75xHp57D7venAg61HR1KMbVXzDDHYwDrcDLEv1ruwTb6rv6Rm148ofT1Whhmlk5HFlz_I0tO9SbjZFcrptgLzdrzQt_"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface text-center">Electronics</span>
+</a>
+<a class="flex flex-col items-center gap-sm shrink-0 w-24 group snap-start" href="#">
+<div class="w-20 h-20 rounded-full bg-surface-container overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] group-hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex items-center justify-center p-2">
+<img class="w-full h-full object-contain group-hover:scale-110 transition-transform" data-alt="A stylish arrangement of modern women's fashion items, including a folded silk scarf, a designer leather belt, and minimalist sunglasses on a pristine white background. High-key lighting, editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjt-RxJJB3p0IYwoRpyni8QnBiiT-0qGFlo7G92O2vh1ha29KK4o5q5sDpPJuenIdBAw9pYbhj6oRFFp9wUyPd0Ru1e51Dc5KEKhiNc-wmHzR8AsvlMOR1T91JZ2RNLnPVhpi4vaAuxFHdyXAGGyt1XYYa6eT8nKNreIhl8TGg9wLeodYC5gwks_hMGbZwdmeOzQ3ZrVTjSuR_LmQ-Cn4hxD29QoqCqNY0BRkPTeC8ANDwu8Rc2nhE"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface text-center">Fashion</span>
+</a>
+<a class="flex flex-col items-center gap-sm shrink-0 w-24 group snap-start" href="#">
+<div class="w-20 h-20 rounded-full bg-surface-container overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] group-hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex items-center justify-center p-2">
+<img class="w-full h-full object-contain group-hover:scale-110 transition-transform" data-alt="A luxury leather handbag in a muted beige tone, placed elegantly against a plain white studio backdrop. The lighting highlights the texture of the leather and the shine of the metal hardware. Premium, minimalist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTC2XllLwuC4IxDjfRbmzvutO07DXaZlPCzNVkyliFtN2cj16UaJ_OSZFrMa7COyem98XCfLGcr9iyz7OK0S80GPmyIfy-BPpkvqFKIrOEabPD2LRTID2C-nqxEEjSjrgAudvmTM6WHVmjeczUneWhlagaDjFFyROqSmIitR5JzZZDmbU169r6M79AkfUxbVQQN_Us5D1Zav-dk8wCh_3UP2vu_Q1nne5lNZElhpmTCZEmtOYbyJry"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface text-center">Luxury</span>
+</a>
+<a class="flex flex-col items-center gap-sm shrink-0 w-24 group snap-start" href="#">
+<div class="w-20 h-20 rounded-full bg-surface-container overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] group-hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex items-center justify-center p-2">
+<img class="w-full h-full object-contain group-hover:scale-110 transition-transform" data-alt="A modern, minimalist ceramic vase holding a few stems of dried eucalyptus, set on a light marble surface with a clean white background. Soft, natural lighting. Aesthetic is calming, organic, and premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoYsi22MO_gfgC1U-tWom0N-zY7yqxszPqu3eG5bpWovJEGKBQ-iqP1sXHku5LH-FKR8AOe1nA7auI0MMsxgMhe_zFfAF7-RbeVFH2nl2UkVkZmxfzlxjtXAacEQYs7GWkbzhQxUUakKEMoTU52b_O_3TYh3_Y7HKuk_7W2hCwUwFb5ZKpXoiS3_jreSuq7AHrtoC6FoBpo_n_lEJCDDUVFIWR6yBFXCxLvvltb7gTDX3FYILSVTlh"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface text-center">Home Decor</span>
+</a>
+<a class="flex flex-col items-center gap-sm shrink-0 w-24 group snap-start" href="#">
+<div class="w-20 h-20 rounded-full bg-surface-container overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] group-hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex items-center justify-center p-2">
+<img class="w-full h-full object-contain group-hover:scale-110 transition-transform" data-alt="A curated selection of high-end skincare products in sleek, minimalist frosted glass bottles, arranged neatly on a crisp white surface. Bright, clean lighting emphasizing purity and luxury beauty." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz_tUjw-o1umb8gj35TQF-YQzqogxDBmVWKrejFWM0QYZUPabP1Ualbqbok0ecByk8tjv-85XUxZQKaHY33big_pGVzu-oKcGyMbqWeeOGj_f8Zm2GVUaNWENoSEDPja7cs57NfQLGeEY-bVZdYDiy7vonOaNgjnCQymoWpHMSjk2h29U9rIMiFa70n44YF-Kv2aOM6ynq_eXiTl7k41QrhMYvv34RHE-urnJi3YbaXOXU9BWINv0n"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface text-center">Health &amp; Beauty</span>
+</a>
+<a class="flex flex-col items-center gap-sm shrink-0 w-24 group snap-start" href="#">
+<div class="w-20 h-20 rounded-full bg-surface-container overflow-hidden shadow-[0px_4px_20px_rgba(15,23,42,0.05)] group-hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex items-center justify-center p-2">
+<img class="w-full h-full object-contain group-hover:scale-110 transition-transform" data-alt="A vibrant, fresh assortment of organic vegetables including bell peppers and leafy greens, presented on a minimalist white background. The lighting is bright and crisp, highlighting the fresh, healthy aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsnPiwmmHlwXzQBqMYkQy3wBUUhQ--gL2sdzBNv1RZNm5eIDvQQmLAGdeKYjIPA6fhNPxZtlZQEsYIhsdM06VUZDAEMISlBxrl_MBMT_WroAumnn3squLKaHx1jZ-jicid9WGmz9QYQ-bR5Qo9Hmp7T5-bsRedw4n92DjV8z2R_lw4ItPw5OnE_vim4wA4d-yXZSIBLz8njHbJroxNqC3zBO1SJMfHGESSJl4sny8X_CvzB_TRQbYB"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface text-center">Groceries</span>
+</a>
+</div>
+</section>
+<!-- Today's Deals (Bento Grid Style) -->
+<section class="space-y-md pt-lg">
+<div class="flex justify-between items-end mb-lg">
+<h2 class="text-headline-md font-headline-md text-on-surface">Today's Best Deals For You!</h2>
+<a class="text-secondary text-label-md font-label-md hover:underline flex items-center gap-1" href="#">View All <span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span></a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-lg">
+<!-- Product Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(15,23,42,0.05)] hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex flex-col group relative">
+<button class="absolute top-md right-md z-10 text-outline hover:text-error transition-colors bg-white/50 rounded-full p-1 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<div class="aspect-square bg-surface-container rounded-lg mb-sm p-4 flex items-center justify-center overflow-hidden">
+<img class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300" data-alt="A premium titanium-colored smartphone showcased against a very light grey background. The device is standing upright, slightly angled to reveal the camera module. Lighting is precise and reflective, emphasizing modern industrial design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMB7C6ERbnlAqxsqKoMiOp70l4esiTunEH7eUqnqC3-RMdXrcdLeIwNTOetsvU7bNb1Ju5HPb5Xjm4vUpmH1r3N7uYYkea872cYKYzmul7nAwOJQ9u21DUMe3V2lcxkoYT-G9nq26-Ilu2vf6q-MtOO0ZuqyYP41hZgxDNlJ8A_VUFLMPDcgdpnf7v2DmG2hzsWk4ewqOKx9zQs30hr6ItylcrzCwgXdHnMSLXFVVBbndGVljhW0BY"/>
+</div>
+<div class="flex-1 flex flex-col justify-between space-y-xs">
+<div>
+<h3 class="text-label-md font-label-md text-on-surface line-clamp-2 leading-tight">Samsung Galaxy S24 Ultra 12+GB Titanium Gray</h3>
+<div class="flex items-center gap-1 mt-1">
+<div class="flex text-amber-400 text-[14px]">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star_half">star_half</span>
+</div>
+<span class="text-label-sm text-outline-variant">(1.2k)</span>
+</div>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-headline-md font-headline-md font-bold text-primary">$ 999.99</span>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(15,23,42,0.05)] hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex flex-col group relative">
+<button class="absolute top-md right-md z-10 text-outline hover:text-error transition-colors bg-white/50 rounded-full p-1 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<div class="aspect-square bg-surface-container rounded-lg mb-sm p-4 flex items-center justify-center overflow-hidden">
+<img class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300" data-alt="A bright blue, thick cotton pullover hoodie floating against a clean white background. The fabric texture is detailed, and the lighting is soft and even, typical of high-end e-commerce apparel photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQYe9gdW2OhT3c1Zsw5S-t3Z3Ib3mNPWDBo7tWylR4Mpa9axfmfUd2-7ia9qa4KkN6n0Hr5V2nEiVVgF6zrvmItrXJjBYdqLTZhSwb8D1VzdE-lLsIDNRdeFGA4MjvXYGsIuiJrfj9wnk_-33-z4XRhkjE8b0nyE8FRXRIjn7N_TbNnoRnbxjjZl08JaqdACa08c9rmGPhZ6rZV6NdBR1FD81MMrjrFii5cCwYyKM4SzUYqz42aOwn"/>
+</div>
+<div class="flex-1 flex flex-col justify-between space-y-xs">
+<div>
+<h3 class="text-label-md font-label-md text-on-surface line-clamp-2 leading-tight">Nike Jordan Brooklyn Fleece Men's Pullover Hoodie</h3>
+<div class="flex items-center gap-1 mt-1">
+<div class="flex text-amber-400 text-[14px]">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star">star</span>
+</div>
+<span class="text-label-sm text-outline-variant">(569)</span>
+</div>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-headline-md font-headline-md font-bold text-primary">$ 45.00</span>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(15,23,42,0.05)] hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex flex-col group relative">
+<button class="absolute top-md right-md z-10 text-outline hover:text-error transition-colors bg-white/50 rounded-full p-1 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<div class="aspect-square bg-surface-container rounded-lg mb-sm p-4 flex items-center justify-center overflow-hidden">
+<img class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300" data-alt="A minimalist, soft grey bean bag chair sitting on an invisible plane against a pure white background. The texture is plush velvet. The lighting is soft studio lighting casting a subtle, elegant drop shadow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyENPSfaoyJmhciyeQti2FoQBxE9_q3fBtkMwGA2aIaCAjC3bclU8PgIrpGM3HqYBSKTN71FYtNc7Q9pB8cFOi2GQvYKNkCEjVBeiuogh_6iD1xIeP6c7XFUvULd1nMF-i7Zl-SXWq5psf7P2IanuSdqiay_KobRmAHFkB0BDhKcMtTqvmNEzGYlpFR6_0eJ0i_Ds8FmJ1dmZzugU0fnVgeX6Hrtwsva80QnZhDy4O677QAD6OfEzY"/>
+</div>
+<div class="flex-1 flex flex-col justify-between space-y-xs">
+<div>
+<h3 class="text-label-md font-label-md text-on-surface line-clamp-2 leading-tight">Beanless Bag Inflatable Lounge Chair Grey</h3>
+<div class="flex items-center gap-1 mt-1">
+<div class="flex text-amber-400 text-[14px]">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star">star</span>
+<span class="material-symbols-outlined" data-icon="star">star</span>
+</div>
+<span class="text-label-sm text-outline-variant">(100)</span>
+</div>
+</div>
+<div class="flex items-end justify-start gap-2 mt-2">
+<span class="text-headline-md font-headline-md font-bold text-primary">$ 32.00</span>
+<span class="text-label-sm font-label-sm text-outline line-through mb-1">$ 48.00</span>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-[0px_4px_20px_rgba(15,23,42,0.05)] hover:shadow-[0px_10px_30px_rgba(15,23,42,0.08)] transition-all flex flex-col group relative">
+<button class="absolute top-md right-md z-10 text-outline hover:text-error transition-colors bg-white/50 rounded-full p-1 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="favorite">favorite</span>
+</button>
+<div class="absolute top-md left-md z-10">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-1 rounded-full font-bold uppercase tracking-wider">New</span>
+</div>
+<div class="aspect-square bg-surface-container rounded-lg mb-sm p-4 flex items-center justify-center overflow-hidden">
+<img class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300" data-alt="A pair of elegant diamond stud earrings resting in a small, open red velvet jewelry box. The background is a clean, bright white. Macro photography, high key lighting, emphasizing the sparkle of the diamonds." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZfFmrCz50bxmaDP8awFSe9fiPtOu3spOJrcIbLOK6sKvVRwZxVCMUNl5O1FrxgWP-RLf00-8qoyYwlIZgzC6ent5LyPCig_oFMTPVWec15vOcJqzbShcsO3prqwket7ILhZq58b1wH9fkFcT8Ei3lNAwNbz-0Aw-YBjfIwBNl2iCLjWAVlbs5EPmTmGRemQsYn193DA55unpJtXeENau6RCoEbOTGgy_Kog8FJle0I71c8Kcahr27"/>
+</div>
+<div class="flex-1 flex flex-col justify-between space-y-xs">
+<div>
+<h3 class="text-label-md font-label-md text-on-surface line-clamp-2 leading-tight">Diamond Stud Earrings in 14K White Gold</h3>
+<div class="flex items-center gap-1 mt-1">
+<div class="flex text-amber-400 text-[14px]">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill">star</span>
+<span class="material-symbols-outlined" data-icon="star_half">star_half</span>
+</div>
+<span class="text-label-sm text-outline-variant">(1.1k)</span>
+</div>
+</div>
+<div class="flex items-end justify-between mt-2">
+<span class="text-headline-md font-headline-md font-bold text-primary">$ 299.00</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="full-width py-12 bg-primary-container dark:bg-tertiary-container flat no shadows mt-xl">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="space-y-sm col-span-1 md:col-span-1">
+<div class="text-headline-md font-headline-md text-on-primary-fixed mb-4">Lumen</div>
+<p class="text-body-sm font-body-sm text-on-primary-container opacity-80">Illuminate your lifestyle with our curated collection of premium goods.</p>
+</div>
+<div class="space-y-sm">
+<h4 class="text-label-md font-label-md text-on-primary-container font-bold mb-4">Company</h4>
+<div class="flex flex-col gap-2">
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">About Us</a>
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">Careers</a>
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">Press</a>
+</div>
+</div>
+<div class="space-y-sm">
+<h4 class="text-label-md font-label-md text-on-primary-container font-bold mb-4">Support</h4>
+<div class="flex flex-col gap-2">
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">Returns Policy</a>
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">Shipping Info</a>
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">Contact Support</a>
+</div>
+</div>
+<div class="space-y-sm">
+<h4 class="text-label-md font-label-md text-on-primary-container font-bold mb-4">Legal</h4>
+<div class="flex flex-col gap-2">
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">Privacy Policy</a>
+<a class="text-body-sm font-body-sm text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mt-12 pt-8 border-t border-on-primary-container/20 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-body-sm font-body-sm text-on-primary-container opacity-80">© 2024 Lumen Tech. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="text-on-primary-container opacity-80 hover:opacity-100 hover:text-secondary-fixed-dim transition-opacity" href="#"><span class="material-symbols-outlined" data-icon="public">public</span></a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="docked full-width bottom-0 z-50 md:hidden border-t border-outline-variant dark:border-none shadow-lg fixed left-0 w-full flex justify-around items-center h-16 bg-surface dark:bg-inverse-surface pb-safe">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-bold active:bg-surface-container dark:active:bg-tertiary-container scale-110 duration-150 ease-in-out p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="home" data-weight="fill">home</span>
+<span class="text-[10px] font-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant active:bg-surface-container dark:active:bg-tertiary-container scale-110 duration-150 ease-in-out p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="text-[10px] font-label-sm mt-1">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant active:bg-surface-container dark:active:bg-tertiary-container scale-110 duration-150 ease-in-out p-2 rounded-xl relative" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span class="absolute top-1 right-2 bg-secondary text-on-secondary text-[8px] w-3 h-3 rounded-full flex items-center justify-center font-bold">2</span>
+<span class="text-[10px] font-label-sm mt-1">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant active:bg-surface-container dark:active:bg-tertiary-container scale-110 duration-150 ease-in-out p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-label-sm mt-1">Profile</span>
+</a>
+</nav>
+</body></html>
