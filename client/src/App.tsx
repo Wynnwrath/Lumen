@@ -1,0 +1,73 @@
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { PublicLayout } from "./components/layout/PublicLayout";
+import { AdminLayout } from "./components/layout/AdminLayout";
+
+// Public Pages
+import { HomePage } from "./pages/HomePage";
+import { ProductsPage } from "./pages/ProductsPage";
+import { ProductDetailPage } from "./pages/ProductDetailPage";
+import { CartPage } from "./pages/CartPage";
+import { CheckoutPage } from "./pages/CheckoutPage";
+import { LoginPage } from "./pages/LoginPage";
+
+// Admin Pages
+import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
+import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
+import { AdminProductsPage } from "./pages/admin/AdminProductsPage";
+import { AdminCategoriesPage } from "./pages/admin/AdminCategoriesPage";
+import { AdminOrdersPage } from "./pages/admin/AdminOrdersPage";
+import { AdminCustomersPage } from "./pages/admin/AdminCustomersPage";
+
+import { useAuthStore } from "./stores/auth.store";
+import { ScrollToTop } from "./components/common/ScrollToTop";
+
+// Protected Admin Route Component
+const ProtectedAdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuthStore();
+  if (!user || user.role !== "admin") {
+    return <Navigate to="/admin/login" replace />;
+  }
+  return <>{children}</>;
+};
+
+export const App: React.FC = () => {
+  return (
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Standalone Login Pages */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+
+        {/* Customer Storefront Routes */}
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="product/:id" element={<ProductDetailPage />} />
+          <Route path="cart" element={<CartPage />} />
+          <Route path="checkout" element={<CheckoutPage />} />
+        </Route>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout />
+            </ProtectedAdminRoute>
+          }
+        >
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="customers" element={<AdminCustomersPage />} />
+        </Route>
+
+        {/* Catch-all redirect to Home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
+  );
+};
+
+export default App;
