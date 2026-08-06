@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { dataService } from "../services/dataService";
+import { getProducts } from "../api/products";
 import { useCartStore } from "../stores/cart.store";
 import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
-import { ProductCard } from "../components/common/ProductCard";
+import { ProductCard, trackSpotlight } from "../components/common/ProductCard";
 import { useToast } from "../components/common/ToastProvider";
 
 const HERO_SLIDES = [
@@ -111,7 +111,13 @@ export const HomePage = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
-  const allProducts = dataService.getProducts();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getProducts({ limit: 100 })
+      .then((res) => setAllProducts(res.products))
+      .catch(() => setAllProducts([]));
+  }, []);
 
   // Auto-play interval: 3 seconds per slide, sliding left with ease-in-out
   useEffect(() => {
@@ -153,7 +159,7 @@ export const HomePage = () => {
 
   const handleQuickBuyHero = (e: React.MouseEvent, productId: string) => {
     e.preventDefault();
-    const prod = dataService.getProductById(productId) || allProducts[0];
+    const prod = allProducts.find((p) => p._id === productId) || allProducts[0];
     if (prod) {
       addItem(prod, 1);
       showToast(`Added "${prod.name}" to cart!`, "success");
@@ -194,6 +200,7 @@ export const HomePage = () => {
           {HERO_SLIDES.map((slide) => (
             <div
               key={slide.id}
+              onMouseMove={trackSpotlight}
               className="w-full shrink-0 relative min-h-[220px] sm:min-h-[460px] flex items-center pl-12 pr-10 sm:px-16 py-5 sm:py-14 aurora-bg spotlight-card"
             >
               {/* Slide Background Image & Gradient Overlay */}

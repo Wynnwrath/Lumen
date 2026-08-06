@@ -24,6 +24,7 @@ import {
   Diamond,
   Envelope,
   Equalizer,
+  FacebookLogo,
   Fire,
   FlowerLotus,
   FunnelSimple,
@@ -34,6 +35,7 @@ import {
   House,
   IdentificationBadge,
   Info,
+  InstagramLogo,
   List,
   ListBullets,
   LockKey,
@@ -77,6 +79,8 @@ import {
   WarningCircle,
   Watch,
   X,
+  XLogo,
+  YoutubeLogo,
 } from "@phosphor-icons/react";
 
 const ICON_MAP: Record<string, PhosphorIcon> = {
@@ -115,6 +119,7 @@ const ICON_MAP: Record<string, PhosphorIcon> = {
   event: CalendarBlank,
   expand_less: CaretUp,
   expand_more: CaretDown,
+  facebook: FacebookLogo,
   favorite: Heart,
   filter_alt: SlidersHorizontal,
   filter_list: FunnelSimple,
@@ -123,6 +128,7 @@ const ICON_MAP: Record<string, PhosphorIcon> = {
   headphones: Headphones,
   home: House,
   info: Info,
+  instagram: InstagramLogo,
   inventory: Package,
   inventory_2: Stack,
   light_mode: Sun,
@@ -162,6 +168,8 @@ const ICON_MAP: Record<string, PhosphorIcon> = {
   view_list: ListBullets,
   warning: Warning,
   watch: Watch,
+  x_twitter: XLogo,
+  youtube: YoutubeLogo,
   zoom_in: MagnifyingGlassPlus,
 };
 

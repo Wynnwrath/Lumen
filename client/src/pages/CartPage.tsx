@@ -1,38 +1,18 @@
-import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/common/Icon";
 import { Button } from "../components/common/Button";
 import { QuantityStepper } from "../components/common/QuantityStepper";
 import { EmptyState } from "../components/common/EmptyState";
-import { checkCoupon, calculateOrderTotals } from "../services/pricing";
+import { calculateOrderTotals } from "../services/pricing";
 
 export const CartPage = () => {
   const { items, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
   const navigate = useNavigate();
 
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedDiscountRate, setAppliedDiscountRate] = useState(0);
-  const [couponError, setCouponError] = useState<string | null>(null);
-  const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
-
   const itemCount = getItemCount();
-  const totals = calculateOrderTotals(items, appliedDiscountRate);
-  const { subtotal, discountAmount, shippingFee, estimatedTax, grandTotal } = totals;
-
-  const handleApplyCoupon = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setCouponError(null);
-    setCouponSuccess(null);
-
-    const result = await checkCoupon(couponCode, subtotal);
-    if (result) {
-      setAppliedDiscountRate(result.rate);
-      setCouponSuccess(result.label);
-    } else {
-      setCouponError("Invalid promo code. Try 'LUMEN10' or 'PRO20'");
-    }
-  };
+  const totals = calculateOrderTotals(items, 0);
+  const { subtotal, shippingFee, estimatedTax, grandTotal } = totals;
 
   if (items.length === 0) {
     return (
@@ -140,41 +120,12 @@ export const CartPage = () => {
               Order Summary
             </h2>
 
-            {/* Promo Code Form */}
-            <form onSubmit={handleApplyCoupon} className="space-y-2">
-              <label className="text-xs font-bold text-on-surface">Have a Promo Code?</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="e.g. LUMEN10"
-                  className="w-full bg-surface dark:bg-slate-800 border border-outline-variant/40 rounded-xl px-3 py-2 text-xs uppercase font-mono outline-none focus:border-secondary"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-xs font-bold shrink-0 hover:opacity-90 transition"
-                >
-                  Apply
-                </button>
-              </div>
-              {couponError && <p className="text-[11px] font-semibold text-red-500">{couponError}</p>}
-              {couponSuccess && <p className="text-[11px] font-semibold text-emerald-500">{couponSuccess}</p>}
-            </form>
-
             {/* Summary Lines */}
-            <div className="space-y-2 text-xs border-t border-outline-variant/20 pt-3">
+            <div className="space-y-2 text-xs pt-1">
               <div className="flex justify-between font-semibold text-outline">
                 <span>Items Subtotal ({itemCount})</span>
                 <span className="text-on-surface font-bold">${subtotal.toFixed(2)}</span>
               </div>
-
-              {appliedDiscountRate > 0 && (
-                <div className="flex justify-between font-bold text-emerald-600 dark:text-emerald-400">
-                  <span>Discount ({Math.round(appliedDiscountRate * 100)}%)</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
-                </div>
-              )}
 
               <div className="flex justify-between font-semibold text-outline">
                 <span>Shipping Fee</span>

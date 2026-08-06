@@ -17,6 +17,11 @@ export const productController = {
     res.json({ success: true, data: toApi(product) });
   }),
 
+  getAllForAdmin: asyncHandler(async (_req, res: Response) => {
+    const result = await productService.findAllForAdmin();
+    res.json({ success: true, data: toApi(result) });
+  }),
+
   create: asyncHandler(async (req: RequestWithUser, res: Response) => {
     const product = await productService.create(req.body);
     res.status(201).json({ success: true, data: toApi(product) });

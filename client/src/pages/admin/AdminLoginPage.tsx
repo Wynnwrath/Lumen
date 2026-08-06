@@ -209,11 +209,10 @@ export const AdminLoginPage = () => {
               {/* Alert Box Container */}
               {alert && (
                 <div
-                  className={`mb-6 p-4 rounded-xl border text-xs font-semibold flex items-center justify-between gap-3 ${
-                    alert.type === "success"
+                  className={`mb-6 p-4 rounded-xl border text-xs font-semibold flex items-center justify-between gap-3 ${alert.type === "success"
                       ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
                       : "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     <Icon name={alert.type === "success" ? "check_circle" : "error"} className="text-lg" />

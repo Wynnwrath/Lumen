@@ -9,7 +9,7 @@ export async function seedDefaultUsers(): Promise<void> {
         name: "Alex Morgan",
         email: "alex.morgan@lumen.com",
         password: await hashPassword("password123"),
-        phone: "+1 (555) 234-5678",
+        phone: "+63 917 555 2345",
         role: "customer",
       },
     });

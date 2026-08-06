@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { AuthUser, AuthResult } from "../types";
 import api from "../api/client";
+import { useCartStore } from "./cart.store";
 
 interface AuthState {
   user: AuthUser | null;
@@ -34,7 +35,10 @@ export const useAuthStore = create<AuthState>()(
         const { user, token } = res.data.data;
         set({ user, token, isAuthenticated: true });
       },
-      logout: () => set({ user: null, token: null, isAuthenticated: false }),
+      logout: () => {
+        useCartStore.getState().clearCart();
+        set({ user: null, token: null, isAuthenticated: false });
+      },
     }),
     { name: "lumen-auth" }
   )

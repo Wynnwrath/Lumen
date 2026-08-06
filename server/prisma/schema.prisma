@@ -3,12 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider  = "mysql"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // Prisma forbids field names starting with "_", so the API-facing primary key
-// is named `id` in the client while the MySQL column is mapped to `_id`.
+// is named `id` in the client while the PostgreSQL column is mapped to `_id`.
 // A `toApi` serializer re-exposes it as `_id` in JSON responses.
 
 model User {
@@ -52,9 +53,9 @@ model Product {
   reviewsCount Int      @default(0)
   arrival      Boolean  @default(false)
   isSale       Boolean  @default(false)
-  images       Json     @default("[]")
+  images       Json     @default(dbgenerated("'[]'::jsonb"))
   description  String   @db.Text
-  specs        Json     @default("{}")
+  specs        Json     @default(dbgenerated("'{}'::jsonb"))
   orderItems   OrderItem[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

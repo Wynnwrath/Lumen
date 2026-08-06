@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Icon } from "../../components/common/Icon";
-import { dataService } from "../../services/dataService";
 import type { CustomerData } from "../../types";
 import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
+import { useCustomers } from "../../hooks/useCustomers";
 
 export const AdminCustomersPage = () => {
-  const [customers] = useState<CustomerData[]>(dataService.getCustomers());
+  const { customers } = useCustomers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerData | null>(null);
 

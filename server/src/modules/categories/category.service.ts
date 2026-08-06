@@ -12,7 +12,7 @@ export const categoryService = {
   },
 
   async create(input: CreateCategoryInput) {
-    return prisma.category.create({ data: input });
+    return prisma.category.create({ data: { ...input, description: input.description ?? "" } });
   },
 
   async update(slug: string, input: Partial<CreateCategoryInput>) {

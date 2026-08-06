@@ -26,6 +26,11 @@ export async function getProducts(params?: Record<string, string | number | bool
   return res.data.data;
 }
 
+export async function getAdminProducts() {
+  const res = await api.get<{ success: true; data: ProductsResponse }>("/products/manage");
+  return res.data.data;
+}
+
 export async function getProduct(id: string) {
   const res = await api.get<{ success: true; data: Product }>(`/products/${id}`);
   return res.data.data;

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { dataService } from "../services/dataService";
+import { getProducts } from "../api/products";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import type { Product } from "../types";
@@ -12,7 +12,7 @@ import { useToast } from "../components/common/ToastProvider";
 export const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addItem } = useCartStore();
-  const { ids: wishlistIds } = useWishlistStore();
+  const { ids: wishlistIds, prune } = useWishlistStore();
   const { showToast } = useToast();
 
   const urlCategory = searchParams.get("category") || "all";
@@ -32,7 +32,21 @@ export const ProductsPage = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
-  const products = dataService.getProducts();
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getProducts({ limit: 100 })
+      .then((res) => setProducts(res.products))
+      .catch(() => setProducts([]));
+  }, []);
+
+  // Prune stale wishlist ids that no longer match any product in the catalog
+  useEffect(() => {
+    if (products.length > 0 && wishlistIds.length > 0) {
+      const validIds = products.map((p) => p._id);
+      prune(validIds);
+    }
+  }, [products, wishlistIds, prune]);
 
   // Sync state if URL changes
   useEffect(() => {
@@ -464,16 +478,33 @@ export const ProductsPage = () => {
 
           {/* Product Cards Container (2-Column Mobile Grid) */}
           {filteredProducts.length === 0 ? (
-            <EmptyState
-              icon="search_off"
-              title="No products found"
-              subtitle="Try adjusting your price range, availability toggles, or category filters."
-              action={
-                <button onClick={handleResetFilters} className="px-4 py-2 rounded-xl bg-secondary text-white text-xs font-bold shadow-xs hover:bg-secondary-container transition">
-                  Reset Filters
-                </button>
-              }
-            />
+            onlyWishlist ? (
+              <EmptyState
+                icon="favorite"
+                title="No saved items"
+                subtitle="You haven't saved any products yet. Browse the catalog and tap the heart icon to save items here."
+                action={
+                  <Link
+                    to="/products"
+                    onClick={handleResetFilters}
+                    className="px-4 py-2 rounded-xl bg-secondary text-white text-xs font-bold shadow-xs hover:bg-secondary-container transition"
+                  >
+                    Browse Catalog
+                  </Link>
+                }
+              />
+            ) : (
+              <EmptyState
+                icon="search_off"
+                title="No products found"
+                subtitle="Try adjusting your price range, availability toggles, or category filters."
+                action={
+                  <button onClick={handleResetFilters} className="px-4 py-2 rounded-xl bg-secondary text-white text-xs font-bold shadow-xs hover:bg-secondary-container transition">
+                    Reset Filters
+                  </button>
+                }
+              />
+            )
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
               {filteredProducts.map((product) => (

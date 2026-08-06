@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { dataService } from "../../services/dataService";
+import { updateOrderStatus } from "../../api/orders";
 import type { Order } from "../../types";
 import { getStatusColorClass } from "../../components/common/StatusBadge";
 import { Button } from "../../components/common/Button";
@@ -14,11 +14,15 @@ export const AdminOrdersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const handleUpdateStatus = (id: string, newStatus: string) => {
-    dataService.updateOrderStatus(id, newStatus);
-    refreshOrders();
-    if (selectedOrder && (selectedOrder._id === id || selectedOrder.orderNumber === id)) {
-      setSelectedOrder({ ...selectedOrder, status: newStatus as any });
+  const handleUpdateStatus = async (orderNumber: string, newStatus: string) => {
+    try {
+      await updateOrderStatus(orderNumber, newStatus);
+      await refreshOrders();
+      if (selectedOrder && selectedOrder.orderNumber === orderNumber) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus as any });
+      }
+    } catch (error) {
+      console.error("Failed to update order status", error);
     }
   };
 
@@ -70,14 +74,14 @@ export const AdminOrdersPage = () => {
         <span>
           <span className="font-extrabold text-slate-900 dark:text-white">{orders.length}</span> orders
         </span>
-        <span className="text-slate-300 dark:text-slate-600">Ã¢â‚¬Â¢</span>
+        <span className="text-slate-300 dark:text-slate-600">•</span>
         <span>
           <span className="font-extrabold text-slate-900 dark:text-white font-mono">
             ${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>{" "}
           revenue
         </span>
-        <span className="text-slate-300 dark:text-slate-600">Ã¢â‚¬Â¢</span>
+        <span className="text-slate-300 dark:text-slate-600">•</span>
         <span>
           <span className="font-extrabold text-slate-900 dark:text-white">{pendingOrdersCount}</span> pending
         </span>
@@ -101,7 +105,10 @@ export const AdminOrdersPage = () => {
                       #{ord.orderNumber}
                     </span>
                     <p className="text-[10px] text-slate-500 font-medium">
-                      {ord.items.length} items Ã¢â‚¬Â¢ {ord.paymentMethod}
+                      {ord.items.length} items • {ord.paymentMethod}
+                    </p>
+                    <p className="text-[10px] text-slate-500 font-medium">
+                      {new Date(ord.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </p>
                   </div>
                   <span className="font-mono font-extrabold text-base text-blue-600 dark:text-blue-400">
@@ -117,7 +124,7 @@ export const AdminOrdersPage = () => {
 
                   <select
                     value={ord.status}
-                    onChange={(e) => handleUpdateStatus(ord._id, e.target.value)}
+                    onChange={(e) => handleUpdateStatus(ord.orderNumber, e.target.value)}
                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                   >
                     <option value="Pending">Pending</option>
@@ -150,6 +157,7 @@ export const AdminOrdersPage = () => {
                 <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <th className="p-4">Order #</th>
                   <th className="p-4">Customer</th>
+                  <th className="p-4">Order Date</th>
                   <th className="p-4">Items Count</th>
                   <th className="p-4">Payment</th>
                   <th className="p-4">Total Amount</th>
@@ -167,6 +175,9 @@ export const AdminOrdersPage = () => {
                         <p className="text-[11px] text-slate-500">{ord.customer.email}</p>
                       </div>
                     </td>
+                    <td className="p-4 font-medium text-slate-600 dark:text-slate-400">
+                      {new Date(ord.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </td>
                     <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
                       {ord.items.length} items
                     </td>
@@ -177,7 +188,7 @@ export const AdminOrdersPage = () => {
                     <td className="p-4">
                       <select
                         value={ord.status}
-                        onChange={(e) => handleUpdateStatus(ord._id, e.target.value)}
+                        onChange={(e) => handleUpdateStatus(ord.orderNumber, e.target.value)}
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                       >
                         <option value="Pending">Pending</option>
@@ -226,6 +237,15 @@ export const AdminOrdersPage = () => {
               <p><strong className="text-slate-500">Customer:</strong> {selectedOrder.customer.name} ({selectedOrder.customer.email})</p>
               <p><strong className="text-slate-500">Shipping Address:</strong> {selectedOrder.address}</p>
               <p><strong className="text-slate-500">Payment:</strong> {selectedOrder.paymentMethod}</p>
+              <p>
+                <strong className="text-slate-500">Status:</strong>{" "}
+                <span className={`px-2 py-0.5 rounded-full font-bold ${getStatusColorClass(selectedOrder.status)}`}>
+                  {selectedOrder.status}
+                </span>
+              </p>
+              {selectedOrder.couponUsed && (
+                <p><strong className="text-slate-500">Coupon:</strong> {selectedOrder.couponUsed}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -238,6 +258,35 @@ export const AdminOrdersPage = () => {
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div className="space-y-1.5 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/60">
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span>Subtotal</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">${selectedOrder.subtotal.toFixed(2)}</span>
+              </div>
+              {selectedOrder.discount > 0 && (
+                <div className="flex justify-between text-emerald-600">
+                  <span>Coupon Discount</span>
+                  <span className="font-mono font-semibold">-${selectedOrder.discount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span>Shipping</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                  {selectedOrder.shipping === 0 ? "FREE" : `$${selectedOrder.shipping.toFixed(2)}`}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                <span>Tax</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">${selectedOrder.tax.toFixed(2)}</span>
+              </div>
+              {selectedOrder.orderNotes && (
+                <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <p className="text-slate-500 font-semibold mb-0.5">Order Notes</p>
+                  <p className="text-slate-700 dark:text-slate-300">{selectedOrder.orderNotes}</p>
+                </div>
+              )}
             </div>
           </>
         )}

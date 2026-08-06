@@ -11,6 +11,7 @@ import { productController } from "./product.controller.js";
 const router = Router();
 
 router.get("/", validate(productQuerySchema, "query"), productController.getAll);
+router.get("/manage", protect, authorize("admin"), productController.getAllForAdmin);
 router.get("/:id", productController.getById);
 router.post("/", protect, authorize("admin"), validate(createProductSchema), productController.create);
 router.patch("/:id", protect, authorize("admin"), validate(updateProductSchema), productController.update);

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
 import { useAuthStore } from "../stores/auth.store";
-import { dataService } from "../services/dataService";
+import { createOrder } from "../api/orders";
 import type { Order } from "../types";
 import { Icon } from "../components/common/Icon";
 import { QuantityStepper } from "../components/common/QuantityStepper";
@@ -12,39 +12,23 @@ import { checkCoupon, calculateOrderTotals } from "../services/pricing";
 
 export const CheckoutPage = () => {
   const { items, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { showToast } = useToast();
-
-  // Urgency Timer State (Starting at 39:43 = 2383 seconds)
-  const [secondsLeft, setSecondsLeft] = useState(2383);
-  const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTimer = (totalSeconds: number) => {
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  };
+  const navigate = useNavigate();
 
   // Form States
-  const [email, setEmail] = useState(user ? user.email : "Dezzlab.agency@gmail.com");
+  const [email, setEmail] = useState(user ? user.email : "");
   const [emailOffers, setEmailOffers] = useState(true);
   const [deliveryType, setDeliveryType] = useState<"home" | "pickup">("home");
-  const [country, setCountry] = useState("US");
-  const [firstName, setFirstName] = useState(user ? user.name.split(" ")[0] || "Sean" : "Sean");
-  const [lastName, setLastName] = useState(user ? user.name.split(" ").slice(1).join(" ") || "Sultan" : "Sultan");
-  const [address, setAddress] = useState("123 Main Street");
+  const [country, setCountry] = useState("PH");
+  const [firstName, setFirstName] = useState(user ? user.name.split(" ")[0] || "Juan" : "Juan");
+  const [lastName, setLastName] = useState(user ? user.name.split(" ").slice(1).join(" ") || "Dela Cruz" : "Dela Cruz");
+  const [address, setAddress] = useState("123 Mabini St.");
   const [showAptField, setShowAptField] = useState(false);
   const [apt, setApt] = useState("");
-  const [city, setCity] = useState("New York");
-  const [stateZip, setStateZip] = useState("NY 10001");
-  const [phone, setPhone] = useState("+1 (555) 019-2834");
+  const [city, setCity] = useState("Manila");
+  const [stateZip, setStateZip] = useState("1000");
+  const [phone, setPhone] = useState("+63 917 555 0123");
   const [paymentMethod, setPaymentMethod] = useState<"Cash on Delivery" | "E-Wallet" | "Bank Transfer">("Cash on Delivery");
   const [orderNotes, setOrderNotes] = useState("");
 
@@ -73,41 +57,44 @@ export const CheckoutPage = () => {
     }
   };
 
-  const handleSubmitOrder = (e: React.FormEvent) => {
+  const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
 
+    if (!isAuthenticated) {
+      showToast("Please sign in to place an order", "info");
+      navigate("/login");
+      return;
+    }
+
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      const newOrder = dataService.addOrder({
-        customer: {
-          _id: user ? (user._id || user.id || "cust_guest") : "cust_guest",
-          name: `${firstName} ${lastName}`.trim() || "Guest Customer",
-          email: email || "guest@lumen.com",
-        },
-        items: items.map((i) => ({
-          product: i.product._id,
-          name: i.product.name,
-          price: i.product.price,
-          quantity: i.quantity,
-          image: i.product.images[0],
-        })),
-        subtotal: rawSubtotal,
-        tax: estimatedTax,
-        shipping: shippingFee,
-        total: grandTotal,
-        discount: discountAmount,
-        couponUsed: appliedDiscountRate > 0 ? couponCode.trim().toUpperCase() : undefined,
-        paymentMethod: paymentMethod,
+    try {
+      const newOrder = await createOrder({
+        items: items.map((i) => ({ product: i.product._id, quantity: i.quantity })),
         address: `${address}${apt ? `, ${apt}` : ""}, ${city}, ${stateZip} (${country})`,
-        orderNotes: orderNotes || "Standard delivery instructions",
+        paymentMethod,
+        couponCode: appliedDiscountRate > 0 ? couponCode.trim().toUpperCase() : undefined,
+        orderNotes: orderNotes || undefined,
       });
+
+      const placed: Order = {
+        ...newOrder,
+        customer: {
+          _id: user?._id || user?.id || "",
+          name: `${firstName} ${lastName}`.trim() || "Customer",
+          email: email || "customer@lumen.com",
+        },
+      };
 
       clearCart();
       setIsSubmitting(false);
-      setPlacedOrder(newOrder);
-    }, 1200);
+      setPlacedOrder(placed);
+    } catch (error: any) {
+      setIsSubmitting(false);
+      const msg = error?.response?.data?.error?.message || "Failed to place your order. Please try again.";
+      showToast(msg, "error");
+    }
   };
 
   // If Order Placed: Render Confirmation Receipt
@@ -186,7 +173,7 @@ export const CheckoutPage = () => {
   }
 
   return (
-    <main className="flex-grow max-w-container-max w-full mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-20 md:pb-8">
+    <main className="flex-grow max-w-container-max w-full mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-20 lg:pb-8">
       {/* Toast Notification Container */}
 
       {/* Breadcrumb Navigation */}
@@ -236,18 +223,6 @@ export const CheckoutPage = () => {
         </div>
       </div>
 
-      {/* Urgency Countdown Banner */}
-      <div className="max-w-container-max mx-auto bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 text-amber-900 dark:text-amber-200 p-2.5 sm:p-3.5 rounded-xl mb-6 text-center text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs">
-        <Icon name="error" className="text-base sm:text-lg text-amber-600 dark:text-amber-400" />
-        <span>
-          Cart items reserved for{" "}
-          <span className="font-extrabold text-slate-900 dark:text-white underline font-mono">
-            {formatTimer(secondsLeft)}
-          </span>{" "}
-          mins.
-        </span>
-      </div>
-
       {/* MAIN CHECKOUT FLOW VIEW */}
       {items.length === 0 ? (
           <EmptyState
@@ -264,38 +239,7 @@ export const CheckoutPage = () => {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-          {/* MOBILE EXPANDABLE ORDER SUMMARY BAR */}
-          <div className="lg:hidden w-full bg-surface-container-lowest dark:bg-slate-800 rounded-xl border border-outline-variant/30 p-3 shadow-xs">
-            <button
-              onClick={() => setIsSummaryExpanded(!isSummaryExpanded)}
-              className="w-full flex items-center justify-between text-xs font-bold text-on-surface"
-            >
-              <span className="flex items-center gap-1.5 text-secondary">
-                <Icon name="shopping_bag" className="text-base" />
-                <span>{isSummaryExpanded ? "Hide Order Summary" : "Show Order Summary"} ({getItemCount()})</span>
-                <Icon name={isSummaryExpanded ? "expand_less" : "expand_more"} className="text-sm" />
-              </span>
-              <span className="text-sm font-black text-primary dark:text-white">${grandTotal.toFixed(2)}</span>
-            </button>
 
-            {isSummaryExpanded && (
-              <div className="mt-3 pt-3 border-t border-outline-variant/20 space-y-2.5 animate-fade-up">
-                {items.map(({ product, quantity }) => (
-                  <div key={product._id} className="flex items-center justify-between text-xs gap-2.5 bg-surface/50 dark:bg-slate-700/40 p-2 rounded-xl border border-outline-variant/20">
-                    <img src={product.images[0]} alt={product.name} className="w-12 h-12 aspect-square object-cover rounded-lg bg-surface shrink-0 border border-outline-variant/30" />
-                    <div className="flex-1 min-w-0">
-                      <span className="font-bold text-on-surface truncate block">{product.name}</span>
-                      <span className="text-[10px] text-outline font-semibold uppercase">{product.category}</span>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="font-extrabold text-on-surface block text-xs">{quantity} &times; ${product.price.toFixed(2)}</span>
-                      <span className="text-[11px] text-secondary font-black">${(product.price * quantity).toFixed(2)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* LEFT COLUMN: CART ITEM CARDS LIST & PRICE BREAKDOWN (7 cols on desktop) */}
           <div className="lg:col-span-7 space-y-5">
@@ -428,18 +372,23 @@ export const CheckoutPage = () => {
                   </div>
                 </div>
 
-                {/* Express Buttons: Western Union, PayPal, GPay */}
-                <div className="grid grid-cols-3 gap-2">
+                {/* Express Buttons: GCash, Maya, PayPal, ShopeePay */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   <button
                     type="button"
-                    onClick={() => showToast("Selected Western Union Express Checkout", "info")}
-                    className="bg-[#ffdd00] hover:brightness-95 text-black h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center px-1 transition shadow-xs"
+                    onClick={() => showToast("Selected GCash Express Checkout", "info")}
+                    className="bg-[#007dfe] hover:brightness-110 text-white h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition shadow-xs"
                   >
-                    <span className="tracking-tighter italic font-serif leading-tight text-center">
-                      WESTERN
-                      <br />
-                      UNION
-                    </span>
+                    <span className="tracking-tight font-extrabold">G</span>
+                    <span className="font-extrabold">Cash</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => showToast("Selected Maya Express Checkout", "info")}
+                    className="bg-[#008ecc] hover:brightness-110 text-white h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition shadow-xs"
+                  >
+                    <span className="font-extrabold">Maya</span>
                   </button>
 
                   <button
@@ -453,11 +402,11 @@ export const CheckoutPage = () => {
 
                   <button
                     type="button"
-                    onClick={() => showToast("Selected Google Pay Express Checkout", "info")}
-                    className="bg-black hover:bg-slate-900 text-white h-10 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1 transition shadow-xs"
+                    onClick={() => showToast("Selected ShopeePay Express Checkout", "info")}
+                    className="bg-[#ee4d2d] hover:brightness-110 text-white h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition shadow-xs"
                   >
-                    <span className="font-bold text-white text-sm">G</span>
-                    <span className="text-xs font-semibold text-slate-300">Pay</span>
+                    <span className="font-extrabold">Shopee</span>
+                    <span className="font-bold">Pay</span>
                   </button>
                 </div>
 
@@ -539,10 +488,9 @@ export const CheckoutPage = () => {
                           : "text-outline hover:text-on-surface"
                       }`}
                     >
-                      DEZZ Pickup
+                      STORE PICKUP
                     </button>
-                  </div>
-                </div>
+                  </div>                </div>
 
                 {/* CUSTOMER INFORMATION SECTION */}
                 <div className="mt-4 pt-3 border-t border-outline-variant/20 space-y-2.5">
@@ -557,10 +505,10 @@ export const CheckoutPage = () => {
                       onChange={(e) => setCountry(e.target.value)}
                       className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-semibold cursor-pointer"
                     >
+                      <option value="PH">Manila (Philippines)</option>
                       <option value="US">New York (United States)</option>
-                      <option value="PH">Philippines</option>
-                      <option value="CA">Canada</option>
-                      <option value="UK">United Kingdom</option>
+                      <option value="CA">Toronto (Canada)</option>
+                      <option value="UK">London (United Kingdom)</option>
                     </select>
                   </div>
 
@@ -751,7 +699,7 @@ export const CheckoutPage = () => {
 
       {/* PERSISTENT STICKY BOTTOM SUBMIT BAR FOR MOBILE */}
       {items.length > 0 && !placedOrder && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-3 flex items-center justify-between lg:hidden shadow-2xl">
+        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-3 flex items-center justify-between lg:hidden shadow-2xl">
           <div>
             <span className="text-[10px] text-outline block leading-none">Total Payable</span>
             <span className="text-base font-black text-primary dark:text-white">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "../../components/common/Icon";
-import { dataService } from "../../services/dataService";
+import { updateOrderStatus } from "../../api/orders";
+import { updateProduct } from "../../api/products";
 import type { Order, Product } from "../../types";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
@@ -9,10 +10,12 @@ import { EmptyState } from "../../components/common/EmptyState";
 import { useToast } from "../../components/common/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { useProducts } from "../../hooks/useProducts";
+import { useCustomers } from "../../hooks/useCustomers";
 
 export const AdminDashboardPage = () => {
   const { orders, refresh: refreshOrders } = useOrders();
   const { products, refresh: refreshProducts } = useProducts();
+  const { customers } = useCustomers();
   const [orderFilter, setOrderFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { showToast } = useToast();
@@ -33,7 +36,6 @@ export const AdminDashboardPage = () => {
   ).length;
   const completedOrdersCount = orders.filter((o) => o.status === "Completed").length;
   const avgOrderValue = totalOrdersCount > 0 ? totalSales / totalOrdersCount : 0;
-  const fulfillmentRate = totalOrdersCount > 0 ? Math.round((completedOrdersCount / totalOrdersCount) * 100) : 0;
 
   // Filtered recent orders
   const recentOrders = orders.filter((o) => {
@@ -45,20 +47,28 @@ export const AdminDashboardPage = () => {
   // Low stock products (< 5)
   const lowStockProducts = products.filter((p) => p.stock < 5);
 
-  const handleUpdateStatus = (orderId: string, orderNumber: string, newStatus: string) => {
-    dataService.updateOrderStatus(orderId, newStatus);
-    refreshData();
-    if (selectedOrder && (selectedOrder._id === orderId || selectedOrder.orderNumber === orderNumber)) {
-      setSelectedOrder({ ...selectedOrder, status: newStatus as any });
+  const handleUpdateStatus = async (orderNumber: string, newStatus: string) => {
+    try {
+      await updateOrderStatus(orderNumber, newStatus);
+      await refreshData();
+      if (selectedOrder && selectedOrder.orderNumber === orderNumber) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus as any });
+      }
+      showToast(`Order ${orderNumber} status updated to ${newStatus}`, "success");
+    } catch (error) {
+      showToast("Failed to update order status", "error");
     }
-    showToast(`Order ${orderNumber} status updated to ${newStatus}`, "success");
   };
 
-  const handleRestock = (product: Product) => {
+  const handleRestock = async (product: Product) => {
     const newStock = (product.stock || 0) + 10;
-    dataService.updateProduct(product._id, { stock: newStock, status: "active" });
-    refreshData();
-    showToast(`Restocked +10 units for ${product.name}`, "success");
+    try {
+      await updateProduct(product._id, { stock: newStock, status: "active" });
+      await refreshData();
+      showToast(`Restocked +10 units for ${product.name}`, "success");
+    } catch (error) {
+      showToast("Failed to restock product", "error");
+    }
   };
 
   const formatDate = (dateStr?: string) => {
@@ -72,18 +82,18 @@ export const AdminDashboardPage = () => {
 
   return (
     <div className="space-y-5 sm:space-y-6 w-full">
-      {/* Top 5 Prominent KPI Cards Row */}
-      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5 w-full">
+      {/* Top KPI Cards Row */}
+      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-3 sm:gap-5 w-full">
         {/* Total Revenue / Units Sold */}
         <KpiCard
-          label="Units Sold"
-          chip="-38%"
+          label="Total Sales"
+          chip="Sales"
           chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
           value={`$${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           valueClassName="font-mono"
           icon="north_east"
           iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
-          subtext="Up 38% this week"
+          subtext="Total order value"
           id="kpi-sales"
           className="rounded-2xl"
         />
@@ -91,19 +101,43 @@ export const AdminDashboardPage = () => {
         {/* Total Orders */}
         <KpiCard
           label="Total Orders"
-          chip="-11%"
+          chip="Orders"
           chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
           value={totalOrdersCount.toLocaleString()}
           icon="north_east"
           iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
-          subtext="Up 11% this week"
+          subtext="All customer orders"
           id="kpi-orders"
+        />
+
+        {/* Total Products */}
+        <KpiCard
+          label="Total Products"
+          chip="Catalog"
+          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
+          value={products.length.toLocaleString()}
+          icon="inventory"
+          iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
+          subtext="Items on sale"
+          id="kpi-products"
+        />
+
+        {/* Total Customers */}
+        <KpiCard
+          label="Total Customers"
+          chip="Registered"
+          chipClassName="bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/60"
+          value={customers.length.toLocaleString()}
+          icon="group"
+          iconClassName="text-purple-600 dark:text-purple-400 text-sm sm:text-base font-bold"
+          subtext="Customer accounts"
+          id="kpi-customers"
         />
 
         {/* Avg Order Value */}
         <KpiCard
           label="Avg. Order"
-          chip="+8%"
+          chip="Average"
           chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
           value={`$${avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           valueClassName="font-mono"
@@ -141,115 +175,6 @@ export const AdminDashboardPage = () => {
         />
       </section>
 
-      {/* Middle Row: Sales Conversion Funnel & Revenue Trend */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full">
-        {/* Sales Conversion Card */}
-        <div className="lg:col-span-6 bg-white dark:bg-slate-900 p-5 sm:p-7 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div>
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Sales conversion</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Conversion process from leads to deals</p>
-              </div>
-              <div className="text-right">
-                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Conversion rate</p>
-                <div className="flex items-center justify-end gap-1.5 mt-0.5">
-                  <span id="funnel-fulfillment-rate" className="text-2xl font-extrabold text-slate-900 dark:text-white font-mono">
-                    {fulfillmentRate}%
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">+7%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Stepped Milestone Vertical Bars Visualizer */}
-            <div className="pt-2 pb-4">
-              <div className="h-36 w-full flex items-end justify-between gap-1.5 sm:gap-2 px-1">
-                {/* Stage 1: Leads */}
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">100%</span>
-                  <div className="w-full bg-emerald-500 rounded-t-md h-28 shadow-xs"></div>
-                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-1">Leads</span>
-                  <span className="text-xs font-mono font-extrabold text-slate-900 dark:text-white">1500</span>
-                </div>
-
-                {/* Stage 2: Add cart */}
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">53%</span>
-                  <div className="w-full bg-emerald-500 rounded-t-md h-20 shadow-xs"></div>
-                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-1">Add cart</span>
-                  <span className="text-xs font-mono font-extrabold text-slate-900 dark:text-white">800</span>
-                </div>
-
-                {/* Stage 3: Checkout */}
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">13%</span>
-                  <div className="w-full bg-emerald-500 rounded-t-md h-12 shadow-xs"></div>
-                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-1">Checkout</span>
-                  <span className="text-xs font-mono font-extrabold text-slate-900 dark:text-white">200</span>
-                </div>
-
-                {/* Stage 4: Deals */}
-                <div className="flex-1 flex flex-col items-center gap-1">
-                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">10%</span>
-                  <div className="w-full bg-emerald-500 rounded-t-md h-8 shadow-xs"></div>
-                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-1">Deals</span>
-                  <span className="text-xs font-mono font-extrabold text-slate-900 dark:text-white">150</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Weekly Revenue Trend Bar Chart */}
-        <div className="lg:col-span-6 bg-white dark:bg-slate-900 p-5 sm:p-7 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Weekly Revenue Trend</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Store sales breakdown for current period</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span className="text-xs font-extrabold text-slate-900 dark:text-white font-mono">
-                ${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>
-
-          <div className="pt-4 pb-2 w-full">
-            <div className="h-36 w-full flex items-end justify-between gap-2 px-1">
-              <div className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: "45%" }}></div>
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Mon</span>
-              </div>
-              <div className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: "65%" }}></div>
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Tue</span>
-              </div>
-              <div className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: "52%" }}></div>
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Wed</span>
-              </div>
-              <div className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: "85%" }}></div>
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Thu</span>
-              </div>
-              <div className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="w-full bg-emerald-500 rounded-t-lg transition-all" style={{ height: "100%" }}></div>
-                <span className="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400">Fri</span>
-              </div>
-              <div className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: "70%" }}></div>
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Sat</span>
-              </div>
-              <div className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: "78%" }}></div>
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Sun</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Bottom Row: Recent Transactions Table & Inventory Warnings */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full">
@@ -310,7 +235,7 @@ export const AdminDashboardPage = () => {
                     <div className="flex items-center justify-between pt-1">
                       <select
                         value={ord.status}
-                        onChange={(e) => handleUpdateStatus(ord._id, ord.orderNumber, e.target.value)}
+                        onChange={(e) => handleUpdateStatus(ord.orderNumber, e.target.value)}
                         className={`text-[11px] font-bold rounded-lg px-2.5 py-1 outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                       >
                         <option value="Pending">Pending</option>
@@ -373,7 +298,7 @@ export const AdminDashboardPage = () => {
                           <div className="flex items-center gap-2">
                             <select
                               value={ord.status}
-                              onChange={(e) => handleUpdateStatus(ord._id, ord.orderNumber, e.target.value)}
+                              onChange={(e) => handleUpdateStatus(ord.orderNumber, e.target.value)}
                               className={`text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                             >
                               <option value="Pending">Pending</option>
@@ -447,7 +372,7 @@ export const AdminDashboardPage = () => {
                             <span className="text-[11px] text-slate-500 dark:text-slate-400 capitalize font-medium">
                               {item.category || "General"}
                             </span>
-                            <span className="text-slate-300 dark:text-slate-700 text-[10px]">Ã¢â‚¬Â¢</span>
+                            <span className="text-slate-300 dark:text-slate-700 text-[10px]">•</span>
                             <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
                               {item.stock} left
                             </span>
@@ -504,10 +429,10 @@ export const AdminDashboardPage = () => {
                 {["Pending", "Confirmed", "Preparing", "Shipped", "Completed", "Cancelled"].map((st) => (
                   <button
                     key={st}
-                    onClick={() => handleUpdateStatus(selectedOrder._id, selectedOrder.orderNumber, st)}
+                    onClick={() => handleUpdateStatus(selectedOrder.orderNumber, st)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${selectedOrder.status === st
-                        ? "bg-blue-600 text-white"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                       }`}
                   >
                     {st}

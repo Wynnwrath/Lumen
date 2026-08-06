@@ -88,7 +88,10 @@ export const orderService = {
     const [items, total] = await Promise.all([
       prisma.order.findMany({
         where,
-        include: { customer: { select: { id: true, name: true, email: true } } },
+        include: {
+          customer: { select: { id: true, name: true, email: true } },
+          items: true,
+        },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,

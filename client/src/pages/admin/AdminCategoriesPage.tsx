@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { dataService } from "../../services/dataService";
+import { createCategory, updateCategory, deleteCategory } from "../../api/categories";
 import type { Category } from "../../types";
 import { Icon } from "../../components/common/Icon";
 import { Button } from "../../components/common/Button";
@@ -9,10 +9,11 @@ import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { useToast } from "../../components/common/ToastProvider";
 import { useCategories } from "../../hooks/useCategories";
+import { useProducts } from "../../hooks/useProducts";
 
 export const AdminCategoriesPage = () => {
   const { categories, refresh: refreshCategories } = useCategories();
-  const [products] = useState(dataService.getProducts());
+  const { products } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const { showToast } = useToast();
 
@@ -72,7 +73,7 @@ export const AdminCategoriesPage = () => {
     setShowModal(true);
   };
 
-  const handleSaveCategory = (e: React.FormEvent) => {
+  const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     const catData = {
       name: formName,
@@ -81,34 +82,34 @@ export const AdminCategoriesPage = () => {
       description: formDescription,
     };
 
-    if (editingCategory) {
-      const updated = dataService.updateCategory(editingCategory._id, catData);
-      if (updated) {
+    try {
+      if (editingCategory) {
+        await updateCategory(editingCategory.slug, catData);
         showToast(`Updated category "${formName}"`, "success");
-      }
-    } else {
-      const created = dataService.addCategory(catData);
-      if (created) {
+      } else {
+        await createCategory(catData);
         showToast(`Created new category "${formName}"`, "success");
       }
+      await refreshCategories();
+    } catch (error) {
+      showToast("Failed to save category", "error");
     }
 
-    refreshCategories();
     setShowModal(false);
   };
 
-  const handleDeleteCategory = (cat: Category) => {
+  const handleDeleteCategory = async (cat: Category) => {
     setPdfWarningMessage(null);
-    const result = dataService.deleteCategory(cat._id);
-
-    if (!result.success) {
-      // PDF Guardrail Requirement Warning Modal trigger
-      setPdfWarningMessage(result.message || `Cannot delete category "${cat.name}" because active products are assigned to it.`);
-      return;
+    try {
+      await deleteCategory(cat.slug);
+      showToast("Category deleted successfully", "info");
+      await refreshCategories();
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message;
+      setPdfWarningMessage(
+        message || `Cannot delete category "${cat.name}" because active products are assigned to it.`
+      );
     }
-
-    showToast("Category deleted successfully", "info");
-    refreshCategories();
   };
 
   return (

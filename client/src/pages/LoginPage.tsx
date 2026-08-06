@@ -63,6 +63,18 @@ export const LoginPage = () => {
       setAlert({ message: "Please fill in all required fields.", type: "error" });
       return;
     }
+    const pwdChecks = [
+      { ok: regPassword.length >= 8, msg: "at least 8 characters" },
+      { ok: /[A-Z]/.test(regPassword), msg: "an uppercase letter" },
+      { ok: /[a-z]/.test(regPassword), msg: "a lowercase letter" },
+      { ok: /[0-9]/.test(regPassword), msg: "a number" },
+      { ok: /[^A-Za-z0-9]/.test(regPassword), msg: "a special character" },
+    ];
+    const failed = pwdChecks.find((c) => !c.ok);
+    if (failed) {
+      setAlert({ message: `Password must include ${failed.msg}.`, type: "error" });
+      return;
+    }
     try {
       await register({ name: regName, email: regEmail, password: regPassword, phone: regPhone });
       setAlert({ message: "Customer account created successfully! Welcome to Lumen.", type: "success" });
@@ -70,8 +82,14 @@ export const LoginPage = () => {
       setTimeout(() => {
         navigate("/");
       }, 1000);
-    } catch {
-      setAlert({ message: "Registration failed. Please try again.", type: "error" });
+    } catch (error: any) {
+      const details = error?.response?.data?.error?.details;
+      const serverMsg = error?.response?.data?.error?.message;
+      if (details?.password?.length) {
+        setAlert({ message: details.password[0], type: "error" });
+      } else {
+        setAlert({ message: serverMsg || "Registration failed. Please try again.", type: "error" });
+      }
     }
   };
 
@@ -199,11 +217,10 @@ export const LoginPage = () => {
                     setActiveTab("login");
                     setAlert(null);
                   }}
-                  className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all text-center ${
-                    activeTab === "login"
+                  className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all text-center ${activeTab === "login"
                       ? "bg-surface-container-lowest dark:bg-slate-800 text-primary dark:text-white shadow-sm"
                       : "text-outline hover:text-on-surface dark:hover:text-white"
-                  }`}
+                    }`}
                 >
                   Sign In
                 </button>
@@ -213,11 +230,10 @@ export const LoginPage = () => {
                     setActiveTab("register");
                     setAlert(null);
                   }}
-                  className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all text-center ${
-                    activeTab === "register"
+                  className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all text-center ${activeTab === "register"
                       ? "bg-surface-container-lowest dark:bg-slate-800 text-primary dark:text-white shadow-sm"
                       : "text-outline hover:text-on-surface dark:hover:text-white"
-                  }`}
+                    }`}
                 >
                   Create Customer Account
                 </button>
@@ -226,11 +242,10 @@ export const LoginPage = () => {
               {/* Alert Box Container */}
               {alert && (
                 <div
-                  className={`mb-6 p-4 rounded-xl border text-xs font-semibold flex items-center justify-between gap-3 ${
-                    alert.type === "success"
+                  className={`mb-6 p-4 rounded-xl border text-xs font-semibold flex items-center justify-between gap-3 ${alert.type === "success"
                       ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
                       : "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     <Icon name={alert.type === "success" ? "check_circle" : "error"} className="text-lg" />
@@ -464,10 +479,13 @@ export const LoginPage = () => {
                             required
                             value={regPassword}
                             onChange={(e) => setRegPassword(e.target.value)}
-                            placeholder="Min 6 chars"
+                            placeholder="Min 8, with upper, lower, number & symbol"
                             className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                           />
                         </div>
+                        <p className="text-[10px] text-outline font-medium">
+                          8+ chars, an uppercase, lowercase, number &amp; special character.
+                        </p>
                       </div>
 
                       <div className="space-y-1.5">
@@ -481,7 +499,7 @@ export const LoginPage = () => {
                             type="tel"
                             value={regPhone}
                             onChange={(e) => setRegPhone(e.target.value)}
-                            placeholder="+1 (555) 000-0000"
+                            placeholder="+63 9XX XXX XXXX"
                             className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                           />
                         </div>

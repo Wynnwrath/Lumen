@@ -1,10 +1,11 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../stores/theme.store";
 import { useCartStore } from "../../stores/cart.store";
 import { useWishlistStore } from "../../stores/wishlist.store";
 import { useAuthStore } from "../../stores/auth.store";
-import { dataService } from "../../services/dataService";
+import { getProducts } from "../../api/products";
+import type { Product } from "../../types";
 import { Icon } from "../common/Icon";
 import { useClickOutside } from "../../hooks/useClickOutside";
 
@@ -28,6 +29,13 @@ export const PublicHeader = () => {
   const itemCount = getItemCount();
   const subtotal = getSubtotal();
 
+  const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
+  useEffect(() => {
+    getProducts({ limit: 100 })
+      .then((res) => setCatalogProducts(res.products))
+      .catch(() => setCatalogProducts([]));
+  }, []);
+
   // close each dropdown when clicking outside its container
   useClickOutside(searchRef, () => setShowSearchDropdown(false));
   useClickOutside(cartModalRef, () => setShowCartModal(false));
@@ -36,15 +44,14 @@ export const PublicHeader = () => {
   const liveSearchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
-    return dataService
-      .getProducts()
+    return catalogProducts
       .filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.category.toLowerCase().includes(q) ||
           (p.brand && p.brand.toLowerCase().includes(q))
       );
-  }, [searchQuery]);
+  }, [searchQuery, catalogProducts]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -70,8 +77,8 @@ export const PublicHeader = () => {
 
   return (
     <>
-      {/* Top Announcement Bar */}
-      <div className="bg-slate-900 dark:bg-slate-950 text-slate-200 text-xs py-2.5 px-6 font-medium border-b border-slate-800">
+      {/* Top Announcement Bar (desktop only) */}
+      <div className="hidden md:flex bg-slate-900 dark:bg-slate-950 text-slate-200 text-xs py-2.5 px-6 font-medium border-b border-slate-800">
         <div className="flex justify-between items-center w-full max-w-container-max mx-auto">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 text-slate-300">
@@ -263,7 +270,7 @@ export const PublicHeader = () => {
               onMouseLeave={() => setShowCartModal(false)}
             >
               <Link
-                to="/checkout"
+                to="/cart"
                 className="text-primary dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 p-2.5 rounded-full relative transition-all flex items-center justify-center"
                 title="Shopping Cart"
               >
@@ -277,7 +284,8 @@ export const PublicHeader = () => {
 
               {/* Cart Quick Preview Dropdown */}
               {showCartModal && (
-                <div className="absolute top-full right-0 mt-2 w-[320px] bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden z-50 p-4 space-y-3">
+                <div className="absolute top-full right-0 pt-1 z-50">
+                  <div className="w-[320px] bg-surface-container-lowest dark:bg-slate-900 rounded-2xl shadow-2xl border border-outline-variant/30 overflow-hidden p-4 space-y-3">
                   <div className="flex items-center justify-between border-b border-outline-variant/20 pb-2.5 gap-2">
                     <span className="text-xs font-bold text-on-surface uppercase tracking-wider whitespace-nowrap">
                       Cart Quick Preview
@@ -359,6 +367,7 @@ export const PublicHeader = () => {
                       </div>
                     </>
                   )}
+                  </div>
                 </div>
               )}
             </div>

@@ -1,14 +1,12 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCartStore } from "../../stores/cart.store";
-import { useWishlistStore } from "../../stores/wishlist.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { Icon } from "../common/Icon";
 import { useClickOutside } from "../../hooks/useClickOutside";
 
 export const MobileNav = () => {
   const { getItemCount } = useCartStore();
-  const { ids: wishlistIds } = useWishlistStore();
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,14 +25,18 @@ export const MobileNav = () => {
   // close the sheet when clicking outside it (but not when clicking the toggle button)
   useClickOutside([mobileUserMenuRef, mobileAccountBtnRef], () => setShowUserMenu(false));
 
+  const isHome = location.pathname === "/";
+  const isCatalog = location.pathname === "/products";
+  const isCart = location.pathname === "/cart" || location.pathname === "/checkout";
+
   return (
     <>
       {/* Mobile Bottom Navigation Dock */}
       <nav className="fixed bottom-0 left-0 w-full z-40 md:hidden bg-surface dark:bg-slate-900 border-t border-outline-variant/40 flex justify-around items-center h-16 px-2 shadow-lg">
         <Link
           to="/"
-          className={`flex flex-col items-center justify-center p-2 active:scale-95 ${
-            location.pathname === "/" ? "text-secondary font-bold" : "text-outline"
+          className={`flex flex-col items-center justify-center p-2 active:scale-95 transition ${
+            isHome ? "text-secondary font-bold" : "text-outline hover:text-secondary"
           }`}
         >
           <Icon name="home" />
@@ -42,8 +44,8 @@ export const MobileNav = () => {
         </Link>
         <Link
           to="/products"
-          className={`flex flex-col items-center justify-center p-2 active:scale-95 ${
-            location.pathname === "/products" ? "text-secondary font-bold" : "text-outline"
+          className={`flex flex-col items-center justify-center p-2 active:scale-95 transition ${
+            isCatalog ? "text-secondary font-bold" : "text-outline hover:text-secondary"
           }`}
         >
           <Icon name="grid_view" />
@@ -51,7 +53,9 @@ export const MobileNav = () => {
         </Link>
         <Link
           to="/cart"
-          className="flex flex-col items-center justify-center text-outline hover:text-secondary p-2 active:scale-95 relative"
+          className={`flex flex-col items-center justify-center p-2 active:scale-95 relative transition ${
+            isCart ? "text-secondary font-bold" : "text-outline hover:text-secondary"
+          }`}
         >
           <Icon name="shopping_cart" />
           {itemCount > 0 && (
@@ -61,23 +65,11 @@ export const MobileNav = () => {
           )}
           <span className="text-[10px] mt-0.5">Cart</span>
         </Link>
-        <Link
-          to="/products?wishlist=true"
-          className="flex flex-col items-center justify-center text-outline hover:text-secondary p-2 active:scale-95 relative"
-        >
-          <Icon name="favorite" />
-          {wishlistIds.length > 0 && (
-            <span className="absolute top-1 right-2 bg-error text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">
-              {wishlistIds.length}
-            </span>
-          )}
-          <span className="text-[10px] mt-0.5">Saved</span>
-        </Link>
         <button
           ref={mobileAccountBtnRef}
           onClick={() => setShowUserMenu(!showUserMenu)}
-          className={`flex flex-col items-center justify-center p-2 active:scale-95 ${
-            showUserMenu ? "text-secondary font-bold" : "text-outline"
+          className={`flex flex-col items-center justify-center p-2 active:scale-95 transition ${
+            showUserMenu ? "text-secondary font-bold" : "text-outline hover:text-secondary"
           }`}
         >
           <Icon name="account_circle" />

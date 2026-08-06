@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import type { Prisma } from "@prisma/client";
 import type { CreateProductInput, UpdateProductInput, ProductQuery } from "./product.validator.js";
 import { requireFound } from "../../utils/requireFound.js";
+import { AppError } from "../../utils/AppError.js";
 
 export const productService = {
   async findAll(query: ProductQuery) {
@@ -19,9 +20,9 @@ export const productService = {
     }
     if (query.search) {
       where.OR = [
-        { name: { contains: query.search, mode: "insensitive" } },
-        { brand: { contains: query.search, mode: "insensitive" } },
-        { description: { contains: query.search, mode: "insensitive" } },
+        { name: { contains: query.search } },
+        { brand: { contains: query.search } },
+        { description: { contains: query.search } },
       ];
     }
 
@@ -50,10 +51,19 @@ export const productService = {
     return requireFound(product, "Product");
   },
 
+  async findAllForAdmin() {
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({ orderBy: { createdAt: "desc" } }),
+      prisma.product.count(),
+    ]);
+    return { products, total, page: 1, limit: products.length, totalPages: 1 };
+  },
+
   async create(input: CreateProductInput) {
     return prisma.product.create({
       data: {
         ...input,
+        description: input.description ?? "",
         status: (input.stock ?? 0) <= 0 ? "out_of_stock" : input.status || "active",
       },
     });
@@ -71,6 +81,14 @@ export const productService = {
 
   async remove(id: string) {
     const product = requireFound(await prisma.product.findUnique({ where: { id } }), "Product");
+    const orderCount = await prisma.orderItem.count({ where: { productId: id } });
+    if (orderCount > 0) {
+      throw new AppError(
+        `Cannot delete "${product.name}" — it appears in ${orderCount} order(s). Set it to inactive instead.`,
+        400,
+        "PRODUCT_HAS_ORDERS"
+      );
+    }
     await prisma.product.delete({ where: { id } });
     return product;
   },

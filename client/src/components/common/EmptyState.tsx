@@ -38,7 +38,7 @@ export const EmptyState = ({ icon, title, subtitle, action, text, colSpan, class
       )}
       {title && <h3 className="text-base font-bold text-on-surface">{title}</h3>}
       {subtitle && <p className="text-xs text-outline max-w-xs mx-auto">{subtitle}</p>}
-      {action}
+      {action && <div className="pt-2.5 flex justify-center">{action}</div>}
     </div>
   );
 };

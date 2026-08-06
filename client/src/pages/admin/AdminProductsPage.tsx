@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Icon } from "../../components/common/Icon";
-import { dataService } from "../../services/dataService";
+import { createProduct, updateProduct, deleteProduct } from "../../api/products";
 import type { Product } from "../../types";
 import { Button } from "../../components/common/Button";
 import { KpiCard } from "../../components/common/KpiCard";
@@ -9,10 +9,11 @@ import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { useToast } from "../../components/common/ToastProvider";
 import { useProducts } from "../../hooks/useProducts";
+import { useCategories } from "../../hooks/useCategories";
 
 export const AdminProductsPage = () => {
   const { products, refresh: refreshProducts } = useProducts();
-  const categories = dataService.getCategories();
+  const { categories } = useCategories();
   const { showToast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,11 +68,11 @@ export const AdminProductsPage = () => {
     setShowModal(true);
   };
 
-  const handleSaveProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     const priceNum = Number(formPrice) || 0;
     const stockNum = Number(formStock) || 0;
-    const payload: Partial<Product> = {
+    const payload = {
       name: formName,
       category: formCategory,
       brand: formBrand || "Lumen",
@@ -83,31 +84,43 @@ export const AdminProductsPage = () => {
       description: formDescription || "Product from Lumen catalog.",
     };
 
-    if (editingProduct) {
-      dataService.updateProduct(editingProduct._id, payload);
-      showToast(`Updated product "${formName}"`, "success");
-    } else {
-      dataService.addProduct(payload);
-      showToast(`Created new product "${formName}"`, "success");
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct._id, payload);
+        showToast(`Updated product "${formName}"`, "success");
+      } else {
+        await createProduct(payload);
+        showToast(`Created new product "${formName}"`, "success");
+      }
+      await refreshProducts();
+    } catch (error) {
+      showToast("Failed to save product", "error");
     }
 
-    refreshProducts();
     setShowModal(false);
   };
 
-  const handleDeleteProduct = (id: string, name: string) => {
+  const handleDeleteProduct = async (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to delete product "${name}"?`)) {
-      dataService.deleteProduct(id);
-      showToast(`Deleted product "${name}"`, "info");
-      refreshProducts();
+      try {
+        await deleteProduct(id);
+        showToast(`Deleted product "${name}"`, "info");
+        await refreshProducts();
+      } catch (error) {
+        showToast("Failed to delete product", "error");
+      }
     }
   };
 
-  const handleToggleStatus = (p: Product) => {
+  const handleToggleStatus = async (p: Product) => {
     const newStatus = p.status === "active" ? "inactive" : "active";
-    dataService.updateProduct(p._id, { status: newStatus });
-    showToast(`Changed status of "${p.name}" to ${newStatus}`, "info");
-    refreshProducts();
+    try {
+      await updateProduct(p._id, { status: newStatus });
+      showToast(`Changed status of "${p.name}" to ${newStatus}`, "info");
+      await refreshProducts();
+    } catch (error) {
+      showToast("Failed to update status", "error");
+    }
   };
 
   // Filtered Products

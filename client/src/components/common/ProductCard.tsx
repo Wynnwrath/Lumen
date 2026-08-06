@@ -5,7 +5,7 @@ import { useWishlistStore } from "../../stores/wishlist.store";
 import { Icon } from "./Icon";
 
 // tracks the mouse so the spotlight glow follows the cursor
-const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+export const trackSpotlight = (e: React.MouseEvent<HTMLDivElement>) => {
   const card = e.currentTarget;
   const rect = card.getBoundingClientRect();
   card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
@@ -80,7 +80,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
   if (variant === "list") {
     return (
       <div
-        onMouseMove={handleMouseMove}
+        onMouseMove={trackSpotlight}
         onClick={() => navigate(`/product/${product._id}`)}
         className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-outline-variant/30 p-3 sm:p-4 shadow-xs hover:shadow-lg transition-all flex flex-row items-center gap-3 sm:gap-4 group cursor-pointer"
       >
@@ -152,7 +152,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
   // default: standard grid card
   return (
     <div
-      onMouseMove={handleMouseMove}
+      onMouseMove={trackSpotlight}
       className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30 overflow-hidden"
     >
       <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">

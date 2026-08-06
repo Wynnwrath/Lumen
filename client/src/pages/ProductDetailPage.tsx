@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { dataService } from "../services/dataService";
+import { getProduct, getProducts } from "../api/products";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import { Icon } from "../components/common/Icon";
 import { ProductCard } from "../components/common/ProductCard";
 import { QuantityStepper } from "../components/common/QuantityStepper";
 import { useToast } from "../components/common/ToastProvider";
+import type { Product } from "../types";
 
 export const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,12 +16,36 @@ export const ProductDetailPage = () => {
   const { ids: wishlistIds, toggle: toggleWishlist } = useWishlistStore();
   const { showToast } = useToast();
 
-  const product = dataService.getProductById(id || "p1");
-  const allProducts = dataService.getProducts();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
   const [isZoomOpen, setIsZoomOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!id) return;
+    let active = true;
+    setLoading(true);
+    (async () => {
+      try {
+        const p = await getProduct(id);
+        if (!active) return;
+        setProduct(p);
+        const res = await getProducts({ limit: 100 });
+        if (!active) return;
+        setRelatedProducts(res.products.filter((x) => x.category === p.category && x._id !== id).slice(0, 4));
+      } catch {
+        if (active) setProduct(null);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   // Normalize images array
   const images = product?.images && product.images.length > 0 
@@ -33,6 +58,14 @@ export const ProductDetailPage = () => {
     setIsZoomOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
+
+  if (loading) {
+    return (
+      <div className="max-w-container-max mx-auto px-6 py-20 text-center">
+        <p className="text-xs text-outline">Loading product...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -55,9 +88,6 @@ export const ProductDetailPage = () => {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  // Related products in same category
-  const relatedProducts = allProducts.filter((p) => p.category === product.category && p._id !== product._id).slice(0, 4);
-
   const handleAddToCart = () => {
     if (isOutOfStock) return;
     addItem(product, quantity);
@@ -77,7 +107,7 @@ export const ProductDetailPage = () => {
   };
 
   return (
-    <div className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8 flex-grow w-full pb-24 md:pb-8">
+    <div className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8 flex-grow w-full pb-20 lg:pb-8">
       {/* Toast Notification Container */}
 
       {/* Breadcrumbs */}
@@ -256,20 +286,32 @@ export const ProductDetailPage = () => {
 
           {/* Trust Features Grid */}
           <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-2">
-            <div className="p-2 sm:p-3 rounded-xl bg-surface dark:bg-slate-800/40 border border-outline-variant/30 text-center space-y-0.5">
-              <Icon name="local_shipping" className="text-secondary text-lg sm:text-xl" />
-              <h4 className="text-[10px] sm:text-[11px] font-bold text-on-surface">Free Shipping</h4>
-              <p className="text-[9px] sm:text-[10px] text-outline">Orders over $100</p>
+            <div className="p-3 rounded-2xl bg-surface dark:bg-slate-800/50 border border-outline-variant/30 flex items-center gap-2.5 sm:gap-3 hover:border-secondary/40 transition group">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-200">
+                <Icon name="local_shipping" className="text-lg sm:text-xl" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[11px] sm:text-xs font-extrabold text-on-surface truncate">Free Shipping</h4>
+                <p className="text-[10px] sm:text-[11px] text-outline font-medium truncate">Orders over $100</p>
+              </div>
             </div>
-            <div className="p-2 sm:p-3 rounded-xl bg-surface dark:bg-slate-800/40 border border-outline-variant/30 text-center space-y-0.5">
-              <Icon name="verified_user" className="text-secondary text-lg sm:text-xl" />
-              <h4 className="text-[10px] sm:text-[11px] font-bold text-on-surface">2-Yr Warranty</h4>
-              <p className="text-[9px] sm:text-[10px] text-outline">Official coverage</p>
+            <div className="p-3 rounded-2xl bg-surface dark:bg-slate-800/50 border border-outline-variant/30 flex items-center gap-2.5 sm:gap-3 hover:border-secondary/40 transition group">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-200">
+                <Icon name="verified_user" className="text-lg sm:text-xl" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[11px] sm:text-xs font-extrabold text-on-surface truncate">2-Yr Warranty</h4>
+                <p className="text-[10px] sm:text-[11px] text-outline font-medium truncate">Official coverage</p>
+              </div>
             </div>
-            <div className="p-2 sm:p-3 rounded-xl bg-surface dark:bg-slate-800/40 border border-outline-variant/30 text-center space-y-0.5">
-              <Icon name="published_with_changes" className="text-secondary text-lg sm:text-xl" />
-              <h4 className="text-[10px] sm:text-[11px] font-bold text-on-surface">30-Day Return</h4>
-              <p className="text-[9px] sm:text-[10px] text-outline">Hassle free policy</p>
+            <div className="p-3 rounded-2xl bg-surface dark:bg-slate-800/50 border border-outline-variant/30 flex items-center gap-2.5 sm:gap-3 hover:border-secondary/40 transition group">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0 group-hover:scale-110 transition duration-200">
+                <Icon name="published_with_changes" className="text-lg sm:text-xl" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[11px] sm:text-xs font-extrabold text-on-surface truncate">30-Day Return</h4>
+                <p className="text-[10px] sm:text-[11px] text-outline font-medium truncate">Hassle free policy</p>
+              </div>
             </div>
           </div>
 
@@ -277,15 +319,15 @@ export const ProductDetailPage = () => {
 
       </section>
 
-      {/* Technical Specifications Section */}
+      {/* Product Specifications Section */}
       <section className="pt-6 border-t border-outline-variant/30 space-y-3">
-        <h2 className="text-lg sm:text-xl font-bold text-on-surface">Technical Specifications</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-on-surface">Product Specifications</h2>
         <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
           <table className="w-full text-xs sm:text-sm text-left">
             <tbody className="divide-y divide-outline-variant/20">
               {product.specs && Object.keys(product.specs).length > 0 ? (
                 Object.entries(product.specs).map(([key, val]) => (
-                  <tr key={key} className="hover:bg-surface-container/50 transition">
+                  <tr key={key} className="hover:bg-surface-container/50 dark:hover:bg-slate-700/40 transition">
                     <td className="py-2.5 px-3 sm:px-4 font-bold text-on-surface w-1/3 bg-surface/50 dark:bg-slate-800/40">{key}</td>
                     <td className="py-2.5 px-3 sm:px-4 text-on-surface-variant">{val}</td>
                   </tr>
@@ -322,7 +364,7 @@ export const ProductDetailPage = () => {
       )}
 
       {/* Persistent Sticky Bottom Action Bar for Mobile Viewports */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-2.5 flex items-center gap-2 lg:hidden shadow-2xl">
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-2.5 flex items-center gap-2 lg:hidden shadow-2xl">
         <div className="shrink-0 pr-2 border-r border-outline-variant/30">
           <span className="text-xs text-outline block leading-none">Total</span>
           <span className="text-base font-black text-primary dark:text-white">
