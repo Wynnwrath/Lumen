@@ -1,42 +1,47 @@
+import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../../utils/AppError.js";
 import { signToken } from "../../utils/signToken.js";
-import { UserModel, AdminModel } from "./auth.model.js";
+import { hashPassword, comparePassword } from "./auth.model.js";
 import type { RegisterUserInput, LoginInput } from "./auth.validator.js";
 
 export const authService = {
   async registerUser(input: RegisterUserInput) {
-    const exists = await UserModel.findOne({ email: input.email });
+    const exists = await prisma.user.findUnique({ where: { email: input.email } });
     if (exists) throw new AppError("Email already registered", 400, "EMAIL_EXISTS");
 
-    const adminExists = await AdminModel.findOne({ email: input.email });
-    if (adminExists) throw new AppError("Email already registered", 400, "EMAIL_EXISTS");
-
-    const user = await UserModel.create(input);
-    const token = signToken(user._id.toString(), "customer");
-    return { user: { id: user._id, name: user.name, email: user.email, role: "customer" }, token };
+    const hashed = await hashPassword(input.password);
+    const user = await prisma.user.create({
+      data: { name: input.name, email: input.email, password: hashed, phone: input.phone },
+    });
+    const token = signToken(user.id, "customer");
+    return { user: { id: user.id, name: user.name, email: user.email, role: "customer" }, token };
   },
 
   async loginUser(input: LoginInput) {
-    const user = await UserModel.findOne({ email: input.email }).select("+password");
+    const user = await prisma.user.findFirst({
+      where: { email: input.email, role: "customer" },
+    });
     if (!user) throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
 
-    const match = await user.comparePassword(input.password);
+    const match = await comparePassword(input.password, user.password);
     if (!match) throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
 
-    const token = signToken(user._id.toString(), "customer");
-    return { user: { id: user._id, name: user.name, email: user.email, role: "customer" }, token };
+    const token = signToken(user.id, "customer");
+    return { user: { id: user.id, name: user.name, email: user.email, role: "customer" }, token };
   },
 
   async loginAdmin(input: LoginInput) {
-    const admin = await AdminModel.findOne({ email: input.email }).select("+password");
-    if (!admin) throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
+    const user = await prisma.user.findFirst({
+      where: { email: input.email, role: "admin" },
+    });
+    if (!user) throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
 
-    const match = await admin.comparePassword(input.password);
+    const match = await comparePassword(input.password, user.password);
     if (!match) throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
 
-    const token = signToken(admin._id.toString(), admin.role);
+    const token = signToken(user.id, "admin");
     return {
-      user: { id: admin._id, name: admin.storeName, email: admin.email, role: admin.role },
+      user: { id: user.id, name: user.storeName || user.name, email: user.email, role: "admin" },
       token,
     };
   },

@@ -1,9 +1,9 @@
 import { config } from "./config/env.js";
 import { connectDB } from "./config/db.js";
-import { seedDefaultUsers } from "./modules/auth/auth.model.js";
-import { seedProducts } from "./modules/products/product.model.js";
-import { seedCategories } from "./modules/categories/category.model.js";
-import { seedCoupons } from "./modules/coupons/coupon.model.js";
+import { seedDefaultUsers } from "./seed/auth.seed.js";
+import { seedProducts } from "./seed/product.seed.js";
+import { seedCategories } from "./seed/category.seed.js";
+import { seedCoupons } from "./seed/coupon.seed.js";
 import app from "./app.js";
 
 async function start() {

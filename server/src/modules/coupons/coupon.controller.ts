@@ -1,8 +1,9 @@
 import type { Request, Response } from "express";
+import { prisma } from "../../lib/prisma.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { CouponModel } from "./coupon.model.js";
 import { AppError } from "../../utils/AppError.js";
 import { calcDiscount } from "../../utils/calcDiscount.js";
+import { toApi } from "../../utils/toApi.js";
 
 export const couponController = {
   validateCoupon: asyncHandler(async (req: Request, res: Response) => {
@@ -11,7 +12,9 @@ export const couponController = {
       throw new AppError("Provide coupon code and subtotal", 400);
     }
 
-    const coupon = await CouponModel.findOne({ code: code.toUpperCase(), isActive: true });
+    const coupon = await prisma.coupon.findFirst({
+      where: { code: code.toUpperCase(), isActive: true },
+    });
     if (!coupon) throw new AppError("Invalid or expired coupon", 400, "INVALID_COUPON");
 
     const discountAmount = calcDiscount(subtotal, coupon.discountPercent);
@@ -22,7 +25,7 @@ export const couponController = {
   }),
 
   getAll: asyncHandler(async (_req: Request, res: Response) => {
-    const coupons = await CouponModel.find().lean();
-    res.json({ success: true, data: coupons });
+    const coupons = await prisma.coupon.findMany();
+    res.json({ success: true, data: toApi(coupons) });
   }),
 };

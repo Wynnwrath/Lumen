@@ -1,74 +1,77 @@
-import { ProductModel } from "./product.model.js";
+import { prisma } from "../../lib/prisma.js";
+import type { Prisma } from "@prisma/client";
 import type { CreateProductInput, UpdateProductInput, ProductQuery } from "./product.validator.js";
-import { paginate } from "../../utils/paginate.js";
 import { requireFound } from "../../utils/requireFound.js";
-import type { FilterQuery } from "mongoose";
-import type { IProduct } from "./product.model.js";
 
 export const productService = {
   async findAll(query: ProductQuery) {
-    const filter: FilterQuery<IProduct> = { status: { $ne: "inactive" } };
+    const where: Prisma.ProductWhereInput = { status: { not: "inactive" } };
 
-    if (query.category) filter.category = query.category;
-    if (query.brand) filter.brand = query.brand;
-    if (query.inStock === "true") filter.stock = { $gt: 0 };
-    if (query.onSale === "true") filter.isSale = true;
+    if (query.category) where.category = query.category;
+    if (query.brand) where.brand = query.brand;
+    if (query.inStock === "true") where.stock = { gt: 0 };
+    if (query.onSale === "true") where.isSale = true;
     if (query.minPrice || query.maxPrice) {
-      filter.price = {};
-      if (query.minPrice) filter.price.$gte = query.minPrice;
-      if (query.maxPrice) filter.price.$lte = query.maxPrice;
+      where.price = {
+        ...(query.minPrice ? { gte: query.minPrice } : {}),
+        ...(query.maxPrice ? { lte: query.maxPrice } : {}),
+      };
     }
     if (query.search) {
-      filter.$or = [
-        { name: { $regex: query.search, $options: "i" } },
-        { brand: { $regex: query.search, $options: "i" } },
-        { description: { $regex: query.search, $options: "i" } },
+      where.OR = [
+        { name: { contains: query.search, mode: "insensitive" } },
+        { brand: { contains: query.search, mode: "insensitive" } },
+        { description: { contains: query.search, mode: "insensitive" } },
       ];
     }
 
-    const sortMap: Record<string, Record<string, 1 | -1>> = {
-      "price-low": { price: 1 },
-      "price-high": { price: -1 },
-      rating: { rating: -1 },
-      newest: { createdAt: -1 },
-    };
-    const sort = sortMap[query.sort || "newest"] || sortMap.newest;
+    const orderByMap = {
+      "price-low": { price: "asc" },
+      "price-high": { price: "desc" },
+      rating: { rating: "desc" },
+      newest: { createdAt: "desc" },
+    } as const;
 
-    const result = await paginate(ProductModel, filter, {
-      sort,
-      page: query.page,
-      limit: query.limit,
-    });
+    const orderBy: Prisma.ProductOrderByWithRelationInput = orderByMap[query.sort || "newest"];
 
-    return { products: result.items, total: result.total, page: result.page, limit: result.limit, totalPages: result.totalPages };
+    const page = query.page || 1;
+    const limit = query.limit || 20;
+
+    const [items, total] = await Promise.all([
+      prisma.product.findMany({ where, orderBy, skip: (page - 1) * limit, take: limit }),
+      prisma.product.count({ where }),
+    ]);
+
+    return { products: items, total, page, limit, totalPages: Math.ceil(total / limit) };
   },
 
   async findById(id: string) {
-    const product = await ProductModel.findById(id).lean();
+    const product = await prisma.product.findUnique({ where: { id } });
     return requireFound(product, "Product");
   },
 
   async create(input: CreateProductInput) {
-    const product = await ProductModel.create({
-      ...input,
-      status: (input.stock ?? 0) <= 0 ? "out_of_stock" : input.status || "active",
+    return prisma.product.create({
+      data: {
+        ...input,
+        status: (input.stock ?? 0) <= 0 ? "out_of_stock" : input.status || "active",
+      },
     });
-    return product.toObject();
   },
 
   async update(id: string, input: UpdateProductInput) {
-    const product = requireFound(await ProductModel.findById(id), "Product");
-
-    Object.assign(product, input);
-    if ((input.stock ?? product.stock) <= 0 && product.status !== "inactive") {
-      product.status = "out_of_stock";
-    }
-    await product.save();
-    return product.toObject();
+    const existing = requireFound(await prisma.product.findUnique({ where: { id } }), "Product");
+    const stock = input.stock ?? existing.stock;
+    const newStatus = stock <= 0 && existing.status !== "inactive" ? "out_of_stock" : undefined;
+    return prisma.product.update({
+      where: { id },
+      data: { ...input, ...(newStatus ? { status: newStatus } : {}) },
+    });
   },
 
   async remove(id: string) {
-    const product = requireFound(await ProductModel.findByIdAndDelete(id), "Product");
+    const product = requireFound(await prisma.product.findUnique({ where: { id } }), "Product");
+    await prisma.product.delete({ where: { id } });
     return product;
   },
 };

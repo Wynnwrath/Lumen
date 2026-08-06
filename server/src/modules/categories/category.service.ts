@@ -1,29 +1,28 @@
-import { CategoryModel } from "./category.model.js";
-import { ProductModel } from "../products/product.model.js";
+import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../../utils/AppError.js";
 import { requireFound } from "../../utils/requireFound.js";
 import type { CreateCategoryInput } from "./category.validator.js";
 
+const findOrThrow = async (slug: string) =>
+  requireFound(await prisma.category.findUnique({ where: { slug } }), "Category");
+
 export const categoryService = {
   async findAll() {
-    return CategoryModel.find().lean();
+    return prisma.category.findMany({ orderBy: { createdAt: "asc" } });
   },
 
   async create(input: CreateCategoryInput) {
-    return CategoryModel.create(input);
+    return prisma.category.create({ data: input });
   },
 
   async update(slug: string, input: Partial<CreateCategoryInput>) {
-    const category = requireFound(await CategoryModel.findOne({ slug }), "Category");
-    Object.assign(category, input);
-    await category.save();
-    return category.toObject();
+    await findOrThrow(slug);
+    return prisma.category.update({ where: { slug }, data: input });
   },
 
   async remove(slug: string) {
-    const category = requireFound(await CategoryModel.findOne({ slug }), "Category");
-
-    const assignedCount = await ProductModel.countDocuments({ category: slug });
+    const category = await findOrThrow(slug);
+    const assignedCount = await prisma.product.count({ where: { category: slug } });
     if (assignedCount > 0) {
       throw new AppError(
         `Cannot delete category "${category.name}" — ${assignedCount} product(s) assigned.`,
@@ -32,8 +31,7 @@ export const categoryService = {
         { assignedCount }
       );
     }
-
-    await CategoryModel.deleteOne({ slug });
+    await prisma.category.delete({ where: { slug } });
     return category;
   },
 };

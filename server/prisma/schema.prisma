@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+// Prisma forbids field names starting with "_", so the API-facing primary key
+// is named `id` in the client while the Postgres column is mapped to `_id`.
+// A `toApi` serializer re-exposes it as `_id` in JSON responses.
+
+model User {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  email     String   @unique
+  password  String
+  phone     String   @default("")
+  role      String   @default("customer") // "customer" | "admin"
+  storeName String?
+  category  String?
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Category {
+  id          String   @id @default(cuid()) @map("_id")
+  slug        String   @unique
+  name        String
+  icon        String   @default("category")
+  description String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Product {
+  id           String   @id @default(cuid()) @map("_id")
+  name         String
+  category     String
+  brand        String   @default("Lumen")
+  price        Float
+  originalPrice Float   @default(0)
+  stock        Int      @default(0)
+  status       String   @default("active") // "active" | "out_of_stock" | "inactive"
+  rating       Float    @default(0)
+  reviewsCount Int      @default(0)
+  arrival      Boolean  @default(false)
+  isSale       Boolean  @default(false)
+  images       Json     @default("[]")
+  description  String   @default("")
+  specs        Json     @default("{}")
+  orderItems   OrderItem[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([price, status])
+  @@index([category])
+  @@index([brand])
+  @@map("products")
+}
+
+model Coupon {
+  id              String   @id @default(cuid()) @map("_id")
+  code            String   @unique
+  discountPercent Float
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("coupons")
+}
+
+model Order {
+  id           String      @id @default(cuid()) @map("_id")
+  orderNumber  String      @unique
+  customerId   String
+  customer     User        @relation(fields: [customerId], references: [id])
+  items        OrderItem[]
+  subtotal     Float
+  tax          Float       @default(0)
+  shipping     Float       @default(0)
+  discount     Float       @default(0)
+  total        Float
+  paymentMethod String
+  status       String      @default("Pending")
+  address      String
+  couponUsed   String?
+  orderNotes   String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid()) @map("_id")
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  name      String
+  price     Float
+  quantity  Int
+  image     String  @default("")
+
+  @@map("order_items")
+}
