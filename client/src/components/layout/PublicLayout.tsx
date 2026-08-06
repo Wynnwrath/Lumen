@@ -6,8 +6,10 @@ import { useWishlistStore } from "../../stores/wishlist.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { dataService } from "../../services/dataService";
 import { Icon } from "../common/Icon";
+import { Toast } from "../common/Toast";
+import { useToast } from "../../hooks/useToast";
 
-export const PublicLayout: React.FC = () => {
+export const PublicLayout = () => {
   const { mode, toggle } = useThemeStore();
   const { items, getSubtotal, getItemCount, removeItem } = useCartStore();
   const { ids: wishlistIds } = useWishlistStore();
@@ -20,7 +22,7 @@ export const PublicLayout: React.FC = () => {
   const [showCartModal, setShowCartModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState("");
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const { toast, showToast } = useToast();
 
   const searchRef = useRef<HTMLDivElement>(null);
   const cartModalRef = useRef<HTMLDivElement>(null);
@@ -91,9 +93,8 @@ export const PublicLayout: React.FC = () => {
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail) return;
-    setToastMessage("Thank you for subscribing to Lumen updates!");
+    showToast("Thank you for subscribing to Lumen updates!", "success");
     setNewsletterEmail("");
-    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleMobileNavigate = (path: string) => {
@@ -104,14 +105,7 @@ export const PublicLayout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col pb-16 md:pb-0 bg-background text-on-background">
       {/* Toast Notification Container */}
-      {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 animate-fade-up">
-          <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <Icon name="check_circle" className="text-emerald-400 text-base" />
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       {/* Top Announcement Bar */}
       <div className="bg-slate-900 dark:bg-slate-950 text-slate-200 text-xs py-2.5 px-6 font-medium border-b border-slate-800">

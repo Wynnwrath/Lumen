@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Icon } from "../../components/common/Icon";
-import { dataService, type CustomerData } from "../../services/dataService";
+import { dataService } from "../../services/dataService";
+import type { CustomerData } from "../../types";
+import { Button } from "../../components/common/Button";
+import { Modal } from "../../components/common/Modal";
 
-export const AdminCustomersPage: React.FC = () => {
+export const AdminCustomersPage = () => {
   const [customers] = useState<CustomerData[]>(dataService.getCustomers());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerData | null>(null);
@@ -168,120 +171,91 @@ export const AdminCustomersPage: React.FC = () => {
       </div>
 
       {/* 1-to-1 Customer Detailed Profile Modal (admin-customers.html parity) */}
-      {selectedCustomer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-fade-in-scale">
-            {/* Profile Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
-              <div className="flex items-center gap-3">
-                <img
-                  src={selectedCustomer.avatar}
-                  alt={selectedCustomer.name}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-blue-600 shrink-0"
-                />
-                <div>
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    {selectedCustomer.name}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {selectedCustomer.email}
-                  </p>
-                </div>
+      <Modal
+        open={!!selectedCustomer}
+        onClose={() => setSelectedCustomer(null)}
+        title={selectedCustomer ? selectedCustomer.name : ""}
+        subtitle={selectedCustomer ? selectedCustomer.email : undefined}
+        icon={selectedCustomer ? <img src={selectedCustomer.avatar} alt={selectedCustomer.name} className="w-full h-full object-cover" /> : undefined}
+        headerIconClassName="w-11 h-11 rounded-full border-2 border-blue-600 overflow-hidden"
+        className="max-w-2xl"
+        footer={<Button onClick={() => setSelectedCustomer(null)}>Close Profile</Button>}
+      >
+        {selectedCustomer && (
+          <>
+            {/* Summary Stats Strip */}
+            <div className="grid grid-cols-3 gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-center">
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
+                  Account Status
+                </p>
+                <span
+                  className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${selectedCustomer.tier.includes("VIP")
+                      ? "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300"
+                      : selectedCustomer.tier.includes("Pro")
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                        : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }`}
+                >
+                  {selectedCustomer.tier}
+                </span>
               </div>
-              <button
-                onClick={() => setSelectedCustomer(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
-              >
-                <Icon name="close" className="text-xl" />
-              </button>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
+                  Total Orders
+                </p>
+                <p className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
+                  {selectedCustomer.totalOrders}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
+                  Lifetime Spend
+                </p>
+                <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
+                  ${selectedCustomer.totalSpent.toFixed(2)}
+                </p>
+              </div>
             </div>
 
-            {/* Profile Body Content */}
-            <div className="p-6 space-y-5 overflow-y-auto flex-1">
-              {/* Summary Stats Strip */}
-              <div className="grid grid-cols-3 gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-center">
+            {/* Contact Info Details */}
+            <div className="space-y-2 text-xs">
+              <h4 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Icon name="badge" className="text-blue-600 text-sm" />
+                <span>Contact & Address Info</span>
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
                 <div>
-                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
-                    Account Status
-                  </p>
-                  <span
-                    className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${selectedCustomer.tier.includes("VIP")
-                        ? "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300"
-                        : selectedCustomer.tier.includes("Pro")
-                          ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-                          : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                      }`}
-                  >
-                    {selectedCustomer.tier}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
-                    Total Orders
-                  </p>
-                  <p className="text-lg font-black text-slate-900 dark:text-white mt-0.5">
-                    {selectedCustomer.totalOrders}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
-                    Lifetime Spend
-                  </p>
-                  <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
-                    ${selectedCustomer.totalSpent.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-
-              {/* Contact Info Details */}
-              <div className="space-y-2 text-xs">
-                <h4 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <Icon name="badge" className="text-blue-600 text-sm" />
-                  <span>Contact & Address Info</span>
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
-                  <div>
-                    <span className="text-slate-400 font-medium">Phone Number:</span>
-                    <p className="font-bold text-slate-900 dark:text-white mt-0.5">
-                      {selectedCustomer.phone}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 font-medium">Shipping Address:</span>
-                    <p className="font-bold text-slate-900 dark:text-white mt-0.5">
-                      {selectedCustomer.address}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Customer Account Details */}
-              <div className="space-y-2 text-xs">
-                <h4 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <Icon name="event" className="text-blue-600 text-sm" />
-                  <span>Account Registration</span>
-                </h4>
-                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
-                  <span className="text-slate-400 font-medium">Registered Date:</span>
+                  <span className="text-slate-400 font-medium">Phone Number:</span>
                   <p className="font-bold text-slate-900 dark:text-white mt-0.5">
-                    {selectedCustomer.registeredAt}
+                    {selectedCustomer.phone}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-medium">Shipping Address:</span>
+                  <p className="font-bold text-slate-900 dark:text-white mt-0.5">
+                    {selectedCustomer.address}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 flex justify-end bg-slate-50/50 dark:bg-slate-800/40">
-              <button
-                onClick={() => setSelectedCustomer(null)}
-                className="px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold rounded-xl hover:bg-slate-800 dark:hover:bg-white transition"
-              >
-                Close Profile
-              </button>
+            {/* Customer Account Details */}
+            <div className="space-y-2 text-xs">
+              <h4 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <Icon name="event" className="text-blue-600 text-sm" />
+                <span>Account Registration</span>
+              </h4>
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
+                <span className="text-slate-400 font-medium">Registered Date:</span>
+                <p className="font-bold text-slate-900 dark:text-white mt-0.5">
+                  {selectedCustomer.registeredAt}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

@@ -1,22 +1,26 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { dataService } from "../services/dataService";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import { Icon } from "../components/common/Icon";
+import { ProductCard } from "../components/common/ProductCard";
+import { QuantityStepper } from "../components/common/QuantityStepper";
+import { Toast } from "../components/common/Toast";
+import { useToast } from "../hooks/useToast";
 
-export const ProductDetailPage: React.FC = () => {
+export const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem } = useCartStore();
   const { ids: wishlistIds, toggle: toggleWishlist } = useWishlistStore();
+  const { toast, showToast } = useToast();
 
   const product = dataService.getProductById(id || "p1");
   const allProducts = dataService.getProducts();
 
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
-  const [toastMessage, setToastMessage] = useState<{ text: string; type: string } | null>(null);
   const [isZoomOpen, setIsZoomOpen] = useState<boolean>(false);
 
   // Normalize images array
@@ -55,24 +59,10 @@ export const ProductDetailPage: React.FC = () => {
   // Related products in same category
   const relatedProducts = allProducts.filter((p) => p.category === product.category && p._id !== product._id).slice(0, 4);
 
-  const showToast = (text: string, type = "info") => {
-    setToastMessage({ text, type });
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  const handleQuantityChange = (delta: number) => {
-    const newQty = quantity + delta;
-    if (newQty >= 1 && newQty <= product.stock) {
-      setQuantity(newQty);
-    } else if (newQty > product.stock) {
-      showToast(`Only ${product.stock} units available in stock!`, "info");
-    }
-  };
-
   const handleAddToCart = () => {
     if (isOutOfStock) return;
     addItem(product, quantity);
-    showToast(`Added ${quantity} &times; "${product.name}" to cart!`, "cart");
+    showToast(`Added ${quantity} × "${product.name}" to cart!`, "cart");
   };
 
   const handleBuyNow = () => {
@@ -90,20 +80,7 @@ export const ProductDetailPage: React.FC = () => {
   return (
     <div className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8 flex-grow w-full pb-24 md:pb-8">
       {/* Toast Notification Container */}
-      {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 animate-fade-up">
-          <div className={`px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-semibold max-w-sm border ${
-            toastMessage.type === "cart" 
-              ? "bg-secondary text-white border-secondary-container"
-              : toastMessage.type === "wishlist"
-              ? "bg-pink-600 text-white border-pink-700"
-              : "bg-slate-900 text-white border-slate-700"
-          }`}>
-            <Icon name={toastMessage.type === "cart" ? "check_circle" : toastMessage.type === "wishlist" ? "favorite" : "info"} className="text-base" />
-            <span dangerouslySetInnerHTML={{ __html: toastMessage.text }}></span>
-          </div>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-xs text-outline overflow-x-auto whitespace-nowrap hide-scroll">
@@ -239,23 +216,7 @@ export const ProductDetailPage: React.FC = () => {
             <div className="flex flex-row items-center gap-3">
 
               {/* Quantity Stepper */}
-              <div className="flex items-center justify-between border border-outline-variant/60 rounded-xl p-1 bg-surface dark:bg-slate-800 w-32 shrink-0">
-                <button
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1 || isOutOfStock}
-                  className="w-8 h-8 rounded-lg hover:bg-surface-container dark:hover:bg-slate-700 flex items-center justify-center font-bold text-on-surface transition active:scale-95 disabled:opacity-40"
-                >
-                  <Icon name="remove" className="text-xs" />
-                </button>
-                <span className="font-extrabold text-xs text-on-surface px-2">{quantity}</span>
-                <button
-                  onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= product.stock || isOutOfStock}
-                  className="w-8 h-8 rounded-lg hover:bg-surface-container dark:hover:bg-slate-700 flex items-center justify-center font-bold text-on-surface transition active:scale-95 disabled:opacity-40"
-                >
-                  <Icon name="add" className="text-xs" />
-                </button>
-              </div>
+              <QuantityStepper value={quantity} onChange={setQuantity} min={1} max={product.stock} />
 
               {/* Add to Cart Button (Desktop View) */}
               <button
@@ -355,35 +316,9 @@ export const ProductDetailPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
-            {relatedProducts.map((rel) => {
-              const relImg = rel.images && rel.images.length > 0 ? rel.images[0] : "";
-              return (
-                <div
-                  key={rel._id}
-                  className="product-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-none shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group border border-outline-variant/30 overflow-hidden"
-                >
-                  <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
-                    <Link to={`/product/${rel._id}`} className="w-full h-full block">
-                      <img src={relImg} alt={rel.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
-                    </Link>
-                  </div>
-                  <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between space-y-1.5 sm:space-y-2">
-                    <div>
-                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">{rel.category}</span>
-                      <Link to={`/product/${rel._id}`} className="text-xs sm:text-sm font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5">
-                        {rel.name}
-                      </Link>
-                    </div>
-                    <div className="pt-1.5 flex items-center justify-between border-t border-outline-variant/20">
-                      <span className="text-xs sm:text-sm font-extrabold text-primary dark:text-white">${rel.price.toFixed(2)}</span>
-                      <Link to={`/product/${rel._id}`} className="bg-secondary/10 hover:bg-secondary text-secondary hover:text-white px-2 py-1 rounded-lg text-xs font-bold transition">
-                        View
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {relatedProducts.map((rel) => (
+              <ProductCard key={rel._id} product={rel} variant="compact" />
+            ))}
           </div>
         </section>
       )}

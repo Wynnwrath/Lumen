@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/common/Icon";
+import { Button } from "../components/common/Button";
+import { QuantityStepper } from "../components/common/QuantityStepper";
 
-export const CartPage: React.FC = () => {
+export const CartPage = () => {
   const { items, getSubtotal, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
   const navigate = useNavigate();
 
@@ -114,22 +116,7 @@ export const CartPage: React.FC = () => {
                 </div>
 
                 {/* Quantity Controls */}
-                <div className="flex items-center gap-1 sm:gap-2 bg-surface-container dark:bg-slate-800 p-0.5 sm:p-1 rounded-xl border border-outline-variant/30 shrink-0">
-                  <button
-                    onClick={() => updateQuantity(product._id, quantity - 1)}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container-high transition"
-                  >
-                    <Icon name="remove" className="text-[11px] sm:text-xs" />
-                  </button>
-                  <span className="w-5 sm:w-6 text-center font-extrabold text-xs text-on-surface">{quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(product._id, quantity + 1)}
-                    disabled={quantity >= product.stock}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container-high transition disabled:opacity-40"
-                  >
-                    <Icon name="add" className="text-[11px] sm:text-xs" />
-                  </button>
-                </div>
+                <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product._id, q)} min={1} max={product.stock} />
 
                 {/* Subtotal & Delete */}
                 <div className="flex items-center gap-2 sm:gap-3 text-right shrink-0">
@@ -225,13 +212,9 @@ export const CartPage: React.FC = () => {
             </div>
 
             {/* Checkout CTA */}
-            <button
-              onClick={() => navigate("/checkout")}
-              className="w-full py-3.5 rounded-2xl bg-secondary hover:bg-secondary-container text-white font-extrabold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95"
-            >
-              <span>Proceed to Checkout</span>
-              <Icon name="arrow_forward" className="text-base" />
-            </button>
+            <Button fullWidth icon="arrow_forward" onClick={() => navigate("/checkout")}>
+              Proceed to Checkout
+            </Button>
 
             {/* Guarantees */}
             <div className="pt-2 border-t border-outline-variant/10 text-[11px] text-outline space-y-1.5">

@@ -2,17 +2,17 @@ import React, { useState } from "react";
 import { dataService } from "../../services/dataService";
 import type { Category } from "../../types";
 import { Icon } from "../../components/common/Icon";
+import { Button } from "../../components/common/Button";
+import { KpiCard } from "../../components/common/KpiCard";
+import { Modal } from "../../components/common/Modal";
+import { Toast } from "../../components/common/Toast";
+import { useToast } from "../../hooks/useToast";
 
-interface Toast {
-  id: number;
-  message: string;
-  type: "info" | "success";
-}
-
-export const AdminCategoriesPage: React.FC = () => {
+export const AdminCategoriesPage = () => {
   const [categories, setCategories] = useState<Category[]>(dataService.getCategories());
   const [products] = useState(dataService.getProducts());
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast, showToast } = useToast();
 
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -22,15 +22,6 @@ export const AdminCategoriesPage: React.FC = () => {
   const [formDescription, setFormDescription] = useState("");
 
   const [pdfWarningMessage, setPdfWarningMessage] = useState<string | null>(null);
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const showToast = (message: string, type: "info" | "success" = "info") => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000);
-  };
 
   const refreshCategories = () => {
     setCategories(dataService.getCategories());
@@ -125,70 +116,42 @@ export const AdminCategoriesPage: React.FC = () => {
   return (
     <div className="space-y-6 w-full">
       {/* Toast Container */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-xs font-semibold max-w-sm border pointer-events-auto transition-all duration-200 ${toast.type === "success"
-                ? "bg-blue-600 text-white border-blue-500"
-                : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200"
-              }`}
-          >
-            <Icon name={toast.type === "success" ? "check_circle" : "info"} className="text-base" />
-            <span>{toast.message}</span>
-          </div>
-        ))}
-      </div>
+      <Toast toast={toast} />
 
       {/* Metrics Overview Cards Section */}
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full">
         {/* Total Categories Stat Card */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Total Categories</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
-              Active
-            </span>
-          </div>
-          <div>
-            <div id="stat-total-categories" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {categories.length}
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Taxonomy groups</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Total Categories"
+          chip="Active"
+          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
+          value={categories.length}
+          subtext="Taxonomy groups"
+          id="stat-total-categories"
+        />
 
         {/* Total Assigned Products */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Products Categorized</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-              Assigned
-            </span>
-          </div>
-          <div>
-            <div id="stat-categorized-products" className="text-xl sm:text-3xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tight">
-              {totalCategorizedProducts}
-            </div>
-            <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-300/80 font-medium mt-1">Catalog items linked</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Products Categorized"
+          chip="Assigned"
+          chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+          value={totalCategorizedProducts}
+          valueClassName="text-blue-600 dark:text-blue-400"
+          subtext="Catalog items linked"
+          id="stat-categorized-products"
+        />
 
         {/* Most Popular Category */}
-        <div className="col-span-2 sm:col-span-1 bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Top Category</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
-              Popular
-            </span>
-          </div>
-          <div>
-            <div id="stat-top-category" className="text-lg sm:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight truncate">
-              {topCategoryName}
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Highest item count</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Top Category"
+          chip="Popular"
+          chipClassName="bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+          value={topCategoryName}
+          valueClassName="text-lg sm:text-2xl"
+          subtext="Highest item count"
+          id="stat-top-category"
+          className="col-span-2 sm:col-span-1"
+        />
       </section>
 
       {/* Search & Actions Bar */}
@@ -205,13 +168,9 @@ export const AdminCategoriesPage: React.FC = () => {
           />
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
-          <button
-            onClick={handleOpenAddModal}
-            className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-xs transition shrink-0"
-          >
-            <Icon name="add" className="text-base" />
-            <span>Add Category</span>
-          </button>
+          <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
+            Add Category
+          </Button>
         </div>
       </section>
 
@@ -370,33 +329,21 @@ export const AdminCategoriesPage: React.FC = () => {
       </section>
 
       {/* Add / Edit Category Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/75 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden animate-fade-in-scale my-auto">
-            <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                  <Icon name={formIcon || "category"} className="text-xl" />
-                </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                    {editingCategory ? "Edit Category Taxonomy" : "Add New Category Taxonomy"}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    Configure catalog taxonomy and icon mapping
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowModal(false)}
-                type="button"
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg transition"
-              >
-                <Icon name="close" className="text-xl" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveCategory} className="p-6 sm:p-8 space-y-5 overflow-y-auto flex-1">
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingCategory ? "Edit Category Taxonomy" : "Add New Category Taxonomy"}
+        subtitle="Configure catalog taxonomy and icon mapping"
+        icon={<Icon name={formIcon || "category"} className="text-xl" />}
+        className="max-w-xl"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button variant="blue" type="submit" form="category-form">Save Category</Button>
+          </>
+        }
+      >
+        <form id="category-form" onSubmit={handleSaveCategory} className="space-y-5">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Category Title *</label>
                 <input
@@ -439,54 +386,20 @@ export const AdminCategoriesPage: React.FC = () => {
                   className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-600/20 transition"
                 />
               </div>
-
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-5 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-md transition"
-                >
-                  Save Category
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+        </form>
+      </Modal>
 
       {/* Deletion Blocked Warning Modal (PDF Guardrail Spec) */}
-      {pdfWarningMessage && (
-        <div className="fixed inset-0 z-50 bg-slate-950/75 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden p-6 text-center space-y-4 my-auto">
-            <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto text-2xl border border-amber-200 dark:border-amber-800">
-              <Icon name="warning" className="text-3xl" />
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Deletion Blocked (PDF Requirement)</h3>
-              <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                {pdfWarningMessage}
-              </p>
-            </div>
-
-            <div className="pt-2">
-              <button
-                onClick={() => setPdfWarningMessage(null)}
-                type="button"
-                className="w-full py-2.5 text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-xl transition"
-              >
-                Understood
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        open={!!pdfWarningMessage}
+        onClose={() => setPdfWarningMessage(null)}
+        title="Deletion Blocked (PDF Requirement)"
+        icon={<Icon name="warning" className="text-3xl text-amber-600" />}
+        headerIconClassName="bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 rounded-full w-14 h-14"
+        footer={<Button fullWidth onClick={() => setPdfWarningMessage(null)}>Understood</Button>}
+      >
+        <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">{pdfWarningMessage}</p>
+      </Modal>
     </div>
   );
 };

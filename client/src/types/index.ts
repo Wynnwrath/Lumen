@@ -68,3 +68,25 @@ export interface CartItem {
   product: Product;
   quantity: number;
 }
+
+// ---- Customer (shown in the admin customer directory) ----
+export interface CustomerData {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  avatar: string;
+  tier: string;
+  totalOrders: number;
+  totalSpent: number;
+  address: string;
+  registeredAt: string;
+}
+
+// ---- Small UI helpers shared across a few pages ----
+export interface ToastMessage {
+  message: string;
+  type: "info" | "success" | "error" | "cart" | "wishlist";
+}
+
+export type ThemeMode = "light" | "dark";

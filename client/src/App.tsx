@@ -23,7 +23,7 @@ import { useAuthStore } from "./stores/auth.store";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 
 // Protected Admin Route Component
-const ProtectedAdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
   if (!user || user.role !== "admin") {
     return <Navigate to="/admin/login" replace />;
@@ -31,7 +31,7 @@ const ProtectedAdminRoute: React.FC<{ children: React.ReactNode }> = ({ children
   return <>{children}</>;
 };
 
-export const App: React.FC = () => {
+export const App = () => {
   return (
     <>
       <ScrollToTop />

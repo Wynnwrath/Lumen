@@ -1,17 +1,4 @@
-import type { Product, Category, Order } from "../types";
-
-export interface CustomerData {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  avatar: string;
-  tier: string;
-  totalOrders: number;
-  totalSpent: number;
-  address: string;
-  registeredAt: string;
-}
+import type { Product, Category, Order, CustomerData } from "../types";
 
 const INITIAL_PRODUCTS: Product[] = [
   {

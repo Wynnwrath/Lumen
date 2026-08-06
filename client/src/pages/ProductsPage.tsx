@@ -1,16 +1,19 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { dataService } from "../services/dataService";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
+import { ProductCard } from "../components/common/ProductCard";
+import { Toast } from "../components/common/Toast";
+import { useToast } from "../hooks/useToast";
 
-export const ProductsPage: React.FC = () => {
+export const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { addItem } = useCartStore();
-  const { ids: wishlistIds, toggle: toggleWishlist } = useWishlistStore();
+  const { ids: wishlistIds } = useWishlistStore();
+  const { toast, showToast } = useToast();
 
   const urlCategory = searchParams.get("category") || "all";
   const urlSearch = searchParams.get("search") || "";
@@ -27,7 +30,6 @@ export const ProductsPage: React.FC = () => {
   const [maxPrice, setMaxPrice] = useState(1500);
   const [sortBy, setSortBy] = useState<"rating" | "featured" | "price-asc" | "price-desc" | "newest">("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
   const products = dataService.getProducts();
@@ -153,8 +155,7 @@ export const ProductsPage: React.FC = () => {
     e.stopPropagation();
     if (product.stock <= 0) return;
     addItem(product, 1);
-    setToastMessage(`Added "${product.name}" to cart!`);
-    setTimeout(() => setToastMessage(null), 3000);
+    showToast(`Added "${product.name}" to cart!`, "success");
   };
 
   const handleCategorySelect = (catSlug: string) => {
@@ -166,26 +167,10 @@ export const ProductsPage: React.FC = () => {
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty("--mouse-x", `${x}px`);
-    card.style.setProperty("--mouse-y", `${y}px`);
-  };
-
   return (
     <main className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-8 flex-grow w-full">
       {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 animate-fade-up">
-          <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <Icon name="check_circle" className="text-emerald-400 text-base" />
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       {/* Header Section: Title & Controls */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-3 border-b border-outline-variant/30">
@@ -499,190 +484,16 @@ export const ProductsPage: React.FC = () => {
             </div>
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
-              {filteredProducts.map((product) => {
-                const isWishlisted = wishlistIds.includes(product._id);
-                const isOutOfStock = product.stock <= 0;
-
-                let stockBadge = null;
-                if (isOutOfStock) {
-                  stockBadge = (
-                    <span className="bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                      Out of Stock
-                    </span>
-                  );
-                } else if (product.stock <= 3) {
-                  stockBadge = (
-                    <span className="bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                      Only {product.stock} Left
-                    </span>
-                  );
-                } else if (product.arrival || product.isNew) {
-                  stockBadge = (
-                    <span className="bg-secondary-container text-on-secondary-container text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                      New
-                    </span>
-                  );
-                } else if (product.isSale) {
-                  stockBadge = (
-                    <span className="bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                      Sale
-                    </span>
-                  );
-                }
-
-                return (
-                  <div
-                    key={product._id}
-                    onMouseMove={handleMouseMove}
-                    className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30 overflow-hidden"
-                  >
-                    {/* Image Container with Badges & Wishlist */}
-                    <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
-                      <Link to={`/product/${product._id}`} className="w-full h-full block">
-                        <img
-                          src={product.images[0]}
-                          alt={product.name}
-                          className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </Link>
-                      <div className="absolute top-2 left-2 z-10">{stockBadge}</div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleWishlist(product._id);
-                        }}
-                        className="absolute top-2 right-2 z-10 text-outline hover:text-red-500 transition-all bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-full p-1 sm:p-1.5 shadow-xs hover:scale-110"
-                      >
-                        <Icon name="favorite" filled={isWishlisted} className={`text-base sm:text-lg ${isWishlisted ? "text-red-500" : ""}`} />
-                      </button>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between space-y-1.5 sm:space-y-2">
-                      <div>
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">
-                          {product.category}
-                        </span>
-                        <Link
-                          to={`/product/${product._id}`}
-                          className="text-xs sm:text-base font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5"
-                        >
-                          {product.name}
-                        </Link>
-
-                        {/* Rating */}
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <div className="flex text-amber-400 text-[10px] sm:text-xs">
-                            <Icon name="star" className="text-xs sm:text-sm" filled />
-                          </div>
-                          <span className="text-[10px] sm:text-xs font-bold text-on-surface">{product.rating}</span>
-                          <span className="text-[10px] sm:text-xs text-outline font-medium">({product.reviewsCount})</span>
-                        </div>
-                      </div>
-
-                      {/* Price & Actions */}
-                      <div className="pt-1.5 flex items-center justify-between border-t border-outline-variant/20">
-                        <div>
-                          <span className="text-xs sm:text-base font-extrabold text-primary dark:text-white">
-                            ${product.price.toFixed(2)}
-                          </span>
-                          {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-[10px] sm:text-xs text-outline line-through ml-1 hidden sm:inline">
-                              ${product.originalPrice.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex gap-1">
-                          <button
-                            onClick={(e) => handleAddToCart(product, e)}
-                            disabled={isOutOfStock}
-                            className={`bg-secondary hover:bg-secondary-container ${
-                              isOutOfStock ? "opacity-40 cursor-not-allowed" : ""
-                            } text-white p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all active:scale-95 shadow-sm flex items-center gap-1 text-[11px] font-bold`}
-                            title="Add to Cart"
-                          >
-                            <Icon name="add_shopping_cart" className="text-sm sm:text-base" />
-                            <span className="hidden sm:inline">Add</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {filteredProducts.map((product) => (
+                <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
+              ))}
             </div>
           ) : (
             /* List View */
             <div className="space-y-3">
-              {filteredProducts.map((product) => {
-                const isWishlisted = wishlistIds.includes(product._id);
-                const isOutOfStock = product.stock <= 0;
-
-                return (
-                  <div
-                    key={product._id}
-                    onMouseMove={handleMouseMove}
-                    className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-outline-variant/30 p-3 sm:p-4 shadow-xs hover:shadow-lg transition-all flex flex-row items-center gap-3 sm:gap-4 group cursor-pointer"
-                    onClick={() => navigate(`/product/${product._id}`)}
-                  >
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-20 h-20 sm:w-32 sm:h-32 object-cover rounded-xl bg-slate-100 dark:bg-slate-700/50 shrink-0"
-                    />
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">
-                          {product.category}
-                        </span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWishlist(product._id);
-                          }}
-                          className="text-outline hover:text-red-500"
-                        >
-                          <Icon name="favorite" filled={isWishlisted} className={`text-base sm:text-lg ${isWishlisted ? "text-red-500" : ""}`} />
-                        </button>
-                      </div>
-                      <Link
-                        to={`/product/${product._id}`}
-                        className="font-bold text-xs sm:text-base text-on-surface group-hover:text-secondary transition-colors block line-clamp-1"
-                      >
-                        {product.name}
-                      </Link>
-                      <p className="text-[11px] text-outline line-clamp-1 font-normal hidden sm:block">
-                        {product.description}
-                      </p>
-                      <div className="flex items-center gap-1 text-[10px] sm:text-xs">
-                        <Icon name="star" filled className="text-xs sm:text-sm text-amber-400" />
-                        <span className="font-bold">{product.rating}</span>
-                        <span className="text-outline text-[10px]">({product.reviewsCount})</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-end justify-between shrink-0 gap-2">
-                      <div className="text-right">
-                        <span className="text-sm sm:text-xl font-extrabold text-on-surface block">
-                          ${product.price.toFixed(2)}
-                        </span>
-                      </div>
-                      <button
-                        onClick={(e) => handleAddToCart(product, e)}
-                        disabled={isOutOfStock}
-                        className={`p-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
-                          isOutOfStock
-                            ? "bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed"
-                            : "bg-secondary hover:bg-secondary-container text-white shadow-xs"
-                        }`}
-                      >
-                        <Icon name="add_shopping_cart" className="text-sm" />
-                        <span className="hidden sm:inline">Add</span>
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+              {filteredProducts.map((product) => (
+                <ProductCard key={product._id} product={product} variant="list" onAddToCart={handleAddToCart} />
+              ))}
             </div>
           )}
         </section>

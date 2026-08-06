@@ -1,28 +1,24 @@
 import React, { useState } from "react";
 import { Icon } from "../../components/common/Icon";
+import { Button } from "../../components/common/Button";
+import { Toast } from "../../components/common/Toast";
+import { useToast } from "../../hooks/useToast";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
 import { useThemeStore } from "../../stores/theme.store";
 
-export const AdminLoginPage: React.FC = () => {
+export const AdminLoginPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, loginAdmin, logout } = useAuthStore();
   const { toggle } = useThemeStore();
+  const { toast, showToast } = useToast();
 
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
   // UI state
-  const [toast, setToast] = useState<{ message: string; type: "info" | "success" | "error" } | null>(null);
   const [alert, setAlert] = useState<{ message: string; type: "success" | "error" } | null>(null);
-
-  const showToast = (message: string, type: "info" | "success" | "error" = "info") => {
-    setToast({ message, type });
-    setTimeout(() => {
-      setToast(null);
-    }, 3500);
-  };
 
   const handleDemoAutofill = () => {
     setLoginEmail("admin@lumen.com");
@@ -91,23 +87,7 @@ export const AdminLoginPage: React.FC = () => {
       </header>
 
       {/* Toast Notification Container */}
-      {toast && (
-        <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none animate-fade-up">
-          <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700 pointer-events-auto">
-            <Icon
-              name={toast.type === "success" ? "check_circle" : toast.type === "error" ? "error" : "info"}
-              className={`text-base ${
-                toast.type === "success"
-                  ? "text-emerald-400"
-                  : toast.type === "error"
-                  ? "text-rose-400"
-                  : "text-blue-400"
-              }`}
-            />
-            <span>{toast.message}</span>
-          </div>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       {/* Main Auth Section */}
       <main className="flex-grow flex items-center justify-center p-3 sm:p-6 md:p-8 my-2 sm:my-6">
@@ -345,13 +325,9 @@ export const AdminLoginPage: React.FC = () => {
                     </label>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-secondary hover:bg-secondary-container text-white font-bold py-3 rounded-xl text-xs transition shadow-md hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
-                  >
-                    <Icon name="login" className="text-lg" />
-                    <span>Sign In to Admin Portal</span>
-                  </button>
+                  <Button type="submit" icon="login" fullWidth>
+                    Sign In to Admin Portal
+                  </Button>
                 </form>
 
                 {/* Quick Demo Fill Helper */}

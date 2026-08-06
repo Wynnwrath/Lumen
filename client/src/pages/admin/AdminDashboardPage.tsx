@@ -1,28 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Icon } from "../../components/common/Icon";
 import { dataService } from "../../services/dataService";
 import type { Order, Product } from "../../types";
+import { KpiCard } from "../../components/common/KpiCard";
+import { Modal } from "../../components/common/Modal";
+import { StatusBadge, getStatusColorClass } from "../../components/common/StatusBadge";
+import { Toast } from "../../components/common/Toast";
+import { useToast } from "../../hooks/useToast";
 
-interface Toast {
-  id: number;
-  message: string;
-  type: "info" | "success";
-}
-
-export const AdminDashboardPage: React.FC = () => {
+export const AdminDashboardPage = () => {
   const [orders, setOrders] = useState<Order[]>(dataService.getOrders());
   const [products, setProducts] = useState<Product[]>(dataService.getProducts());
   const [orderFilter, setOrderFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const showToast = (message: string, type: "info" | "success" = "info") => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000);
-  };
+  const { toast, showToast } = useToast();
 
   const refreshData = () => {
     setOrders(dataService.getOrders());
@@ -77,147 +68,78 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
-  const getStatusColorClass = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/90 dark:text-emerald-200 dark:border-emerald-600 font-bold";
-      case "pending":
-        return "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/90 dark:text-amber-200 dark:border-amber-600 font-bold";
-      case "preparing":
-        return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/90 dark:text-purple-200 dark:border-purple-600 font-bold";
-      case "cancelled":
-        return "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/90 dark:text-rose-200 dark:border-rose-600 font-bold";
-      case "shipped":
-        return "bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-900/90 dark:text-indigo-200 dark:border-indigo-600 font-bold";
-      case "confirmed":
-      default:
-        return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/90 dark:text-blue-200 dark:border-blue-600 font-bold";
-    }
-  };
-
-  const getStatusBadgeHTML = (status: string) => {
-    return (
-      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${getStatusColorClass(status)}`}>
-        <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-        <span>{status}</span>
-      </span>
-    );
-  };
-
   return (
     <div className="space-y-5 sm:space-y-6 w-full">
       {/* Toast Notification Container */}
-      <div id="toast-container" className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-xs font-semibold max-w-sm border pointer-events-auto transition-all duration-200 ${toast.type === "success"
-                ? "bg-blue-600 text-white border-blue-500"
-                : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200"
-              }`}
-          >
-            <Icon name={toast.type === "success" ? "check_circle" : "info"} className="text-base" />
-            <span>{toast.message}</span>
-          </div>
-        ))}
-      </div>
+      <Toast toast={toast} />
 
       {/* Top 5 Prominent KPI Cards Row */}
       <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5 w-full">
         {/* Total Revenue / Units Sold */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Units Sold</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-              -38%
-            </span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <div id="kpi-sales" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
-                ${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <Icon name="north_east" className="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold" />
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Up 38% this week</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Units Sold"
+          chip="-38%"
+          chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+          value={`$${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          valueClassName="font-mono"
+          icon="north_east"
+          iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
+          subtext="Up 38% this week"
+          id="kpi-sales"
+          className="rounded-2xl"
+        />
 
         {/* Total Orders */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Total Orders</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-              -11%
-            </span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <div id="kpi-orders" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                {totalOrdersCount.toLocaleString()}
-              </div>
-              <Icon name="north_east" className="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold" />
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Up 11% this week</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Total Orders"
+          chip="-11%"
+          chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+          value={totalOrdersCount.toLocaleString()}
+          icon="north_east"
+          iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
+          subtext="Up 11% this week"
+          id="kpi-orders"
+        />
 
         {/* Avg Order Value */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Avg. Order</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
-              +8%
-            </span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <div id="kpi-avg-order" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
-                ${avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <Icon name="north_east" className="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold" />
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Avg customer spend</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Avg. Order"
+          chip="+8%"
+          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
+          value={`$${avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          valueClassName="font-mono"
+          icon="north_east"
+          iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
+          subtext="Avg customer spend"
+          id="kpi-avg-order"
+        />
 
         {/* Pending Orders */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Pending</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
-              Action
-            </span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <div id="kpi-pending" className="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">
-                {pendingOrdersCount}
-              </div>
-              <Icon name="schedule" className="text-amber-600 dark:text-amber-400 text-sm sm:text-base font-bold" />
-            </div>
-            <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-300/80 font-medium mt-1">Awaiting processing</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Pending"
+          chip="Action"
+          chipClassName="bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+          value={pendingOrdersCount}
+          valueClassName="text-amber-600 dark:text-amber-400"
+          icon="schedule"
+          iconClassName="text-amber-600 dark:text-amber-400 text-sm sm:text-base font-bold"
+          subtext="Awaiting processing"
+          id="kpi-pending"
+        />
 
         {/* Completed Orders */}
-        <div className="col-span-2 sm:col-span-1 bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Completed</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-              Fulfilled
-            </span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <div id="kpi-completed" className="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight">
-                {completedOrdersCount}
-              </div>
-              <Icon name="task_alt" className="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold" />
-            </div>
-            <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-300/80 font-medium mt-1">Delivered to buyers</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Completed"
+          chip="Fulfilled"
+          chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+          value={completedOrdersCount}
+          valueClassName="text-emerald-600 dark:text-emerald-400"
+          icon="task_alt"
+          iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
+          subtext="Delivered to buyers"
+          id="kpi-completed"
+          className="col-span-2 sm:col-span-1"
+        />
       </section>
 
       {/* Middle Row: Sales Conversion Funnel & Revenue Trend */}
@@ -373,7 +295,7 @@ export const AdminDashboardPage: React.FC = () => {
                         <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">
                           #{ord.orderNumber}
                         </span>
-                        {getStatusBadgeHTML(ord.status)}
+                        <StatusBadge status={ord.status} />
                       </div>
                       <span className="font-mono font-extrabold text-sm text-slate-900 dark:text-white">
                         ${ord.total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -452,7 +374,7 @@ export const AdminDashboardPage: React.FC = () => {
                           <Icon name="north_east" className="text-emerald-600 dark:text-emerald-400 text-xs align-middle inline-block ml-0.5" />
                         </td>
                         <td className="px-5 py-4">
-                          {getStatusBadgeHTML(ord.status)}
+                          <StatusBadge status={ord.status} />
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2">
@@ -555,21 +477,26 @@ export const AdminDashboardPage: React.FC = () => {
       </section>
 
       {/* Order Detail Modal */}
-      {selectedOrder && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-              <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
-                Order #{selectedOrder.orderNumber}
-              </h3>
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="text-slate-400 hover:text-slate-900 dark:hover:text-white"
-              >
-                <Icon name="close" className="text-lg" />
-              </button>
-            </div>
-
+      <Modal
+        open={!!selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+        title={selectedOrder ? `Order #${selectedOrder.orderNumber}` : ""}
+        footer={
+          <div className="flex justify-between items-center w-full">
+            <span className="font-black text-slate-900 dark:text-white text-sm">
+              Total Amount: ${selectedOrder ? selectedOrder.total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
+            </span>
+            <button
+              onClick={() => setSelectedOrder(null)}
+              className="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold"
+            >
+              Close
+            </button>
+          </div>
+        }
+      >
+        {selectedOrder && (
+          <>
             <div className="space-y-2 text-xs">
               <p><strong className="text-slate-500 font-semibold">Customer:</strong> {selectedOrder.customer.name} ({selectedOrder.customer.email})</p>
               <p><strong className="text-slate-500 font-semibold">Date:</strong> {formatDate(selectedOrder.createdAt)}</p>
@@ -595,21 +522,9 @@ export const AdminDashboardPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
-              <span className="font-black text-slate-900 dark:text-white text-sm">
-                Total Amount: ${selectedOrder.total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

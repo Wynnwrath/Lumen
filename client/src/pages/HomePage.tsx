@@ -2,9 +2,11 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { dataService } from "../services/dataService";
 import { useCartStore } from "../stores/cart.store";
-import { useWishlistStore } from "../stores/wishlist.store";
 import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
+import { ProductCard } from "../components/common/ProductCard";
+import { Toast } from "../components/common/Toast";
+import { useToast } from "../hooks/useToast";
 
 const HERO_SLIDES = [
   {
@@ -98,14 +100,13 @@ const CATEGORIES = [
   },
 ];
 
-export const HomePage: React.FC = () => {
+export const HomePage = () => {
   const navigate = useNavigate();
   const { addItem } = useCartStore();
-  const { ids: wishlistIds, toggle: toggleWishlist } = useWishlistStore();
+  const { toast, showToast } = useToast();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("featured");
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Carousel Hero Banner States
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
@@ -148,8 +149,7 @@ export const HomePage: React.FC = () => {
     e.stopPropagation();
     if (product.stock <= 0) return;
     addItem(product, 1);
-    setToastMessage(`Added "${product.name}" to cart!`);
-    setTimeout(() => setToastMessage(null), 3000);
+    showToast(`Added "${product.name}" to cart!`, "success");
   };
 
   const handleQuickBuyHero = (e: React.MouseEvent, productId: string) => {
@@ -157,18 +157,8 @@ export const HomePage: React.FC = () => {
     const prod = dataService.getProductById(productId) || allProducts[0];
     if (prod) {
       addItem(prod, 1);
-      setToastMessage(`Added "${prod.name}" to cart!`);
-      setTimeout(() => setToastMessage(null), 3000);
+      showToast(`Added "${prod.name}" to cart!`, "success");
     }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty("--mouse-x", `${x}px`);
-    card.style.setProperty("--mouse-y", `${y}px`);
   };
 
   const handleCategoryClick = (catId: string) => {
@@ -190,14 +180,7 @@ export const HomePage: React.FC = () => {
   return (
     <main className="max-w-container-max mx-auto px-3 sm:px-6 py-3 sm:py-8 space-y-4 sm:space-y-10 flex-grow w-full">
       {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 animate-fade-up">
-          <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <Icon name="check_circle" className="text-emerald-400 text-base" />
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       {/* 4-SLIDE AUTOMATED CAROUSEL HERO BANNER */}
       <section
@@ -215,7 +198,6 @@ export const HomePage: React.FC = () => {
           {HERO_SLIDES.map((slide) => (
             <div
               key={slide.id}
-              onMouseMove={handleMouseMove}
               className="w-full shrink-0 relative min-h-[220px] sm:min-h-[460px] flex items-center pl-12 pr-10 sm:px-16 py-5 sm:py-14 aurora-bg spotlight-card"
             >
               {/* Slide Background Image & Gradient Overlay */}
@@ -395,106 +377,9 @@ export const HomePage: React.FC = () => {
 
         {/* 2-Column Grid on Mobile Viewports */}
         <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
-          {displayProducts.map((product) => {
-            const isWishlisted = wishlistIds.includes(product._id);
-            const isOutOfStock = product.stock <= 0;
-
-            return (
-              <div
-                key={product._id}
-                onMouseMove={handleMouseMove}
-                className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30 overflow-hidden"
-              >
-                {/* Image Container with Badges & Wishlist */}
-                <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
-                  <Link to={`/product/${product._id}`} className="w-full h-full block">
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </Link>
-
-                  {/* Stock/Status Badges */}
-                  <div className="absolute top-2 left-2 z-10">
-                    {isOutOfStock ? (
-                      <span className="bg-red-100 dark:bg-red-900/80 text-red-600 dark:text-red-200 text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase">
-                        Out of Stock
-                      </span>
-                    ) : product.isSale ? (
-                      <span className="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-extrabold uppercase">
-                        Sale
-                      </span>
-                    ) : product.isNew ? (
-                      <span className="bg-secondary text-white text-[9px] px-1.5 py-0.5 rounded-full font-extrabold uppercase">
-                        New
-                      </span>
-                    ) : null}
-                  </div>
-
-                  {/* Wishlist Heart Icon */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleWishlist(product._id);
-                    }}
-                    className="absolute top-2 right-2 z-10 text-outline hover:text-red-500 transition-all bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-full p-1 sm:p-1.5 shadow-xs hover:scale-110"
-                    title="Wishlist"
-                  >
-                    <Icon name="favorite" filled={isWishlisted} className={`text-sm sm:text-base ${isWishlisted ? "text-red-500" : ""}`} />
-                  </button>
-                </div>
-
-                {/* Content */}
-                <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between space-y-1.5 sm:space-y-2">
-                  <div>
-                    <span className="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-secondary">
-                      {product.category}
-                    </span>
-                    <Link
-                      to={`/product/${product._id}`}
-                      className="text-xs sm:text-base font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5"
-                    >
-                      {product.name}
-                    </Link>
-
-                    {/* Rating */}
-                    <div className="flex items-center gap-1 mt-1">
-                      <div className="flex text-amber-400 text-[10px] sm:text-xs">
-                        <Icon name="star" className="text-xs sm:text-sm" filled />
-                      </div>
-                      <span className="text-[10px] sm:text-xs font-bold text-on-surface">{product.rating}</span>
-                      <span className="text-[10px] sm:text-xs text-outline font-medium">({product.reviewsCount})</span>
-                    </div>
-                  </div>
-
-                  {/* Price & Actions */}
-                  <div className="pt-1.5 flex items-center justify-between border-t border-outline-variant/20">
-                    <div>
-                      <span className="text-xs sm:text-base font-extrabold text-primary dark:text-white">
-                        ${product.price.toFixed(2)}
-                      </span>
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <span className="text-[10px] text-outline line-through ml-1 hidden sm:inline">
-                          ${product.originalPrice.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                    <button
-                      onClick={(e) => handleAddToCart(product, e)}
-                      disabled={isOutOfStock}
-                      className={`bg-secondary hover:bg-secondary-container ${isOutOfStock ? "opacity-40 cursor-not-allowed" : ""
-                        } text-white p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all active:scale-95 shadow-sm flex items-center gap-1 text-[11px] font-bold`}
-                      title="Add to Cart"
-                    >
-                      <Icon name="add_shopping_cart" className="text-xs sm:text-base" />
-                      <span className="hidden sm:inline">Add</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {displayProducts.map((product) => (
+            <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
+          ))}
         </div>
 
         {/* View Full Catalog CTA Button */}

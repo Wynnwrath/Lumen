@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../stores/theme.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { Icon } from "../common/Icon";
 
-export const AdminLayout: React.FC = () => {
+export const AdminLayout = () => {
   const { mode, toggle } = useThemeStore();
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();

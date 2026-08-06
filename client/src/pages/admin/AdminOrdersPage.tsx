@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Icon } from "../../components/common/Icon";
 import { dataService } from "../../services/dataService";
 import type { Order } from "../../types";
+import { getStatusColorClass } from "../../components/common/StatusBadge";
+import { Button } from "../../components/common/Button";
+import { Modal } from "../../components/common/Modal";
 
-export const AdminOrdersPage: React.FC = () => {
+export const AdminOrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>(dataService.getOrders());
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,24 +43,6 @@ export const AdminOrdersPage: React.FC = () => {
   const pendingOrdersCount = orders.filter(
     (o) => o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing"
   ).length;
-
-  const getStatusColorClass = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/90 dark:text-emerald-200 dark:border-emerald-600 font-bold";
-      case "pending":
-        return "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/90 dark:text-amber-200 dark:border-amber-600 font-bold";
-      case "preparing":
-        return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/90 dark:text-purple-200 dark:border-purple-600 font-bold";
-      case "cancelled":
-        return "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/90 dark:text-rose-200 dark:border-rose-600 font-bold";
-      case "shipped":
-        return "bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-900/90 dark:text-indigo-200 dark:border-indigo-600 font-bold";
-      case "confirmed":
-      default:
-        return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/90 dark:text-blue-200 dark:border-blue-600 font-bold";
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -233,21 +218,23 @@ export const AdminOrdersPage: React.FC = () => {
       </div>
 
       {/* Invoice Modal */}
-      {selectedOrder && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div>
-                <h3 className="font-black text-slate-900 dark:text-white text-base">
-                  Order Invoice #{selectedOrder.orderNumber}
-                </h3>
-                <p className="text-[10px] text-slate-500">Date: {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
-              </div>
-              <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-white">
-                <Icon name="close" className="text-lg" />
-              </button>
-            </div>
-
+      <Modal
+        open={!!selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+        title={selectedOrder ? `Order Invoice #${selectedOrder.orderNumber}` : ""}
+        subtitle={selectedOrder ? `Date: ${new Date(selectedOrder.createdAt).toLocaleDateString()}` : undefined}
+        className="max-w-lg"
+        footer={
+          <div className="flex justify-between items-center w-full">
+            <span className="font-black text-slate-900 dark:text-white text-sm">
+              Total Due: ${selectedOrder ? selectedOrder.total.toFixed(2) : ""}
+            </span>
+            <Button variant="blue" onClick={() => setSelectedOrder(null)}>Done</Button>
+          </div>
+        }
+      >
+        {selectedOrder && (
+          <>
             <div className="space-y-2 text-xs bg-slate-50 dark:bg-slate-800/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/60">
               <p><strong className="text-slate-500">Customer:</strong> {selectedOrder.customer.name} ({selectedOrder.customer.email})</p>
               <p><strong className="text-slate-500">Shipping Address:</strong> {selectedOrder.address}</p>
@@ -265,21 +252,9 @@ export const AdminOrdersPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs">
-              <span className="font-black text-slate-900 dark:text-white text-sm">
-                Total Due: ${selectedOrder.total.toFixed(2)}
-              </span>
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

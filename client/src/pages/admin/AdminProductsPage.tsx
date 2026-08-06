@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { Icon } from "../../components/common/Icon";
 import { dataService } from "../../services/dataService";
 import type { Product } from "../../types";
+import { Button } from "../../components/common/Button";
+import { KpiCard } from "../../components/common/KpiCard";
+import { Modal } from "../../components/common/Modal";
+import { Toast } from "../../components/common/Toast";
+import { useToast } from "../../hooks/useToast";
 
-interface Toast {
-  id: number;
-  message: string;
-  type: "info" | "success";
-}
-
-export const AdminProductsPage: React.FC = () => {
+export const AdminProductsPage = () => {
   const [products, setProducts] = useState<Product[]>(dataService.getProducts());
   const categories = dataService.getCategories();
+  const { toast, showToast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -30,16 +30,6 @@ export const AdminProductsPage: React.FC = () => {
   const [formStatus, setFormStatus] = useState<"active" | "inactive" | "out_of_stock">("active");
   const [formImage, setFormImage] = useState("");
   const [formDescription, setFormDescription] = useState("");
-
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const showToast = (message: string, type: "info" | "success" = "info") => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3000);
-  };
 
   const refreshProducts = () => {
     setProducts(dataService.getProducts());
@@ -146,86 +136,52 @@ export const AdminProductsPage: React.FC = () => {
   return (
     <div className="space-y-6 w-full font-sans">
       {/* Toast Notifications */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-xs font-semibold max-w-sm border pointer-events-auto transition-all duration-200 ${toast.type === "success"
-                ? "bg-blue-600 text-white border-blue-500"
-                : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200"
-              }`}
-          >
-            <Icon name={toast.type === "success" ? "check_circle" : "info"} className="text-base" />
-            <span>{toast.message}</span>
-          </div>
-        ))}
-      </div>
+      <Toast toast={toast} />
 
       {/* Top Catalog KPI Cards */}
       <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 w-full">
         {/* Total Products */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Total Products</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
-              Active
-            </span>
-          </div>
-          <div>
-            <div id="stat-total-products" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              {totalProducts}
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Catalog items count</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Total Products"
+          chip="Active"
+          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
+          value={totalProducts}
+          subtext="Catalog items count"
+          id="stat-total-products"
+        />
 
         {/* In Stock */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">In Stock</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-              Available
-            </span>
-          </div>
-          <div>
-            <div id="stat-active-products" className="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight">
-              {inStockProducts}
-            </div>
-            <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-300/80 font-medium mt-1">Ready for dispatch</p>
-          </div>
-        </div>
+        <KpiCard
+          label="In Stock"
+          chip="Available"
+          chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+          value={inStockProducts}
+          valueClassName="text-emerald-600 dark:text-emerald-400"
+          subtext="Ready for dispatch"
+          id="stat-active-products"
+        />
 
         {/* Out of Stock */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Out of Stock</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
-              Low Stock
-            </span>
-          </div>
-          <div>
-            <div id="stat-out-stock" className="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">
-              {outOfStockProducts}
-            </div>
-            <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-300/80 font-medium mt-1">Requires reorder</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Out of Stock"
+          chip="Low Stock"
+          chipClassName="bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+          value={outOfStockProducts}
+          valueClassName="text-amber-600 dark:text-amber-400"
+          subtext="Requires reorder"
+          id="stat-out-stock"
+        />
 
         {/* Inventory Value */}
-        <div className="bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">Inventory Value</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
-              Valuation
-            </span>
-          </div>
-          <div>
-            <div id="stat-inventory-val" className="text-xl sm:text-3xl font-extrabold text-blue-600 dark:text-blue-400 font-mono tracking-tight">
-              ${inventoryValuation.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Total stock value</p>
-          </div>
-        </div>
+        <KpiCard
+          label="Inventory Value"
+          chip="Valuation"
+          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
+          value={`$${inventoryValuation.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          valueClassName="font-mono text-blue-600 dark:text-blue-400"
+          subtext="Total stock value"
+          id="stat-inventory-val"
+        />
       </section>
 
       {/* Filter Controls Bar */}
@@ -272,13 +228,9 @@ export const AdminProductsPage: React.FC = () => {
             <option value="outofstock">Out of Stock (0)</option>
           </select>
 
-          <button
-            onClick={handleOpenAddModal}
-            className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-xs transition shrink-0"
-          >
-            <Icon name="add" className="text-base" />
-            <span>Add Product</span>
-          </button>
+          <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
+            Add Product
+          </Button>
         </div>
       </section>
 
@@ -464,56 +416,26 @@ export const AdminProductsPage: React.FC = () => {
       </section>
 
       {/* Add / Edit Product Modal (SalesSync 2-Column UI 1-to-1) */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden animate-fade-in-scale">
-            {/* Modal Header Bar */}
-            <div className="px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                  <Icon name="inventory_2" className="text-xl" />
-                </div>
-                <div>
-                  <h3 id="modal-title" className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    {editingProduct ? "Edit Product" : "Add New Product"}
-                  </h3>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                    Create or modify product details for the Lumen catalog
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    showToast("Draft saved to memory", "info");
-                  }}
-                  className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition shadow-xs"
-                >
-                  <Icon name="bookmark" className="text-sm" />
-                  <span>Save Draft</span>
-                </button>
-                <button
-                  type="submit"
-                  form="product-form"
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-xs transition"
-                >
-                  <Icon name="check" className="text-sm" />
-                  <span id="btn-save-label">{editingProduct ? "Save Changes" : "Add Product"}</span>
-                </button>
-                <button
-                  onClick={() => setShowModal(false)}
-                  type="button"
-                  className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition ml-2"
-                >
-                  <Icon name="close" className="text-xl" />
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Body Form (2 Columns Layout) */}
-            <form id="product-form" onSubmit={handleSaveProduct} className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1">
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingProduct ? "Edit Product" : "Add New Product"}
+        subtitle="Create or modify product details for the Lumen catalog"
+        icon={<Icon name="inventory_2" className="text-xl" />}
+        className="max-w-4xl"
+        headerActions={
+          <>
+            <Button variant="blue" onClick={() => showToast("Draft saved to memory", "info")} className="hidden sm:flex">
+              <Icon name="bookmark" className="text-sm" />Save Draft
+            </Button>
+            <Button variant="blue" type="submit" form="product-form">
+              <Icon name="check" className="text-sm" />{editingProduct ? "Save Changes" : "Add Product"}
+            </Button>
+          </>
+        }
+      >
+        {/* Modal Body Form (2 Columns Layout) */}
+        <form id="product-form" onSubmit={handleSaveProduct} className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
                 {/* Left Column (General Information + Pricing & Stock) - 7 cols */}
                 <div className="lg:col-span-7 space-y-5">
@@ -702,10 +624,8 @@ export const AdminProductsPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+        </form>
+      </Modal>
     </div>
   );
 };

@@ -5,10 +5,14 @@ import { useAuthStore } from "../stores/auth.store";
 import { dataService } from "../services/dataService";
 import type { Order } from "../types";
 import { Icon } from "../components/common/Icon";
+import { QuantityStepper } from "../components/common/QuantityStepper";
+import { Toast } from "../components/common/Toast";
+import { useToast } from "../hooks/useToast";
 
-export const CheckoutPage: React.FC = () => {
+export const CheckoutPage = () => {
   const { items, getSubtotal, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
   const { user } = useAuthStore();
+  const { toast, showToast } = useToast();
 
   // Urgency Timer State (Starting at 39:43 = 2383 seconds)
   const [secondsLeft, setSecondsLeft] = useState(2383);
@@ -48,9 +52,6 @@ export const CheckoutPage: React.FC = () => {
   const [appliedDiscountRate, setAppliedDiscountRate] = useState(0);
   const [couponMessage, setCouponMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
-  // Toast Notification State
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
   // Order Submission State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
@@ -72,11 +73,6 @@ export const CheckoutPage: React.FC = () => {
     } else {
       setCouponMessage({ text: "Invalid Coupon Code. Try 'LUMEN10'", isError: true });
     }
-  };
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleSubmitOrder = (e: React.FormEvent) => {
@@ -192,14 +188,7 @@ export const CheckoutPage: React.FC = () => {
   return (
     <main className="flex-grow max-w-container-max w-full mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-20 md:pb-8">
       {/* Toast Notification Container */}
-      {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 animate-fade-up">
-          <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <Icon name="info" className="text-secondary text-base" />
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
+      <Toast toast={toast} />
 
       {/* Breadcrumb Navigation */}
       <div className="mb-3 flex items-center justify-between">
@@ -348,23 +337,7 @@ export const CheckoutPage: React.FC = () => {
 
                   {/* Quantity Controls & Remove */}
                   <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <div className="flex items-center border border-outline-variant/40 rounded-xl bg-surface dark:bg-slate-700/50 p-0.5 sm:p-1">
-                      <button
-                        type="button"
-                        onClick={() => updateQuantity(product._id, quantity - 1)}
-                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-slate-200 dark:hover:bg-slate-600 transition"
-                      >
-                        <Icon name="remove" className="text-[11px] sm:text-xs" />
-                      </button>
-                      <span className="w-5 sm:w-6 text-center text-xs font-bold text-on-surface">{quantity}</span>
-                      <button
-                        type="button"
-                        onClick={() => updateQuantity(product._id, quantity + 1)}
-                        className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-slate-200 dark:hover:bg-slate-600 transition"
-                      >
-                        <Icon name="add" className="text-[11px] sm:text-xs" />
-                      </button>
-                    </div>
+                    <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product._id, q)} min={1} max={product.stock} />
 
                     <span className="text-xs sm:text-sm font-black text-on-surface w-14 sm:w-16 text-right">
                       ${(product.price * quantity).toFixed(2)}
@@ -464,7 +437,7 @@ export const CheckoutPage: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
-                    onClick={() => showToast("Selected Western Union Express Checkout")}
+                    onClick={() => showToast("Selected Western Union Express Checkout", "info")}
                     className="bg-[#ffdd00] hover:brightness-95 text-black h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center px-1 transition shadow-xs"
                   >
                     <span className="tracking-tighter italic font-serif leading-tight text-center">
@@ -476,7 +449,7 @@ export const CheckoutPage: React.FC = () => {
 
                   <button
                     type="button"
-                    onClick={() => showToast("Selected PayPal Express Checkout")}
+                    onClick={() => showToast("Selected PayPal Express Checkout", "info")}
                     className="bg-[#003087] hover:bg-[#002568] text-white h-10 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1 transition shadow-xs"
                   >
                     <span className="italic font-extrabold text-blue-300">Pay</span>
@@ -485,7 +458,7 @@ export const CheckoutPage: React.FC = () => {
 
                   <button
                     type="button"
-                    onClick={() => showToast("Selected Google Pay Express Checkout")}
+                    onClick={() => showToast("Selected Google Pay Express Checkout", "info")}
                     className="bg-black hover:bg-slate-900 text-white h-10 rounded-xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1 transition shadow-xs"
                   >
                     <span className="font-bold text-white text-sm">G</span>

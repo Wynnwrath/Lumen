@@ -170,7 +170,7 @@ interface IconProps extends PhosphorIconProps {
   filled?: boolean;
 }
 
-export const Icon: React.FC<IconProps> = ({ name, size = "1em", weight, className, filled, ...rest }) => {
+export const Icon = ({ name, size = "1em", weight, className, filled, ...rest }: IconProps) => {
   const Cmp = ICON_MAP[name] || SquaresFour;
   return <Cmp size={size} weight={filled ? "fill" : weight || "regular"} className={className} {...rest} />;
 };
