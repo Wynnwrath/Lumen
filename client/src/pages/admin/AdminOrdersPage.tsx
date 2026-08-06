@@ -1,20 +1,18 @@
 import { useState } from "react";
-import { Icon } from "../../components/common/Icon";
 import { dataService } from "../../services/dataService";
 import type { Order } from "../../types";
 import { getStatusColorClass } from "../../components/common/StatusBadge";
 import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
+import { SearchInput } from "../../components/common/SearchInput";
+import { EmptyState } from "../../components/common/EmptyState";
+import { useOrders } from "../../hooks/useOrders";
 
 export const AdminOrdersPage = () => {
-  const [orders, setOrders] = useState<Order[]>(dataService.getOrders());
+  const { orders, refresh: refreshOrders } = useOrders();
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-
-  const refreshOrders = () => {
-    setOrders(dataService.getOrders());
-  };
 
   const handleUpdateStatus = (id: string, newStatus: string) => {
     dataService.updateOrderStatus(id, newStatus);
@@ -48,16 +46,7 @@ export const AdminOrdersPage = () => {
     <div className="space-y-6">
       {/* Search & Filter Bar */}
       <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
-        <div className="relative flex-1">
-          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by order # or customer name..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium rounded-lg pl-9 pr-4 py-2.5 outline-none focus:border-blue-500 transition"
-          />
-        </div>
+        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by order # or customer name..." />
 
         <div className="flex items-center gap-3">
           <select
@@ -99,9 +88,7 @@ export const AdminOrdersPage = () => {
         {/* Mobile View: High-Density Order Cards */}
         <div className="block md:hidden space-y-3">
           {filteredOrders.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none">
-              No orders found matching your criteria.
-            </div>
+            <EmptyState text="No orders found matching your criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
             filteredOrders.map((ord) => (
               <div

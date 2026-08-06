@@ -5,19 +5,21 @@ import type { Order, Product } from "../../types";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
 import { StatusBadge, getStatusColorClass } from "../../components/common/StatusBadge";
-import { Toast } from "../../components/common/Toast";
-import { useToast } from "../../hooks/useToast";
+import { EmptyState } from "../../components/common/EmptyState";
+import { useToast } from "../../components/common/ToastProvider";
+import { useOrders } from "../../hooks/useOrders";
+import { useProducts } from "../../hooks/useProducts";
 
 export const AdminDashboardPage = () => {
-  const [orders, setOrders] = useState<Order[]>(dataService.getOrders());
-  const [products, setProducts] = useState<Product[]>(dataService.getProducts());
+  const { orders, refresh: refreshOrders } = useOrders();
+  const { products, refresh: refreshProducts } = useProducts();
   const [orderFilter, setOrderFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   const refreshData = () => {
-    setOrders(dataService.getOrders());
-    setProducts(dataService.getProducts());
+    refreshOrders();
+    refreshProducts();
   };
 
   // Calculated Metrics
@@ -70,9 +72,6 @@ export const AdminDashboardPage = () => {
 
   return (
     <div className="space-y-5 sm:space-y-6 w-full">
-      {/* Toast Notification Container */}
-      <Toast toast={toast} />
-
       {/* Top 5 Prominent KPI Cards Row */}
       <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5 w-full">
         {/* Total Revenue / Units Sold */}
@@ -281,9 +280,7 @@ export const AdminDashboardPage = () => {
             {/* Mobile View: High-Density Transaction Cards */}
             <div className="block md:hidden space-y-3 mt-3">
               {recentOrders.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  No orders recorded yet.
-                </div>
+                <EmptyState text="No orders recorded yet." />
               ) : (
                 recentOrders.map((ord) => (
                   <div
@@ -351,11 +348,7 @@ export const AdminDashboardPage = () => {
                 </thead>
                 <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800 text-xs sm:text-sm">
                   {recentOrders.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
-                        No orders recorded yet.
-                      </td>
-                    </tr>
+                    <EmptyState text="No orders recorded yet." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
                   ) : (
                     recentOrders.map((ord) => (
                       <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-dashed border-slate-200 dark:border-slate-800">

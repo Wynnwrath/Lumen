@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Icon } from "../../components/common/Icon";
 import { Button } from "../../components/common/Button";
-import { Toast } from "../../components/common/Toast";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../components/common/ToastProvider";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
 import { useThemeStore } from "../../stores/theme.store";
@@ -11,7 +10,7 @@ export const AdminLoginPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, loginAdmin, logout } = useAuthStore();
   const { toggle } = useThemeStore();
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
@@ -87,7 +86,6 @@ export const AdminLoginPage = () => {
       </header>
 
       {/* Toast Notification Container */}
-      <Toast toast={toast} />
 
       {/* Main Auth Section */}
       <main className="flex-grow flex items-center justify-center p-3 sm:p-6 md:p-8 my-2 sm:my-6">

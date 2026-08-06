@@ -5,14 +5,16 @@ import { Icon } from "../../components/common/Icon";
 import { Button } from "../../components/common/Button";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
-import { Toast } from "../../components/common/Toast";
-import { useToast } from "../../hooks/useToast";
+import { SearchInput } from "../../components/common/SearchInput";
+import { EmptyState } from "../../components/common/EmptyState";
+import { useToast } from "../../components/common/ToastProvider";
+import { useCategories } from "../../hooks/useCategories";
 
 export const AdminCategoriesPage = () => {
-  const [categories, setCategories] = useState<Category[]>(dataService.getCategories());
+  const { categories, refresh: refreshCategories } = useCategories();
   const [products] = useState(dataService.getProducts());
   const [searchQuery, setSearchQuery] = useState("");
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -22,10 +24,6 @@ export const AdminCategoriesPage = () => {
   const [formDescription, setFormDescription] = useState("");
 
   const [pdfWarningMessage, setPdfWarningMessage] = useState<string | null>(null);
-
-  const refreshCategories = () => {
-    setCategories(dataService.getCategories());
-  };
 
   // Calculate Product Counts per Category
   const getAssignedCount = (cat: Category) => {
@@ -115,9 +113,6 @@ export const AdminCategoriesPage = () => {
 
   return (
     <div className="space-y-6 w-full">
-      {/* Toast Container */}
-      <Toast toast={toast} />
-
       {/* Metrics Overview Cards Section */}
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full">
         {/* Total Categories Stat Card */}
@@ -156,17 +151,7 @@ export const AdminCategoriesPage = () => {
 
       {/* Search & Actions Bar */}
       <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
-        <div className="relative flex-1">
-          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
-          <input
-            id="category-search"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search category title or description..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium rounded-lg pl-9 pr-4 py-2.5 outline-none focus:border-blue-500 transition"
-          />
-        </div>
+        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search category title or description..." id="category-search" />
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
             Add Category
@@ -179,9 +164,7 @@ export const AdminCategoriesPage = () => {
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredCategories.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none">
-              No categories found matching your search.
-            </div>
+            <EmptyState text="No categories found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
             filteredCategories.map((cat) => {
               const count = getAssignedCount(cat);
@@ -257,11 +240,7 @@ export const AdminCategoriesPage = () => {
               </thead>
               <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
                 {filteredCategories.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
-                      No categories found matching your search.
-                    </td>
-                  </tr>
+                  <EmptyState text="No categories found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={5} />
                 ) : (
                   filteredCategories.map((cat) => {
                     const count = getAssignedCount(cat);

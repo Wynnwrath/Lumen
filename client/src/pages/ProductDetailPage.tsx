@@ -6,15 +6,14 @@ import { useWishlistStore } from "../stores/wishlist.store";
 import { Icon } from "../components/common/Icon";
 import { ProductCard } from "../components/common/ProductCard";
 import { QuantityStepper } from "../components/common/QuantityStepper";
-import { Toast } from "../components/common/Toast";
-import { useToast } from "../hooks/useToast";
+import { useToast } from "../components/common/ToastProvider";
 
 export const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem } = useCartStore();
   const { ids: wishlistIds, toggle: toggleWishlist } = useWishlistStore();
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   const product = dataService.getProductById(id || "p1");
   const allProducts = dataService.getProducts();
@@ -80,7 +79,6 @@ export const ProductDetailPage = () => {
   return (
     <div className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8 flex-grow w-full pb-24 md:pb-8">
       {/* Toast Notification Container */}
-      <Toast toast={toast} />
 
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-xs text-outline overflow-x-auto whitespace-nowrap hide-scroll">

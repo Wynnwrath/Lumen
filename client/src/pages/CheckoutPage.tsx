@@ -6,13 +6,14 @@ import { dataService } from "../services/dataService";
 import type { Order } from "../types";
 import { Icon } from "../components/common/Icon";
 import { QuantityStepper } from "../components/common/QuantityStepper";
-import { Toast } from "../components/common/Toast";
-import { useToast } from "../hooks/useToast";
+import { EmptyState } from "../components/common/EmptyState";
+import { useToast } from "../components/common/ToastProvider";
+import { checkCoupon, calculateOrderTotals } from "../services/pricing";
 
 export const CheckoutPage = () => {
-  const { items, getSubtotal, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
+  const { items, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
   const { user } = useAuthStore();
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   // Urgency Timer State (Starting at 39:43 = 2383 seconds)
   const [secondsLeft, setSecondsLeft] = useState(2383);
@@ -56,20 +57,17 @@ export const CheckoutPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
-  const rawSubtotal = getSubtotal();
-  const discountAmount = rawSubtotal * appliedDiscountRate;
-  const subtotalAfterDiscount = rawSubtotal - discountAmount;
-  const shippingFee = subtotalAfterDiscount > 100 || items.length === 0 ? 0 : 15.0;
-  const estimatedTax = subtotalAfterDiscount * 0.08;
-  const grandTotal = subtotalAfterDiscount + shippingFee + estimatedTax;
+  const totals = calculateOrderTotals(items, appliedDiscountRate);
+  const { subtotal: rawSubtotal, discountAmount, shippingFee, estimatedTax, grandTotal } = totals;
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
+  const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!couponCode.trim()) return;
 
-    if (couponCode.trim().toUpperCase() === "LUMEN10") {
-      setAppliedDiscountRate(0.1);
-      setCouponMessage({ text: "10% Discount Applied Successfully!", isError: false });
+    const result = await checkCoupon(couponCode, rawSubtotal);
+    if (result) {
+      setAppliedDiscountRate(result.rate);
+      setCouponMessage({ text: result.label, isError: false });
     } else {
       setCouponMessage({ text: "Invalid Coupon Code. Try 'LUMEN10'", isError: true });
     }
@@ -99,6 +97,8 @@ export const CheckoutPage = () => {
         tax: estimatedTax,
         shipping: shippingFee,
         total: grandTotal,
+        discount: discountAmount,
+        couponUsed: appliedDiscountRate > 0 ? couponCode.trim().toUpperCase() : undefined,
         paymentMethod: paymentMethod,
         address: `${address}${apt ? `, ${apt}` : ""}, ${city}, ${stateZip} (${country})`,
         orderNotes: orderNotes || "Standard delivery instructions",
@@ -188,7 +188,6 @@ export const CheckoutPage = () => {
   return (
     <main className="flex-grow max-w-container-max w-full mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-20 md:pb-8">
       {/* Toast Notification Container */}
-      <Toast toast={toast} />
 
       {/* Breadcrumb Navigation */}
       <div className="mb-3 flex items-center justify-between">
@@ -251,21 +250,17 @@ export const CheckoutPage = () => {
 
       {/* MAIN CHECKOUT FLOW VIEW */}
       {items.length === 0 ? (
-        <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-3xl p-8 text-center space-y-4 max-w-lg mx-auto border border-outline-variant/30 shadow-sm">
-          <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center text-outline">
-            <Icon name="shopping_cart_off" className="text-2xl" />
-          </div>
-          <h3 className="text-lg font-bold text-on-surface">Your Shopping Cart is Empty</h3>
-          <p className="text-xs text-outline">
-            Explore our catalog of flagship tech and luxury goods to populate your cart.
-          </p>
-          <Link
-            to="/products"
-            className="inline-block px-5 py-2.5 rounded-xl bg-secondary text-white text-xs font-bold shadow-sm hover:bg-secondary-container transition"
-          >
-            Browse Products Catalog
-          </Link>
-        </div>
+          <EmptyState
+            icon="shopping_cart_off"
+            title="Your Shopping Cart is Empty"
+            subtitle="Explore our catalog of flagship tech and luxury goods to populate your cart."
+            action={
+              <Link to="/products" className="inline-block px-5 py-2.5 rounded-xl bg-secondary text-white text-xs font-bold shadow-sm hover:bg-secondary-container transition">
+                Browse Products Catalog
+              </Link>
+            }
+            className="max-w-lg mx-auto"
+          />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
@@ -397,7 +392,7 @@ export const CheckoutPage = () => {
                 </div>
                 {appliedDiscountRate > 0 && (
                   <div className="flex justify-between text-emerald-600 font-medium">
-                    <span>Coupon Savings (10%)</span>
+                    <span>Coupon Savings ({Math.round(appliedDiscountRate * 100)}%)</span>
                     <span className="font-bold">-${discountAmount.toFixed(2)}</span>
                   </div>
                 )}

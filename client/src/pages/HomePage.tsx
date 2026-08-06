@@ -5,8 +5,7 @@ import { useCartStore } from "../stores/cart.store";
 import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
 import { ProductCard } from "../components/common/ProductCard";
-import { Toast } from "../components/common/Toast";
-import { useToast } from "../hooks/useToast";
+import { useToast } from "../components/common/ToastProvider";
 
 const HERO_SLIDES = [
   {
@@ -103,7 +102,7 @@ const CATEGORIES = [
 export const HomePage = () => {
   const navigate = useNavigate();
   const { addItem } = useCartStore();
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("featured");
@@ -179,9 +178,6 @@ export const HomePage = () => {
 
   return (
     <main className="max-w-container-max mx-auto px-3 sm:px-6 py-3 sm:py-8 space-y-4 sm:space-y-10 flex-grow w-full">
-      {/* Toast Notification */}
-      <Toast toast={toast} />
-
       {/* 4-SLIDE AUTOMATED CAROUSEL HERO BANNER */}
       <section
         onMouseEnter={() => setIsPaused(true)}

@@ -4,14 +4,13 @@ import { useAuthStore } from "../stores/auth.store";
 import { useThemeStore } from "../stores/theme.store";
 import { Icon } from "../components/common/Icon";
 import { Button } from "../components/common/Button";
-import { Toast } from "../components/common/Toast";
-import { useToast } from "../hooks/useToast";
+import { useToast } from "../components/common/ToastProvider";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, login, register, logout } = useAuthStore();
   const { toggle } = useThemeStore();
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 
@@ -114,7 +113,6 @@ export const LoginPage = () => {
       </header>
 
       {/* Toast Notification Container */}
-      <Toast toast={toast} />
 
       {/* Main Customer Auth Section */}
       <main className="flex-grow flex items-center justify-center p-3 sm:p-6 md:p-8 my-2 sm:my-6">

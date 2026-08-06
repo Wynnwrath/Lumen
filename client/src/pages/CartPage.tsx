@@ -4,35 +4,31 @@ import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/common/Icon";
 import { Button } from "../components/common/Button";
 import { QuantityStepper } from "../components/common/QuantityStepper";
+import { EmptyState } from "../components/common/EmptyState";
+import { checkCoupon, calculateOrderTotals } from "../services/pricing";
 
 export const CartPage = () => {
-  const { items, getSubtotal, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
+  const { items, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
   const navigate = useNavigate();
 
   const [couponCode, setCouponCode] = useState("");
-  const [appliedDiscountPercent, setAppliedDiscountPercent] = useState(0);
+  const [appliedDiscountRate, setAppliedDiscountRate] = useState(0);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
 
-  const subtotal = getSubtotal();
   const itemCount = getItemCount();
-  const discountAmount = (subtotal * appliedDiscountPercent) / 100;
-  const shippingFee = subtotal > 100 || items.length === 0 ? 0 : 15.0;
-  const estimatedTax = (subtotal - discountAmount) * 0.08;
-  const grandTotal = subtotal - discountAmount + shippingFee + estimatedTax;
+  const totals = calculateOrderTotals(items, appliedDiscountRate);
+  const { subtotal, discountAmount, shippingFee, estimatedTax, grandTotal } = totals;
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
+  const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     setCouponError(null);
     setCouponSuccess(null);
 
-    const code = couponCode.trim().toUpperCase();
-    if (code === "LUMEN10" || code === "WELCOME10") {
-      setAppliedDiscountPercent(10);
-      setCouponSuccess("10% discount coupon applied successfully!");
-    } else if (code === "PRO20") {
-      setAppliedDiscountPercent(20);
-      setCouponSuccess("20% PRO discount applied!");
+    const result = await checkCoupon(couponCode, subtotal);
+    if (result) {
+      setAppliedDiscountRate(result.rate);
+      setCouponSuccess(result.label);
     } else {
       setCouponError("Invalid promo code. Try 'LUMEN10' or 'PRO20'");
     }
@@ -40,25 +36,18 @@ export const CartPage = () => {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-container-max mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center space-y-5">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-outline">
-          <Icon name="shopping_cart" className="text-3xl sm:text-4xl" />
-        </div>
-        <div className="space-y-1.5">
-          <h1 className="text-xl sm:text-3xl font-black text-on-surface">Your Cart is Currently Empty</h1>
-          <p className="text-xs text-outline max-w-sm mx-auto">
-            Looks like you haven't added any products to your shopping bag yet. Explore our catalog to find premium goods.
-          </p>
-        </div>
-        <div>
-          <Link
-            to="/products"
-            className="px-6 py-3 rounded-2xl bg-secondary hover:bg-secondary-container text-white font-extrabold text-xs shadow-md transition inline-flex items-center gap-2"
-          >
-            <span>Start Shopping</span>
-            <Icon name="arrow_forward" className="text-base" />
-          </Link>
-        </div>
+      <div className="max-w-container-max mx-auto px-4 sm:px-6 py-12 sm:py-20">
+        <EmptyState
+          icon="shopping_cart"
+          title="Your Cart is Currently Empty"
+          subtitle="Looks like you haven't added any products to your shopping bag yet. Explore our catalog to find premium goods."
+          action={
+            <Link to="/products" className="px-6 py-3 rounded-2xl bg-secondary hover:bg-secondary-container text-white font-extrabold text-xs shadow-md transition inline-flex items-center gap-2">
+              <span>Start Shopping</span>
+              <Icon name="arrow_forward" className="text-base" />
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -180,9 +169,9 @@ export const CartPage = () => {
                 <span className="text-on-surface font-bold">${subtotal.toFixed(2)}</span>
               </div>
 
-              {appliedDiscountPercent > 0 && (
+              {appliedDiscountRate > 0 && (
                 <div className="flex justify-between font-bold text-emerald-600 dark:text-emerald-400">
-                  <span>Discount ({appliedDiscountPercent}%)</span>
+                  <span>Discount ({Math.round(appliedDiscountRate * 100)}%)</span>
                   <span>-${discountAmount.toFixed(2)}</span>
                 </div>
               )}

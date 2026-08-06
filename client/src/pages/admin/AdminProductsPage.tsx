@@ -5,13 +5,15 @@ import type { Product } from "../../types";
 import { Button } from "../../components/common/Button";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
-import { Toast } from "../../components/common/Toast";
-import { useToast } from "../../hooks/useToast";
+import { SearchInput } from "../../components/common/SearchInput";
+import { EmptyState } from "../../components/common/EmptyState";
+import { useToast } from "../../components/common/ToastProvider";
+import { useProducts } from "../../hooks/useProducts";
 
 export const AdminProductsPage = () => {
-  const [products, setProducts] = useState<Product[]>(dataService.getProducts());
+  const { products, refresh: refreshProducts } = useProducts();
   const categories = dataService.getCategories();
-  const { toast, showToast } = useToast();
+  const { showToast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -30,10 +32,6 @@ export const AdminProductsPage = () => {
   const [formStatus, setFormStatus] = useState<"active" | "inactive" | "out_of_stock">("active");
   const [formImage, setFormImage] = useState("");
   const [formDescription, setFormDescription] = useState("");
-
-  const refreshProducts = () => {
-    setProducts(dataService.getProducts());
-  };
 
   // KPI calculations
   const totalProducts = products.length;
@@ -135,9 +133,6 @@ export const AdminProductsPage = () => {
 
   return (
     <div className="space-y-6 w-full font-sans">
-      {/* Toast Notifications */}
-      <Toast toast={toast} />
-
       {/* Top Catalog KPI Cards */}
       <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 w-full">
         {/* Total Products */}
@@ -187,17 +182,7 @@ export const AdminProductsPage = () => {
       {/* Filter Controls Bar */}
       <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 rounded-none">
         {/* Search Input */}
-        <div className="relative flex-1">
-          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
-          <input
-            id="catalog-search"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search product name or brand..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium rounded-lg pl-9 pr-4 py-2.5 outline-none focus:border-blue-500 transition"
-          />
-        </div>
+        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search product name or brand..." id="catalog-search" />
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           {/* Category Filter */}
@@ -239,9 +224,7 @@ export const AdminProductsPage = () => {
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filtered.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none">
-              No products found matching your filter criteria.
-            </div>
+            <EmptyState text="No products found matching your filter criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
             filtered.map((product) => {
               const isStockActive = product.status === "active" && product.stock > 0;
@@ -330,11 +313,7 @@ export const AdminProductsPage = () => {
               </thead>
               <tbody id="products-tbody" className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
                 {filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">
-                      No products found matching your filter criteria.
-                    </td>
-                  </tr>
+                  <EmptyState text="No products found matching your filter criteria." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
                 ) : (
                   filtered.map((product) => (
                     <tr

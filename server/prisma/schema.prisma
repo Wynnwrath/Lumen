@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "mysql"
   url       = env("DATABASE_URL")
 }
 
 // Prisma forbids field names starting with "_", so the API-facing primary key
-// is named `id` in the client while the Postgres column is mapped to `_id`.
+// is named `id` in the client while the MySQL column is mapped to `_id`.
 // A `toApi` serializer re-exposes it as `_id` in JSON responses.
 
 model User {
@@ -18,7 +18,7 @@ model User {
   password  String
   phone     String   @default("")
   role      String   @default("customer") // "customer" | "admin"
-  storeName String?
+  storeName String? @db.Text
   category  String?
   orders    Order[]
   createdAt DateTime @default(now())
@@ -32,7 +32,7 @@ model Category {
   slug        String   @unique
   name        String
   icon        String   @default("category")
-  description String   @default("")
+  description String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -53,7 +53,7 @@ model Product {
   arrival      Boolean  @default(false)
   isSale       Boolean  @default(false)
   images       Json     @default("[]")
-  description  String   @default("")
+  description  String   @db.Text
   specs        Json     @default("{}")
   orderItems   OrderItem[]
   createdAt    DateTime @default(now())
@@ -89,9 +89,9 @@ model Order {
   total        Float
   paymentMethod String
   status       String      @default("Pending")
-  address      String
+  address      String      @db.Text
   couponUsed   String?
-  orderNotes   String?
+  orderNotes   String?   @db.Text
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -109,7 +109,7 @@ model OrderItem {
   name      String
   price     Float
   quantity  Int
-  image     String  @default("")
+  image     String  @db.Text
 
   @@map("order_items")
 }

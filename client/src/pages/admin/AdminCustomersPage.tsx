@@ -4,6 +4,8 @@ import { dataService } from "../../services/dataService";
 import type { CustomerData } from "../../types";
 import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
+import { SearchInput } from "../../components/common/SearchInput";
+import { EmptyState } from "../../components/common/EmptyState";
 
 export const AdminCustomersPage = () => {
   const [customers] = useState<CustomerData[]>(dataService.getCustomers());
@@ -22,16 +24,7 @@ export const AdminCustomersPage = () => {
     <div className="space-y-6">
       {/* Search Filter Bar */}
       <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex items-center gap-3 rounded-none">
-        <div className="relative flex-1">
-          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by customer name or email..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-medium rounded-lg pl-9 pr-4 py-2.5 outline-none focus:border-blue-500 transition"
-          />
-        </div>
+        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by customer name or email..." />
       </div>
 
       {/* Customers Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
@@ -39,9 +32,7 @@ export const AdminCustomersPage = () => {
         {/* Mobile View: High-Density Customer Cards */}
         <div className="block md:hidden space-y-3">
           {filtered.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none">
-              No customers found matching your search.
-            </div>
+            <EmptyState text="No customers found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
             filtered.map((c) => (
               <div
