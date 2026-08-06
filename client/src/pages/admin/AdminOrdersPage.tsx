@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Icon } from "../../components/common/Icon";
 import { dataService } from "../../services/dataService";
 import type { Order } from "../../types";
 
@@ -33,20 +34,28 @@ export const AdminOrdersPage: React.FC = () => {
     return true;
   });
 
+  const totalRevenue = orders
+    .filter((o) => o.status !== "Cancelled")
+    .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+  const pendingOrdersCount = orders.filter(
+    (o) => o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing"
+  ).length;
+
   const getStatusColorClass = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
-        return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/90 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700";
+        return "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/90 dark:text-emerald-200 dark:border-emerald-600 font-bold";
       case "pending":
-        return "bg-amber-50 text-amber-700 dark:bg-amber-950/90 dark:text-amber-300 border-amber-300 dark:border-amber-700";
+        return "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/90 dark:text-amber-200 dark:border-amber-600 font-bold";
       case "preparing":
-        return "bg-purple-50 text-purple-700 dark:bg-purple-950/90 dark:text-purple-300 border-purple-300 dark:border-purple-700";
+        return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/90 dark:text-purple-200 dark:border-purple-600 font-bold";
       case "cancelled":
-        return "bg-rose-50 text-rose-700 dark:bg-rose-950/90 dark:text-rose-300 border-rose-300 dark:border-rose-700";
-      case "confirmed":
+        return "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/90 dark:text-rose-200 dark:border-rose-600 font-bold";
       case "shipped":
+        return "bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-900/90 dark:text-indigo-200 dark:border-indigo-600 font-bold";
+      case "confirmed":
       default:
-        return "bg-blue-50 text-blue-700 dark:bg-blue-950/90 dark:text-blue-300 border-blue-300 dark:border-blue-700";
+        return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/90 dark:text-blue-200 dark:border-blue-600 font-bold";
     }
   };
 
@@ -55,7 +64,7 @@ export const AdminOrdersPage: React.FC = () => {
       {/* Search & Filter Bar */}
       <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
         <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
           <input
             type="text"
             value={searchQuery}
@@ -71,15 +80,33 @@ export const AdminOrdersPage: React.FC = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
           >
-            <option value="all" className="dark:bg-slate-900 text-slate-900 dark:text-white">All Statuses</option>
-            <option value="pending" className="dark:bg-slate-900 text-slate-900 dark:text-white">Pending</option>
-            <option value="confirmed" className="dark:bg-slate-900 text-slate-900 dark:text-white">Confirmed</option>
-            <option value="preparing" className="dark:bg-slate-900 text-slate-900 dark:text-white">Preparing</option>
-            <option value="shipped" className="dark:bg-slate-900 text-slate-900 dark:text-white">Shipped</option>
-            <option value="completed" className="dark:bg-slate-900 text-slate-900 dark:text-white">Completed</option>
-            <option value="cancelled" className="dark:bg-slate-900 text-slate-900 dark:text-white">Cancelled</option>
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="preparing">Preparing</option>
+            <option value="shipped">Shipped</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
+      </div>
+
+      {/* Orders Summary Strip */}
+      <div className="flex items-center flex-wrap gap-x-4 gap-y-1 px-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+        <span>
+          <span className="font-extrabold text-slate-900 dark:text-white">{orders.length}</span> orders
+        </span>
+        <span className="text-slate-300 dark:text-slate-600">Ã¢â‚¬Â¢</span>
+        <span>
+          <span className="font-extrabold text-slate-900 dark:text-white font-mono">
+            ${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>{" "}
+          revenue
+        </span>
+        <span className="text-slate-300 dark:text-slate-600">Ã¢â‚¬Â¢</span>
+        <span>
+          <span className="font-extrabold text-slate-900 dark:text-white">{pendingOrdersCount}</span> pending
+        </span>
       </div>
 
       {/* Orders Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
@@ -102,7 +129,7 @@ export const AdminOrdersPage: React.FC = () => {
                       #{ord.orderNumber}
                     </span>
                     <p className="text-[10px] text-slate-500 font-medium">
-                      {ord.items.length} items • {ord.paymentMethod}
+                      {ord.items.length} items Ã¢â‚¬Â¢ {ord.paymentMethod}
                     </p>
                   </div>
                   <span className="font-mono font-extrabold text-base text-blue-600 dark:text-blue-400">
@@ -121,12 +148,12 @@ export const AdminOrdersPage: React.FC = () => {
                     onChange={(e) => handleUpdateStatus(ord._id, e.target.value)}
                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                   >
-                    <option value="Pending" className="dark:bg-slate-900 text-slate-900 dark:text-white">Pending</option>
-                    <option value="Confirmed" className="dark:bg-slate-900 text-slate-900 dark:text-white">Confirmed</option>
-                    <option value="Preparing" className="dark:bg-slate-900 text-slate-900 dark:text-white">Preparing</option>
-                    <option value="Shipped" className="dark:bg-slate-900 text-slate-900 dark:text-white">Shipped</option>
-                    <option value="Completed" className="dark:bg-slate-900 text-slate-900 dark:text-white">Completed</option>
-                    <option value="Cancelled" className="dark:bg-slate-900 text-slate-900 dark:text-white">Cancelled</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Preparing">Preparing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
                   </select>
                 </div>
 
@@ -146,9 +173,9 @@ export const AdminOrdersPage: React.FC = () => {
         {/* Desktop View: Multi-Column Table (screen >= md) */}
         <div className="hidden md:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden rounded-none">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <th className="p-4">Order #</th>
                   <th className="p-4">Customer</th>
                   <th className="p-4">Items Count</th>
@@ -158,14 +185,14 @@ export const AdminOrdersPage: React.FC = () => {
                   <th className="p-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
                 {filteredOrders.map((ord) => (
                   <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">#{ord.orderNumber}</td>
                     <td className="p-4">
                       <div>
                         <p className="font-bold text-slate-900 dark:text-white">{ord.customer.name}</p>
-                        <p className="text-[10px] text-slate-500">{ord.customer.email}</p>
+                        <p className="text-[11px] text-slate-500">{ord.customer.email}</p>
                       </div>
                     </td>
                     <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
@@ -181,12 +208,12 @@ export const AdminOrdersPage: React.FC = () => {
                         onChange={(e) => handleUpdateStatus(ord._id, e.target.value)}
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                       >
-                        <option value="Pending" className="dark:bg-slate-900 text-slate-900 dark:text-white">Pending</option>
-                        <option value="Confirmed" className="dark:bg-slate-900 text-slate-900 dark:text-white">Confirmed</option>
-                        <option value="Preparing" className="dark:bg-slate-900 text-slate-900 dark:text-white">Preparing</option>
-                        <option value="Shipped" className="dark:bg-slate-900 text-slate-900 dark:text-white">Shipped</option>
-                        <option value="Completed" className="dark:bg-slate-900 text-slate-900 dark:text-white">Completed</option>
-                        <option value="Cancelled" className="dark:bg-slate-900 text-slate-900 dark:text-white">Cancelled</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Preparing">Preparing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
                       </select>
                     </td>
                     <td className="p-4 text-right">
@@ -217,7 +244,7 @@ export const AdminOrdersPage: React.FC = () => {
                 <p className="text-[10px] text-slate-500">Date: {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
               </div>
               <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-white">
-                <span className="material-symbols-outlined text-lg">close</span>
+                <Icon name="close" className="text-lg" />
               </button>
             </div>
 

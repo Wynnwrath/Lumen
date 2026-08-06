@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
+import { Icon } from "../components/common/Icon";
 
 export const CartPage: React.FC = () => {
   const { items, getSubtotal, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
@@ -39,7 +40,7 @@ export const CartPage: React.FC = () => {
     return (
       <div className="max-w-container-max mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center space-y-5">
         <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-outline">
-          <span className="material-symbols-outlined text-3xl sm:text-4xl">shopping_cart</span>
+          <Icon name="shopping_cart" className="text-3xl sm:text-4xl" />
         </div>
         <div className="space-y-1.5">
           <h1 className="text-xl sm:text-3xl font-black text-on-surface">Your Cart is Currently Empty</h1>
@@ -53,7 +54,7 @@ export const CartPage: React.FC = () => {
             className="px-6 py-3 rounded-2xl bg-secondary hover:bg-secondary-container text-white font-extrabold text-xs shadow-md transition inline-flex items-center gap-2"
           >
             <span>Start Shopping</span>
-            <span className="material-symbols-outlined text-base">arrow_forward</span>
+            <Icon name="arrow_forward" className="text-base" />
           </Link>
         </div>
       </div>
@@ -78,7 +79,7 @@ export const CartPage: React.FC = () => {
           }}
           className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 shrink-0"
         >
-          <span className="material-symbols-outlined text-sm">delete_sweep</span>
+          <Icon name="delete_sweep" className="text-sm" />
           <span>Clear Cart</span>
         </button>
       </div>
@@ -118,7 +119,7 @@ export const CartPage: React.FC = () => {
                     onClick={() => updateQuantity(product._id, quantity - 1)}
                     className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container-high transition"
                   >
-                    <span className="material-symbols-outlined text-[11px] sm:text-xs">remove</span>
+                    <Icon name="remove" className="text-[11px] sm:text-xs" />
                   </button>
                   <span className="w-5 sm:w-6 text-center font-extrabold text-xs text-on-surface">{quantity}</span>
                   <button
@@ -126,7 +127,7 @@ export const CartPage: React.FC = () => {
                     disabled={quantity >= product.stock}
                     className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container-high transition disabled:opacity-40"
                   >
-                    <span className="material-symbols-outlined text-[11px] sm:text-xs">add</span>
+                    <Icon name="add" className="text-[11px] sm:text-xs" />
                   </button>
                 </div>
 
@@ -140,7 +141,7 @@ export const CartPage: React.FC = () => {
                     className="text-outline hover:text-red-500 p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition"
                     title="Remove item"
                   >
-                    <span className="material-symbols-outlined text-base">delete</span>
+                    <Icon name="delete" className="text-base" />
                   </button>
                 </div>
               </div>
@@ -151,7 +152,7 @@ export const CartPage: React.FC = () => {
             to="/products"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-secondary hover:underline pt-1"
           >
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
+            <Icon name="arrow_back" className="text-sm" />
             <span>Continue Shopping</span>
           </Link>
         </div>
@@ -229,17 +230,17 @@ export const CartPage: React.FC = () => {
               className="w-full py-3.5 rounded-2xl bg-secondary hover:bg-secondary-container text-white font-extrabold text-xs shadow-md transition flex items-center justify-center gap-2 active:scale-95"
             >
               <span>Proceed to Checkout</span>
-              <span className="material-symbols-outlined text-base">arrow_forward</span>
+              <Icon name="arrow_forward" className="text-base" />
             </button>
 
             {/* Guarantees */}
             <div className="pt-2 border-t border-outline-variant/10 text-[11px] text-outline space-y-1.5">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-emerald-500 text-sm">lock</span>
+                <Icon name="lock" className="text-emerald-500 text-sm" />
                 <span>256-bit SSL Encrypted Secure Checkout</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-blue-500 text-sm">verified</span>
+                <Icon name="verified" className="text-blue-500 text-sm" />
                 <span>30-Day Money-Back Guarantee</span>
               </div>
             </div>

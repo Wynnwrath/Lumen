@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../stores/theme.store";
 import { useAuthStore } from "../../stores/auth.store";
+import { Icon } from "../common/Icon";
 
 export const AdminLayout: React.FC = () => {
   const { mode, toggle } = useThemeStore();
@@ -97,7 +98,7 @@ export const AdminLayout: React.FC = () => {
               onClick={() => setSidebarOpen(false)}
               className="md:hidden text-slate-500 hover:text-slate-900 dark:hover:text-white"
             >
-              <span className="material-symbols-outlined text-xl">close</span>
+              <Icon name="close" className="text-xl" />
             </button>
           </div>
 
@@ -133,7 +134,7 @@ export const AdminLayout: React.FC = () => {
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
-                  <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                  <Icon name={item.icon} className="text-lg" />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -147,14 +148,14 @@ export const AdminLayout: React.FC = () => {
             to="/"
             className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition"
           >
-            <span className="material-symbols-outlined text-base">storefront</span>
+            <Icon name="storefront" className="text-base" />
             <span>Customer Website</span>
           </Link>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition text-left"
           >
-            <span className="material-symbols-outlined text-base">logout</span>
+            <Icon name="logout" className="text-base" />
             <span>Sign Out</span>
           </button>
         </div>
@@ -177,7 +178,7 @@ export const AdminLayout: React.FC = () => {
               onClick={() => setSidebarOpen(true)}
               className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl shrink-0"
             >
-              <span className="material-symbols-outlined text-xl">menu</span>
+              <Icon name="menu" className="text-xl" />
             </button>
 
             <div className="min-w-0">
@@ -194,9 +195,9 @@ export const AdminLayout: React.FC = () => {
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {showTimeFilter && (
               <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/90 px-2.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-700/80 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-                <span className="material-symbols-outlined text-sm text-slate-500 dark:text-slate-400">calendar_today</span>
+                <Icon name="calendar_today" className="text-sm text-slate-500 dark:text-slate-400" />
                 <span className="text-[11px] sm:text-xs">Last 7 days</span>
-                <span className="material-symbols-outlined text-sm text-slate-500 dark:text-slate-400">expand_more</span>
+                <Icon name="expand_more" className="text-sm text-slate-500 dark:text-slate-400" />
               </div>
             )}
 
@@ -206,9 +207,7 @@ export const AdminLayout: React.FC = () => {
               className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition border border-slate-200 dark:border-slate-700/80"
               title="Toggle Theme"
             >
-              <span className="material-symbols-outlined text-lg">
-                {mode === "dark" ? "light_mode" : "dark_mode"}
-              </span>
+              <Icon name={mode === "dark" ? "light_mode" : "dark_mode"} className="text-lg" />
             </button>
           </div>
         </header>

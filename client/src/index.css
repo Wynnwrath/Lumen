@@ -10,15 +10,6 @@
 
 /* Custom styles & animations for Lumen Marketplace */
 
-/* ---- Material Symbols ---- */
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-.material-symbols-outlined.filled {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
 /* Hide scrollbars for slick category horizontal sliders */
 .hide-scroll::-webkit-scrollbar {
   display: none;
@@ -98,7 +89,7 @@
   transform: scale(1.06);
 }
 
-.category-card:hover .material-symbols-outlined {
+.category-card:hover .category-card-icon {
   animation: wiggle 0.35s ease;
 }
 

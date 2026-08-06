@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useThemeStore } from "../stores/theme.store";
+import { Icon } from "../components/common/Icon";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -99,7 +100,7 @@ export const LoginPage: React.FC = () => {
               className="text-xs font-bold text-outline hover:text-on-surface dark:hover:text-white flex items-center gap-1.5 px-2.5 py-2 rounded-xl hover:bg-surface-container dark:hover:bg-slate-800 transition whitespace-nowrap"
               title="Back to Shop"
             >
-              <span className="material-symbols-outlined text-lg">shopping_bag</span>
+              <Icon name="shopping_bag" className="text-lg" />
               <span className="hidden sm:inline">Back to Shop</span>
             </Link>
 
@@ -109,8 +110,8 @@ export const LoginPage: React.FC = () => {
               className="p-2 text-outline hover:text-on-surface dark:hover:text-white rounded-xl hover:bg-surface-container dark:hover:bg-slate-800 transition"
               title="Toggle Theme"
             >
-              <span className="material-symbols-outlined text-xl dark:hidden">dark_mode</span>
-              <span className="material-symbols-outlined text-xl hidden dark:block">light_mode</span>
+              <Icon name="dark_mode" className="text-xl dark:hidden" />
+              <Icon name="light_mode" className="text-xl hidden dark:block" />
             </button>
           </div>
         </div>
@@ -120,17 +121,16 @@ export const LoginPage: React.FC = () => {
       {toast && (
         <div className="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none animate-fade-up">
           <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700 pointer-events-auto">
-            <span
-              className={`material-symbols-outlined text-base ${
+            <Icon
+              name={toast.type === "success" ? "check_circle" : toast.type === "error" ? "error" : "info"}
+              className={`text-base ${
                 toast.type === "success"
                   ? "text-emerald-400"
                   : toast.type === "error"
                   ? "text-rose-400"
                   : "text-blue-400"
               }`}
-            >
-              {toast.type === "success" ? "check_circle" : toast.type === "error" ? "error" : "info"}
-            </span>
+            />
             <span>{toast.message}</span>
           </div>
         </div>
@@ -148,7 +148,7 @@ export const LoginPage: React.FC = () => {
             {/* Top Content */}
             <div className="relative z-10 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-blue-200">
-                <span className="material-symbols-outlined text-sm text-amber-300">verified</span>
+                <Icon name="verified" className="text-sm text-amber-300" />
                 <span>Lumen Member Rewards</span>
               </div>
 
@@ -166,7 +166,7 @@ export const LoginPage: React.FC = () => {
             <div className="relative z-10 space-y-3.5 my-8">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
                 <div className="w-9 h-9 rounded-lg bg-secondary/30 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-blue-300 text-lg">local_shipping</span>
+                  <Icon name="local_shipping" className="text-blue-300 text-lg" />
                 </div>
                 <div>
                   <div className="text-xs font-bold text-white">Free Express Shipping</div>
@@ -176,7 +176,7 @@ export const LoginPage: React.FC = () => {
 
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/30 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-emerald-300 text-lg">loyalty</span>
+                  <Icon name="loyalty" className="text-emerald-300 text-lg" />
                 </div>
                 <div>
                   <div className="text-xs font-bold text-white">Earn Member Points</div>
@@ -189,7 +189,7 @@ export const LoginPage: React.FC = () => {
             <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
               <span>Join over 50,000+ Happy Shoppers</span>
               <span className="flex items-center gap-1 text-emerald-400 font-bold">
-                <span className="material-symbols-outlined text-xs">shield</span> 100% Secure
+                <Icon name="shield" className="text-xs" /> 100% Secure
               </span>
             </div>
           </div>
@@ -200,7 +200,7 @@ export const LoginPage: React.FC = () => {
               {/* Mobile Compact Header Greeting */}
               <div className="lg:hidden mb-5 text-center space-y-1">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-bold mb-1">
-                  <span className="material-symbols-outlined text-sm">verified</span>
+                  <Icon name="verified" className="text-sm" />
                   <span>Lumen Member Rewards</span>
                 </div>
                 <h1 className="text-xl font-extrabold text-on-surface dark:text-white">
@@ -255,13 +255,11 @@ export const LoginPage: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-lg">
-                      {alert.type === "success" ? "check_circle" : "error"}
-                    </span>
+                    <Icon name={alert.type === "success" ? "check_circle" : "error"} className="text-lg" />
                     <span>{alert.message}</span>
                   </div>
                   <button onClick={() => setAlert(null)} className="text-outline hover:text-primary">
-                    <span className="material-symbols-outlined text-sm">close</span>
+                    <Icon name="close" className="text-sm" />
                   </button>
                 </div>
               )}
@@ -271,7 +269,7 @@ export const LoginPage: React.FC = () => {
                 <div className="mb-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-base text-secondary">account_circle</span>
+                      <Icon name="account_circle" className="text-base text-secondary" />
                       <span>
                         Active Customer: <strong>{user.name}</strong>
                       </span>
@@ -350,9 +348,7 @@ export const LoginPage: React.FC = () => {
                         Email Address
                       </label>
                       <div className="relative">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                          mail
-                        </span>
+                        <Icon name="mail" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                         <input
                           id="login-email"
                           type="email"
@@ -386,16 +382,14 @@ export const LoginPage: React.FC = () => {
                         </a>
                       </div>
                       <div className="relative">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                          lock
-                        </span>
+                        <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                         <input
                           id="login-password"
                           type="password"
                           required
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
-                          placeholder="••••••••"
+                          placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢"
                           className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                         />
                       </div>
@@ -417,7 +411,7 @@ export const LoginPage: React.FC = () => {
                       type="submit"
                       className="w-full bg-secondary hover:bg-secondary-container text-white font-bold py-3 rounded-xl text-xs transition shadow-md hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
                     >
-                      <span className="material-symbols-outlined text-lg">login</span>
+                      <Icon name="login" className="text-lg" />
                       <span>Sign In to Customer Account</span>
                     </button>
                   </form>
@@ -430,7 +424,7 @@ export const LoginPage: React.FC = () => {
                       onClick={handleDemoAutofill}
                       className="text-secondary font-bold hover:underline flex items-center gap-1"
                     >
-                      <span className="material-symbols-outlined text-sm">auto_fix_high</span>
+                      <Icon name="auto_fix_high" className="text-sm" />
                       <span>Fill Demo Customer Credentials</span>
                     </button>
                   </div>
@@ -447,9 +441,7 @@ export const LoginPage: React.FC = () => {
                         Full Name
                       </label>
                       <div className="relative">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                          person
-                        </span>
+                        <Icon name="person" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                         <input
                           id="reg-name"
                           type="text"
@@ -468,9 +460,7 @@ export const LoginPage: React.FC = () => {
                         Email Address
                       </label>
                       <div className="relative">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                          mail
-                        </span>
+                        <Icon name="mail" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                         <input
                           id="reg-email"
                           type="email"
@@ -493,9 +483,7 @@ export const LoginPage: React.FC = () => {
                           Password
                         </label>
                         <div className="relative">
-                          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                            lock
-                          </span>
+                          <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                           <input
                             id="reg-password"
                             type="password"
@@ -513,9 +501,7 @@ export const LoginPage: React.FC = () => {
                           Phone Number (Optional)
                         </label>
                         <div className="relative">
-                          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                            call
-                          </span>
+                          <Icon name="call" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                           <input
                             id="reg-phone"
                             type="tel"
@@ -565,7 +551,7 @@ export const LoginPage: React.FC = () => {
                       type="submit"
                       className="w-full bg-secondary hover:bg-secondary-container text-white font-bold py-3 rounded-xl text-xs transition shadow-md hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
                     >
-                      <span className="material-symbols-outlined text-lg">person_add</span>
+                      <Icon name="person_add" className="text-lg" />
                       <span>Create Customer Account</span>
                     </button>
                   </form>
@@ -576,7 +562,7 @@ export const LoginPage: React.FC = () => {
             {/* Form Bottom Links */}
             <div className="pt-6 border-t border-outline-variant/20 flex flex-wrap items-center justify-between gap-2 text-xs text-outline font-medium">
               <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm text-emerald-500">verified_user</span> Protected by Lumen
+                <Icon name="verified_user" className="text-sm text-emerald-500" /> Protected by Lumen
                 Trust
               </span>
             </div>

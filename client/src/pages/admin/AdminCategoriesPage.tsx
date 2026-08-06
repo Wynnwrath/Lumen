@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { dataService } from "../../services/dataService";
 import type { Category } from "../../types";
+import { Icon } from "../../components/common/Icon";
 
 interface Toast {
   id: number;
@@ -133,9 +134,7 @@ export const AdminCategoriesPage: React.FC = () => {
                 : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200"
               }`}
           >
-            <span className="material-symbols-outlined text-base">
-              {toast.type === "success" ? "check_circle" : "info"}
-            </span>
+            <Icon name={toast.type === "success" ? "check_circle" : "info"} className="text-base" />
             <span>{toast.message}</span>
           </div>
         ))}
@@ -195,7 +194,7 @@ export const AdminCategoriesPage: React.FC = () => {
       {/* Search & Actions Bar */}
       <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
         <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
           <input
             id="category-search"
             type="text"
@@ -210,7 +209,7 @@ export const AdminCategoriesPage: React.FC = () => {
             onClick={handleOpenAddModal}
             className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-xs transition shrink-0"
           >
-            <span className="material-symbols-outlined text-base">add</span>
+            <Icon name="add" className="text-base" />
             <span>Add Category</span>
           </button>
         </div>
@@ -234,7 +233,7 @@ export const AdminCategoriesPage: React.FC = () => {
                 >
                   {/* Category Icon Box */}
                   <div className="w-20 h-20 bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800/60 rounded-md">
-                    <span className="material-symbols-outlined text-2xl">{cat.icon || "category"}</span>
+                    <Icon name={cat.icon || "category"} className="text-2xl" />
                   </div>
 
                   {/* Metadata & Actions */}
@@ -249,7 +248,7 @@ export const AdminCategoriesPage: React.FC = () => {
                         className="p-1 text-rose-400 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition shrink-0 -mr-1 -mt-1"
                         title="Delete Category"
                       >
-                        <span className="material-symbols-outlined text-lg">delete</span>
+                        <Icon name="delete" className="text-lg" />
                       </button>
                     </div>
 
@@ -316,7 +315,7 @@ export const AdminCategoriesPage: React.FC = () => {
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
-                              <span className="material-symbols-outlined text-lg">{cat.icon || "category"}</span>
+                              <Icon name={cat.icon || "category"} className="text-lg" />
                             </div>
                             <div>
                               <p className="font-extrabold text-slate-900 dark:text-slate-100">{cat.name}</p>
@@ -349,14 +348,14 @@ export const AdminCategoriesPage: React.FC = () => {
                               className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition"
                               title="Edit Category"
                             >
-                              <span className="material-symbols-outlined text-base">edit</span>
+                              <Icon name="edit" className="text-base" />
                             </button>
                             <button
                               onClick={() => handleDeleteCategory(cat)}
                               className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
                               title="Delete Category"
                             >
-                              <span className="material-symbols-outlined text-base">delete</span>
+                              <Icon name="delete" className="text-base" />
                             </button>
                           </div>
                         </td>
@@ -377,7 +376,7 @@ export const AdminCategoriesPage: React.FC = () => {
             <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                  <span className="material-symbols-outlined text-xl">{formIcon || "category"}</span>
+                  <Icon name={formIcon || "category"} className="text-xl" />
                 </div>
                 <div>
                   <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
@@ -393,7 +392,7 @@ export const AdminCategoriesPage: React.FC = () => {
                 type="button"
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg transition"
               >
-                <span className="material-symbols-outlined text-xl">close</span>
+                <Icon name="close" className="text-xl" />
               </button>
             </div>
 
@@ -418,15 +417,15 @@ export const AdminCategoriesPage: React.FC = () => {
                   required
                   className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-600/20 transition cursor-pointer"
                 >
-                  <option value="devices">devices (Electronics & Tech)</option>
-                  <option value="checkroom">checkroom (Fashion & Apparel)</option>
-                  <option value="chair">chair (Home & Living)</option>
-                  <option value="spa">spa (Beauty & Skincare)</option>
-                  <option value="shopping_basket">shopping_basket (Groceries)</option>
-                  <option value="diamond">diamond (Luxury & Fine Items)</option>
-                  <option value="sports_esports">sports_esports (Gaming)</option>
-                  <option value="watch">watch (Watches & Accessories)</option>
-                  <option value="book">book (Books & Stationery)</option>
+                  <option value="devices">Electronics &amp; Tech</option>
+                  <option value="checkroom">Fashion &amp; Apparel</option>
+                  <option value="chair">Home &amp; Living</option>
+                  <option value="spa">Beauty &amp; Skincare</option>
+                  <option value="shopping_basket">Groceries</option>
+                  <option value="diamond">Luxury &amp; Fine Items</option>
+                  <option value="sports_esports">Gaming</option>
+                  <option value="watch">Watches &amp; Accessories</option>
+                  <option value="book">Books &amp; Stationery</option>
                 </select>
               </div>
 
@@ -466,7 +465,7 @@ export const AdminCategoriesPage: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-950/75 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden p-6 text-center space-y-4 my-auto">
             <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto text-2xl border border-amber-200 dark:border-amber-800">
-              <span className="material-symbols-outlined text-3xl">warning</span>
+              <Icon name="warning" className="text-3xl" />
             </div>
 
             <div className="space-y-2">

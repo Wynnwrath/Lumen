@@ -4,6 +4,7 @@ import { dataService } from "../services/dataService";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import type { Product } from "../types";
+import { Icon } from "../components/common/Icon";
 
 export const ProductsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -180,7 +181,7 @@ export const ProductsPage: React.FC = () => {
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 animate-fade-up">
           <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <span className="material-symbols-outlined text-emerald-400 text-base">check_circle</span>
+            <Icon name="check_circle" className="text-emerald-400 text-base" />
             <span>{toastMessage}</span>
           </div>
         </div>
@@ -201,7 +202,7 @@ export const ProductsPage: React.FC = () => {
             <Link to="/" className="hover:text-secondary transition font-medium">
               Home
             </Link>
-            <span className="material-symbols-outlined text-xs">chevron_right</span>
+            <Icon name="chevron_right" className="text-xs" />
             <span className="font-semibold text-on-surface">
               {selectedCategory !== "all"
                 ? selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)
@@ -217,7 +218,7 @@ export const ProductsPage: React.FC = () => {
             onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
             className="lg:hidden flex items-center gap-1.5 bg-secondary text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm"
           >
-            <span className="material-symbols-outlined text-sm">filter_list</span>
+            <Icon name="filter_list" className="text-sm" />
             <span>Filter</span>
             {hasActiveFilters && (
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
@@ -246,7 +247,7 @@ export const ProductsPage: React.FC = () => {
               }`}
               title="Grid View"
             >
-              <span className="material-symbols-outlined text-sm">grid_view</span>
+              <Icon name="grid_view" className="text-sm" />
             </button>
             <button
               onClick={() => setViewMode("list")}
@@ -255,7 +256,7 @@ export const ProductsPage: React.FC = () => {
               }`}
               title="List View"
             >
-              <span className="material-symbols-outlined text-sm">view_list</span>
+              <Icon name="view_list" className="text-sm" />
             </button>
           </div>
         </div>
@@ -275,7 +276,7 @@ export const ProductsPage: React.FC = () => {
                   : "bg-surface-container dark:bg-slate-800 text-on-surface-variant hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
-              <span className="material-symbols-outlined text-sm">{cat.icon}</span>
+              <Icon name={cat.icon} className="text-sm" />
               <span>{cat.label}</span>
             </button>
           );
@@ -291,7 +292,7 @@ export const ProductsPage: React.FC = () => {
           {/* Header & Clear Filters Button */}
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-on-surface flex items-center gap-2">
-              <span className="material-symbols-outlined text-secondary">filter_alt</span>
+              <Icon name="filter_alt" className="text-secondary" />
               <span>Filter Options</span>
             </h3>
             {hasActiveFilters && (
@@ -299,7 +300,7 @@ export const ProductsPage: React.FC = () => {
                 onClick={handleResetFilters}
                 className="text-xs font-bold text-secondary hover:underline flex items-center gap-1"
               >
-                <span className="material-symbols-outlined text-xs">refresh</span> Clear All
+                <Icon name="refresh" className="text-xs" /> Clear All
               </button>
             )}
           </div>
@@ -326,7 +327,7 @@ export const ProductsPage: React.FC = () => {
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-base">{cat.icon}</span>
+                      <Icon name={cat.icon} className="text-base" />
                       <span>{cat.label}</span>
                     </span>
                     <span className={`text-[10px] ${isActive ? "text-white/80" : "text-outline"}`}>
@@ -356,9 +357,7 @@ export const ProductsPage: React.FC = () => {
 
             {/* Brand Search Input */}
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-outline">
-                search
-              </span>
+              <Icon name="search" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-outline" />
               <input
                 type="text"
                 placeholder="Search brands..."
@@ -485,7 +484,7 @@ export const ProductsPage: React.FC = () => {
           {filteredProducts.length === 0 ? (
             <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 p-8 text-center space-y-3 shadow-sm">
               <div className="w-12 h-12 mx-auto rounded-full bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center text-outline">
-                <span className="material-symbols-outlined text-2xl">search_off</span>
+                <Icon name="search_off" className="text-2xl" />
               </div>
               <h3 className="text-base font-bold text-on-surface">No products found</h3>
               <p className="text-xs text-outline max-w-xs mx-auto">
@@ -554,13 +553,7 @@ export const ProductsPage: React.FC = () => {
                         }}
                         className="absolute top-2 right-2 z-10 text-outline hover:text-red-500 transition-all bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-full p-1 sm:p-1.5 shadow-xs hover:scale-110"
                       >
-                        <span
-                          className={`material-symbols-outlined text-base sm:text-lg ${
-                            isWishlisted ? "filled text-red-500" : ""
-                          }`}
-                        >
-                          favorite
-                        </span>
+                        <Icon name="favorite" filled={isWishlisted} className={`text-base sm:text-lg ${isWishlisted ? "text-red-500" : ""}`} />
                       </button>
                     </div>
 
@@ -580,7 +573,7 @@ export const ProductsPage: React.FC = () => {
                         {/* Rating */}
                         <div className="flex items-center gap-1 mt-0.5">
                           <div className="flex text-amber-400 text-[10px] sm:text-xs">
-                            <span className="material-symbols-outlined text-xs sm:text-sm filled">star</span>
+                            <Icon name="star" className="text-xs sm:text-sm" filled />
                           </div>
                           <span className="text-[10px] sm:text-xs font-bold text-on-surface">{product.rating}</span>
                           <span className="text-[10px] sm:text-xs text-outline font-medium">({product.reviewsCount})</span>
@@ -608,7 +601,7 @@ export const ProductsPage: React.FC = () => {
                             } text-white p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all active:scale-95 shadow-sm flex items-center gap-1 text-[11px] font-bold`}
                             title="Add to Cart"
                           >
-                            <span className="material-symbols-outlined text-sm sm:text-base">add_shopping_cart</span>
+                            <Icon name="add_shopping_cart" className="text-sm sm:text-base" />
                             <span className="hidden sm:inline">Add</span>
                           </button>
                         </div>
@@ -649,13 +642,7 @@ export const ProductsPage: React.FC = () => {
                           }}
                           className="text-outline hover:text-red-500"
                         >
-                          <span
-                            className={`material-symbols-outlined text-base sm:text-lg ${
-                              isWishlisted ? "filled text-red-500" : ""
-                            }`}
-                          >
-                            favorite
-                          </span>
+                          <Icon name="favorite" filled={isWishlisted} className={`text-base sm:text-lg ${isWishlisted ? "text-red-500" : ""}`} />
                         </button>
                       </div>
                       <Link
@@ -668,9 +655,7 @@ export const ProductsPage: React.FC = () => {
                         {product.description}
                       </p>
                       <div className="flex items-center gap-1 text-[10px] sm:text-xs">
-                        <span className="material-symbols-outlined text-xs sm:text-sm text-amber-400 filled">
-                          star
-                        </span>
+                        <Icon name="star" filled className="text-xs sm:text-sm text-amber-400" />
                         <span className="font-bold">{product.rating}</span>
                         <span className="text-outline text-[10px]">({product.reviewsCount})</span>
                       </div>
@@ -691,7 +676,7 @@ export const ProductsPage: React.FC = () => {
                             : "bg-secondary hover:bg-secondary-container text-white shadow-xs"
                         }`}
                       >
-                        <span className="material-symbols-outlined text-sm">add_shopping_cart</span>
+                        <Icon name="add_shopping_cart" className="text-sm" />
                         <span className="hidden sm:inline">Add</span>
                       </button>
                     </div>

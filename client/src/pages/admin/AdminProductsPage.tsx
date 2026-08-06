@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Icon } from "../../components/common/Icon";
 import { dataService } from "../../services/dataService";
 import type { Product } from "../../types";
 
@@ -154,9 +155,7 @@ export const AdminProductsPage: React.FC = () => {
                 : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200"
               }`}
           >
-            <span className="material-symbols-outlined text-base">
-              {toast.type === "success" ? "check_circle" : "info"}
-            </span>
+            <Icon name={toast.type === "success" ? "check_circle" : "info"} className="text-base" />
             <span>{toast.message}</span>
           </div>
         ))}
@@ -233,7 +232,7 @@ export const AdminProductsPage: React.FC = () => {
       <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 rounded-none">
         {/* Search Input */}
         <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
           <input
             id="catalog-search"
             type="text"
@@ -277,7 +276,7 @@ export const AdminProductsPage: React.FC = () => {
             onClick={handleOpenAddModal}
             className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-xs transition shrink-0"
           >
-            <span className="material-symbols-outlined text-base">add</span>
+            <Icon name="add" className="text-base" />
             <span>Add Product</span>
           </button>
         </div>
@@ -318,7 +317,7 @@ export const AdminProductsPage: React.FC = () => {
                         className="p-1 text-rose-400 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition shrink-0 -mr-1 -mt-1"
                         title="Delete Product"
                       >
-                        <span className="material-symbols-outlined text-lg">delete</span>
+                        <Icon name="delete" className="text-lg" />
                       </button>
                     </div>
 
@@ -444,14 +443,14 @@ export const AdminProductsPage: React.FC = () => {
                             className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition"
                             title="Edit Product"
                           >
-                            <span className="material-symbols-outlined text-base">edit</span>
+                            <Icon name="edit" className="text-base" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(product._id, product.name)}
                             className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
                             title="Delete Product"
                           >
-                            <span className="material-symbols-outlined text-base">delete</span>
+                            <Icon name="delete" className="text-base" />
                           </button>
                         </div>
                       </td>
@@ -472,7 +471,7 @@ export const AdminProductsPage: React.FC = () => {
             <div className="px-6 py-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-xl">inventory_2</span>
+                  <Icon name="inventory_2" className="text-xl" />
                 </div>
                 <div>
                   <h3 id="modal-title" className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">
@@ -492,7 +491,7 @@ export const AdminProductsPage: React.FC = () => {
                   }}
                   className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition shadow-xs"
                 >
-                  <span className="material-symbols-outlined text-sm">bookmark</span>
+                  <Icon name="bookmark" className="text-sm" />
                   <span>Save Draft</span>
                 </button>
                 <button
@@ -500,7 +499,7 @@ export const AdminProductsPage: React.FC = () => {
                   form="product-form"
                   className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-xs transition"
                 >
-                  <span className="material-symbols-outlined text-sm">check</span>
+                  <Icon name="check" className="text-sm" />
                   <span id="btn-save-label">{editingProduct ? "Save Changes" : "Add Product"}</span>
                 </button>
                 <button
@@ -508,7 +507,7 @@ export const AdminProductsPage: React.FC = () => {
                   type="button"
                   className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition ml-2"
                 >
-                  <span className="material-symbols-outlined text-xl">close</span>
+                  <Icon name="close" className="text-xl" />
                 </button>
               </div>
             </div>
@@ -652,7 +651,7 @@ export const AdminProductsPage: React.FC = () => {
                         />
                       </div>
                       <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-                        <span className="material-symbols-outlined text-lg">add</span>
+                        <Icon name="add" className="text-lg" />
                       </div>
                     </div>
 

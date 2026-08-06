@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Icon } from "../../components/common/Icon";
 import { dataService, type CustomerData } from "../../services/dataService";
 
 export const AdminCustomersPage: React.FC = () => {
@@ -19,7 +20,7 @@ export const AdminCustomersPage: React.FC = () => {
       {/* Search Filter Bar */}
       <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex items-center gap-3 rounded-none">
         <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-lg">search</span>
+          <Icon name="search" className="absolute left-3 top-2.5 text-slate-400 text-lg" />
           <input
             type="text"
             value={searchQuery}
@@ -104,9 +105,9 @@ export const AdminCustomersPage: React.FC = () => {
         {/* Desktop View: Multi-Column Table (screen >= md) */}
         <div className="hidden md:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden rounded-none">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <th className="p-4">Customer</th>
                   <th className="p-4">Tier Status</th>
                   <th className="p-4">Total Orders</th>
@@ -115,7 +116,7 @@ export const AdminCustomersPage: React.FC = () => {
                   <th className="p-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
                 {filtered.map((c) => (
                   <tr key={c._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-4">
@@ -127,7 +128,7 @@ export const AdminCustomersPage: React.FC = () => {
                         />
                         <div>
                           <p className="font-bold text-slate-900 dark:text-white">{c.name}</p>
-                          <p className="text-[10px] text-slate-500">{c.email}</p>
+                          <p className="text-[11px] text-slate-500">{c.email}</p>
                         </div>
                       </div>
                     </td>
@@ -191,7 +192,7 @@ export const AdminCustomersPage: React.FC = () => {
                 onClick={() => setSelectedCustomer(null)}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
               >
-                <span className="material-symbols-outlined text-xl">close</span>
+                <Icon name="close" className="text-xl" />
               </button>
             </div>
 
@@ -235,7 +236,7 @@ export const AdminCustomersPage: React.FC = () => {
               {/* Contact Info Details */}
               <div className="space-y-2 text-xs">
                 <h4 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-blue-600 text-sm">badge</span>
+                  <Icon name="badge" className="text-blue-600 text-sm" />
                   <span>Contact & Address Info</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
@@ -257,7 +258,7 @@ export const AdminCustomersPage: React.FC = () => {
               {/* Customer Account Details */}
               <div className="space-y-2 text-xs">
                 <h4 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-blue-600 text-sm">event</span>
+                  <Icon name="event" className="text-blue-600 text-sm" />
                   <span>Account Registration</span>
                 </h4>
                 <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">

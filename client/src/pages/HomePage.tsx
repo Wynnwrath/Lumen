@@ -4,6 +4,7 @@ import { dataService } from "../services/dataService";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import type { Product } from "../types";
+import { Icon } from "../components/common/Icon";
 
 const HERO_SLIDES = [
   {
@@ -192,7 +193,7 @@ export const HomePage: React.FC = () => {
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 animate-fade-up">
           <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <span className="material-symbols-outlined text-emerald-400 text-base">check_circle</span>
+            <Icon name="check_circle" className="text-emerald-400 text-base" />
             <span>{toastMessage}</span>
           </div>
         </div>
@@ -232,7 +233,7 @@ export const HomePage: React.FC = () => {
                 <span
                   className={`inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 ${slide.badgeColor} rounded-full text-[9px] sm:text-xs font-extrabold uppercase tracking-wider shadow-md`}
                 >
-                  <span className="material-symbols-outlined text-[11px] sm:text-sm">{slide.icon}</span>
+                  <Icon name={slide.icon} className="text-[11px] sm:text-sm" />
                   <span>{slide.badge}</span>
                 </span>
                 <h1 className="text-lg sm:text-5xl font-black text-white leading-tight tracking-tight">
@@ -249,7 +250,7 @@ export const HomePage: React.FC = () => {
                     onClick={(e) => handleQuickBuyHero(e, slide.id)}
                     className="bg-secondary hover:bg-secondary-container text-white px-3.5 py-2 sm:px-8 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm transition-all shadow-lg active:scale-95 flex items-center gap-1.5 quick-buy-btn btn-sheen whitespace-nowrap"
                   >
-                    <span className="material-symbols-outlined text-sm sm:text-xl">shopping_bag</span>
+                    <Icon name="shopping_bag" className="text-sm sm:text-xl" />
                     <span>{slide.cta}</span>
                   </button>
                   <Link
@@ -270,7 +271,7 @@ export const HomePage: React.FC = () => {
           className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg opacity-80 hover:opacity-100"
           title="Previous Banner"
         >
-          <span className="material-symbols-outlined text-base sm:text-2xl">chevron_left</span>
+          <Icon name="chevron_left" className="text-base sm:text-2xl" />
         </button>
 
         <button
@@ -278,7 +279,7 @@ export const HomePage: React.FC = () => {
           className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-slate-900/60 hover:bg-slate-900/90 text-white backdrop-blur-md flex items-center justify-center transition shadow-lg opacity-80 hover:opacity-100"
           title="Next Banner"
         >
-          <span className="material-symbols-outlined text-base sm:text-2xl">chevron_right</span>
+          <Icon name="chevron_right" className="text-base sm:text-2xl" />
         </button>
 
         {/* Carousel Indicator Dots */}
@@ -301,7 +302,7 @@ export const HomePage: React.FC = () => {
           <div className="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">
             {BRANDS.map((brand, i) => (
               <span key={i} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
-                <span className="material-symbols-outlined text-secondary text-sm">verified</span>
+                <Icon name="verified" className="text-secondary text-sm" />
                 <span>{brand}</span>
               </span>
             ))}
@@ -309,7 +310,7 @@ export const HomePage: React.FC = () => {
           <div className="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200" aria-hidden="true">
             {BRANDS.map((brand, i) => (
               <span key={`dup-${i}`} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
-                <span className="material-symbols-outlined text-secondary text-sm">verified</span>
+                <Icon name="verified" className="text-secondary text-sm" />
                 <span>{brand}</span>
               </span>
             ))}
@@ -335,7 +336,7 @@ export const HomePage: React.FC = () => {
             className="text-secondary text-xs sm:text-sm font-bold hover:underline flex items-center gap-0.5"
           >
             <span>{selectedCategory !== "all" ? "Show All" : "View All"}</span>
-            <span className="material-symbols-outlined text-sm">chevron_right</span>
+            <Icon name="chevron_right" className="text-sm" />
           </button>
         </div>
 
@@ -355,7 +356,7 @@ export const HomePage: React.FC = () => {
                 <div
                   className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ${cat.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs`}
                 >
-                  <span className="material-symbols-outlined text-2xl sm:text-3xl">{cat.icon}</span>
+                  <Icon name={cat.icon} className="category-card-icon text-2xl sm:text-3xl" />
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-on-surface text-center line-clamp-1">
                   {cat.label}
@@ -440,9 +441,7 @@ export const HomePage: React.FC = () => {
                     className="absolute top-2 right-2 z-10 text-outline hover:text-red-500 transition-all bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-full p-1 sm:p-1.5 shadow-xs hover:scale-110"
                     title="Wishlist"
                   >
-                    <span className={`material-symbols-outlined text-sm sm:text-base ${isWishlisted ? "filled text-red-500" : ""}`}>
-                      favorite
-                    </span>
+                    <Icon name="favorite" filled={isWishlisted} className={`text-sm sm:text-base ${isWishlisted ? "text-red-500" : ""}`} />
                   </button>
                 </div>
 
@@ -462,7 +461,7 @@ export const HomePage: React.FC = () => {
                     {/* Rating */}
                     <div className="flex items-center gap-1 mt-1">
                       <div className="flex text-amber-400 text-[10px] sm:text-xs">
-                        <span className="material-symbols-outlined text-xs sm:text-sm filled">star</span>
+                        <Icon name="star" className="text-xs sm:text-sm" filled />
                       </div>
                       <span className="text-[10px] sm:text-xs font-bold text-on-surface">{product.rating}</span>
                       <span className="text-[10px] sm:text-xs text-outline font-medium">({product.reviewsCount})</span>
@@ -488,7 +487,7 @@ export const HomePage: React.FC = () => {
                         } text-white p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all active:scale-95 shadow-sm flex items-center gap-1 text-[11px] font-bold`}
                       title="Add to Cart"
                     >
-                      <span className="material-symbols-outlined text-xs sm:text-base">add_shopping_cart</span>
+                      <Icon name="add_shopping_cart" className="text-xs sm:text-base" />
                       <span className="hidden sm:inline">Add</span>
                     </button>
                   </div>
@@ -505,7 +504,7 @@ export const HomePage: React.FC = () => {
             className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-container text-white px-9 py-4 rounded-full font-extrabold text-sm shadow-md transition-all hover:scale-105 active:scale-95 btn-sheen"
           >
             <span>Explore Full Catalog ({allProducts.length}+ Products)</span>
-            <span className="material-symbols-outlined text-lg">arrow_forward</span>
+            <Icon name="arrow_forward" className="text-lg" />
           </Link>
         </div>
       </section>

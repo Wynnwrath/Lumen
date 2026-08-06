@@ -5,6 +5,7 @@ import { useCartStore } from "../../stores/cart.store";
 import { useWishlistStore } from "../../stores/wishlist.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { dataService } from "../../services/dataService";
+import { Icon } from "../common/Icon";
 
 export const PublicLayout: React.FC = () => {
   const { mode, toggle } = useThemeStore();
@@ -106,7 +107,7 @@ export const PublicLayout: React.FC = () => {
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 animate-fade-up">
           <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <span className="material-symbols-outlined text-emerald-400 text-base">check_circle</span>
+            <Icon name="check_circle" className="text-emerald-400 text-base" />
             <span>{toastMessage}</span>
           </div>
         </div>
@@ -117,12 +118,12 @@ export const PublicLayout: React.FC = () => {
         <div className="flex justify-between items-center w-full max-w-container-max mx-auto">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 text-slate-300">
-              <span className="material-symbols-outlined text-sm text-secondary-fixed">local_shipping</span>
+              <Icon name="local_shipping" className="text-sm text-secondary-fixed" />
               Free Worldwide Express Shipping on orders over $100
             </span>
             <span className="hidden md:inline text-slate-700">|</span>
             <span className="hidden md:flex items-center gap-1 text-slate-300">
-              <span className="material-symbols-outlined text-sm text-amber-400 filled">star</span>
+              <Icon name="star" className="text-sm text-amber-400" filled />
               4.9/5 Rating (12,400+ verified customer reviews)
             </span>
           </div>
@@ -131,9 +132,7 @@ export const PublicLayout: React.FC = () => {
               onClick={toggle}
               className="hidden md:flex hover:text-white transition items-center gap-1.5 font-semibold"
             >
-              <span className="material-symbols-outlined text-sm">
-                {mode === "dark" ? "light_mode" : "dark_mode"}
-              </span>
+              <Icon name={mode === "dark" ? "light_mode" : "dark_mode"} className="text-sm" />
               <span>Theme</span>
             </button>
             <span className="hidden md:inline text-slate-700">|</span>
@@ -161,12 +160,10 @@ export const PublicLayout: React.FC = () => {
                 className="p-2 text-on-surface hover:text-secondary rounded-full"
                 title="Toggle Theme"
               >
-                <span className="material-symbols-outlined text-xl">
-                  {mode === "dark" ? "light_mode" : "dark_mode"}
-                </span>
+                <Icon name={mode === "dark" ? "light_mode" : "dark_mode"} className="text-xl" />
               </button>
               <Link to="/cart" className="p-2 text-primary dark:text-inverse-primary relative">
-                <span className="material-symbols-outlined text-xl">shopping_cart</span>
+                <Icon name="shopping_cart" className="text-xl" />
                 {itemCount > 0 && (
                   <span className="absolute top-1 right-1 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {itemCount}
@@ -212,12 +209,11 @@ export const PublicLayout: React.FC = () => {
 
           {/* Search Input */}
           <div className="w-full md:w-80 lg:w-96 relative" ref={searchRef}>
-            <span
+            <Icon
+              name="search"
               onClick={handleSearchSubmit}
-              className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg cursor-pointer hover:text-secondary transition"
-            >
-              search
-            </span>
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-lg cursor-pointer hover:text-secondary transition"
+            />
             <input
               type="text"
               value={searchQuery}
@@ -232,7 +228,7 @@ export const PublicLayout: React.FC = () => {
                 onClick={handleClearSearch}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary"
               >
-                <span className="material-symbols-outlined text-sm">close</span>
+                <Icon name="close" className="text-sm" />
               </button>
             )}
 
@@ -273,7 +269,7 @@ export const PublicLayout: React.FC = () => {
                         className="w-full text-left py-2 px-3 hover:bg-surface-container dark:hover:bg-slate-700 rounded-xl text-xs font-bold text-secondary flex items-center justify-between"
                       >
                         <span>View all {liveSearchResults.length} results in Catalog</span>
-                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        <Icon name="arrow_forward" className="text-sm" />
                       </button>
                     </div>
                   </>
@@ -294,7 +290,7 @@ export const PublicLayout: React.FC = () => {
               className="hidden md:flex text-primary dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 p-2.5 rounded-full relative transition-all"
               title="Wishlist"
             >
-              <span className="material-symbols-outlined">favorite</span>
+              <Icon name="favorite" />
               {wishlistIds.length > 0 && (
                 <span className="absolute top-0 right-0 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                   {wishlistIds.length}
@@ -314,7 +310,7 @@ export const PublicLayout: React.FC = () => {
                 className="text-primary dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 p-2.5 rounded-full relative transition-all flex items-center justify-center"
                 title="Shopping Cart"
               >
-                <span className="material-symbols-outlined">shopping_cart</span>
+                <Icon name="shopping_cart" />
                 {itemCount > 0 && (
                   <span className="absolute top-0 right-0 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {itemCount}
@@ -336,7 +332,7 @@ export const PublicLayout: React.FC = () => {
                   {items.length === 0 ? (
                     <div className="py-6 px-4 text-center space-y-3">
                       <div className="w-12 h-12 mx-auto rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
-                        <span className="material-symbols-outlined text-2xl">shopping_bag</span>
+                        <Icon name="shopping_bag" className="text-2xl" />
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm font-bold text-on-surface">Your cart is empty</p>
@@ -350,7 +346,7 @@ export const PublicLayout: React.FC = () => {
                         className="w-full mt-2 bg-secondary hover:bg-secondary-container text-white py-2.5 px-4 rounded-xl text-xs font-bold transition shadow-xs flex items-center justify-center gap-1.5 whitespace-nowrap"
                       >
                         <span>Browse Catalog</span>
-                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        <Icon name="arrow_forward" className="text-sm" />
                       </button>
                     </div>
                   ) : (
@@ -376,7 +372,7 @@ export const PublicLayout: React.FC = () => {
                               onClick={() => removeItem(product._id)}
                               className="text-outline hover:text-error p-1"
                             >
-                              <span className="material-symbols-outlined text-sm">close</span>
+                              <Icon name="close" className="text-sm" />
                             </button>
                           </div>
                         ))}
@@ -401,7 +397,7 @@ export const PublicLayout: React.FC = () => {
                           className="w-full mt-2 bg-secondary hover:bg-secondary-container text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5"
                         >
                           <span>Proceed to Checkout</span>
-                          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                          <Icon name="arrow_forward" className="text-sm" />
                         </button>
                       </div>
                     </>
@@ -417,8 +413,8 @@ export const PublicLayout: React.FC = () => {
                 className="flex text-primary dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 p-2 rounded-full transition-all items-center justify-center gap-1 focus:outline-none"
                 title="User Account"
               >
-                <span className="material-symbols-outlined text-xl">account_circle</span>
-                <span className="material-symbols-outlined text-xs text-outline">expand_more</span>
+                <Icon name="account_circle" className="text-xl" />
+                <Icon name="expand_more" className="text-xs text-outline" />
               </button>
 
               {showUserMenu && (
@@ -446,7 +442,7 @@ export const PublicLayout: React.FC = () => {
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition"
                       >
-                        <span className="material-symbols-outlined text-base text-secondary">person</span>
+                        <Icon name="person" className="text-base text-secondary" />
                         <span>My Profile</span>
                       </Link>
                       <Link
@@ -454,7 +450,7 @@ export const PublicLayout: React.FC = () => {
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition"
                       >
-                        <span className="material-symbols-outlined text-base text-secondary">shopping_bag</span>
+                        <Icon name="shopping_bag" className="text-base text-secondary" />
                         <span>My Orders</span>
                       </Link>
                       <Link
@@ -462,7 +458,7 @@ export const PublicLayout: React.FC = () => {
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition"
                       >
-                        <span className="material-symbols-outlined text-base text-secondary">storefront</span>
+                        <Icon name="storefront" className="text-base text-secondary" />
                         <span>Admin Portal</span>
                       </Link>
                       <div className="border-t border-outline-variant/20 my-1"></div>
@@ -473,9 +469,7 @@ export const PublicLayout: React.FC = () => {
                         }}
                         className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition text-left"
                       >
-                        <span className="material-symbols-outlined text-base text-red-600 dark:text-red-400">
-                          logout
-                        </span>
+                        <Icon name="logout" className="text-base text-red-600 dark:text-red-400" />
                         <span>Log Out</span>
                       </button>
                     </>
@@ -486,7 +480,7 @@ export const PublicLayout: React.FC = () => {
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-on-surface hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition"
                       >
-                        <span className="material-symbols-outlined text-base text-secondary">person</span>
+                        <Icon name="person" className="text-base text-secondary" />
                         <span>User Sign In / Register</span>
                       </Link>
                       <Link
@@ -494,7 +488,7 @@ export const PublicLayout: React.FC = () => {
                         onClick={() => setShowUserMenu(false)}
                         className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-secondary dark:text-secondary-fixed hover:bg-secondary/10 rounded-xl transition border border-secondary/20"
                       >
-                        <span className="material-symbols-outlined text-base">storefront</span>
+                        <Icon name="storefront" className="text-base" />
                         <span>Admin Login</span>
                       </Link>
                     </div>
@@ -517,7 +511,7 @@ export const PublicLayout: React.FC = () => {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-white">
-                <span className="material-symbols-outlined text-sm">auto_awesome</span>
+                <Icon name="auto_awesome" className="text-sm" />
               </div>
               <span className="text-2xl font-extrabold text-white tracking-tight">Lumen</span>
             </div>
@@ -590,7 +584,7 @@ export const PublicLayout: React.FC = () => {
             location.pathname === "/" ? "text-secondary font-bold" : "text-outline"
           }`}
         >
-          <span className="material-symbols-outlined">home</span>
+          <Icon name="home" />
           <span className="text-[10px] mt-0.5">Home</span>
         </Link>
         <Link
@@ -599,14 +593,14 @@ export const PublicLayout: React.FC = () => {
             location.pathname === "/products" ? "text-secondary font-bold" : "text-outline"
           }`}
         >
-          <span className="material-symbols-outlined">grid_view</span>
+          <Icon name="grid_view" />
           <span className="text-[10px] mt-0.5">Catalog</span>
         </Link>
         <Link
           to="/cart"
           className="flex flex-col items-center justify-center text-outline hover:text-secondary p-2 active:scale-95 relative"
         >
-          <span className="material-symbols-outlined">shopping_cart</span>
+          <Icon name="shopping_cart" />
           {itemCount > 0 && (
             <span className="absolute top-1 right-2 bg-secondary text-on-secondary text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">
               {itemCount}
@@ -618,7 +612,7 @@ export const PublicLayout: React.FC = () => {
           to="/products?wishlist=true"
           className="flex flex-col items-center justify-center text-outline hover:text-secondary p-2 active:scale-95 relative"
         >
-          <span className="material-symbols-outlined">favorite</span>
+          <Icon name="favorite" />
           {wishlistIds.length > 0 && (
             <span className="absolute top-1 right-2 bg-error text-white text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">
               {wishlistIds.length}
@@ -633,7 +627,7 @@ export const PublicLayout: React.FC = () => {
             showUserMenu ? "text-secondary font-bold" : "text-outline"
           }`}
         >
-          <span className="material-symbols-outlined">account_circle</span>
+          <Icon name="account_circle" />
           <span className="text-[10px] mt-0.5">Account</span>
         </button>
       </nav>
@@ -670,7 +664,7 @@ export const PublicLayout: React.FC = () => {
                 onClick={() => setShowUserMenu(false)}
                 className="p-1.5 text-outline hover:text-on-surface rounded-full bg-surface dark:bg-slate-800 shrink-0"
               >
-                <span className="material-symbols-outlined text-lg">close</span>
+                <Icon name="close" className="text-lg" />
               </button>
             </div>
 
@@ -680,21 +674,21 @@ export const PublicLayout: React.FC = () => {
                   onClick={() => handleMobileNavigate("/checkout")}
                   className="w-full flex items-center gap-3 p-3 text-xs font-bold text-on-surface hover:bg-surface-container dark:hover:bg-slate-800 rounded-xl transition text-left"
                 >
-                  <span className="material-symbols-outlined text-secondary">person</span>
+                  <Icon name="person" className="text-secondary" />
                   <span>My Profile</span>
                 </button>
                 <button
                   onClick={() => handleMobileNavigate("/cart")}
                   className="w-full flex items-center gap-3 p-3 text-xs font-bold text-on-surface hover:bg-surface-container dark:hover:bg-slate-800 rounded-xl transition text-left"
                 >
-                  <span className="material-symbols-outlined text-secondary">shopping_bag</span>
+                  <Icon name="shopping_bag" className="text-secondary" />
                   <span>My Orders</span>
                 </button>
                 <button
                   onClick={() => handleMobileNavigate("/admin")}
                   className="w-full flex items-center gap-3 p-3 text-xs font-bold text-on-surface hover:bg-surface-container dark:hover:bg-slate-800 rounded-xl transition text-left"
                 >
-                  <span className="material-symbols-outlined text-secondary">storefront</span>
+                  <Icon name="storefront" className="text-secondary" />
                   <span>Admin Portal</span>
                 </button>
                 <div className="border-t border-outline-variant/20 dark:border-slate-800 my-2"></div>
@@ -705,7 +699,7 @@ export const PublicLayout: React.FC = () => {
                   }}
                   className="w-full flex items-center gap-3 p-3 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition text-left"
                 >
-                  <span className="material-symbols-outlined">logout</span>
+                  <Icon name="logout" />
                   <span>Log Out</span>
                 </button>
               </div>
@@ -716,20 +710,20 @@ export const PublicLayout: React.FC = () => {
                   className="w-full flex items-center justify-between p-3.5 text-xs font-bold text-on-surface bg-surface-container dark:bg-slate-800/80 rounded-xl transition border border-outline-variant/30 text-left active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary text-lg">person</span>
+                    <Icon name="person" className="text-secondary text-lg" />
                     <span>User Sign In / Register</span>
                   </div>
-                  <span className="material-symbols-outlined text-sm text-outline">chevron_right</span>
+                  <Icon name="chevron_right" className="text-sm text-outline" />
                 </button>
                 <button
                   onClick={() => handleMobileNavigate("/admin/login")}
                   className="w-full flex items-center justify-between p-3.5 text-xs font-bold text-secondary dark:text-secondary-fixed bg-secondary/10 rounded-xl transition border border-secondary/30 text-left active:scale-[0.98]"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-lg">storefront</span>
+                    <Icon name="storefront" className="text-lg" />
                     <span>Admin Login</span>
                   </div>
-                  <span className="material-symbols-outlined text-sm text-secondary">chevron_right</span>
+                  <Icon name="chevron_right" className="text-sm text-secondary" />
                 </button>
               </div>
             )}

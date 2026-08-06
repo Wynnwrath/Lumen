@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Icon } from "../../components/common/Icon";
 import { dataService } from "../../services/dataService";
 import type { Order, Product } from "../../types";
 
@@ -76,31 +77,27 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
-  const getStatusBadgeHTML = (status: string) => {
-    let colorClasses = "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700";
-    switch (status) {
-      case "Pending":
-        colorClasses = "bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800";
-        break;
-      case "Confirmed":
-        colorClasses = "bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800";
-        break;
-      case "Preparing":
-        colorClasses = "bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800";
-        break;
-      case "Shipped":
-        colorClasses = "bg-purple-50 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800";
-        break;
-      case "Completed":
-        colorClasses = "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
-        break;
-      case "Cancelled":
-        colorClasses = "bg-rose-50 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800";
-        break;
+  const getStatusColorClass = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "completed":
+        return "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/90 dark:text-emerald-200 dark:border-emerald-600 font-bold";
+      case "pending":
+        return "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/90 dark:text-amber-200 dark:border-amber-600 font-bold";
+      case "preparing":
+        return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/90 dark:text-purple-200 dark:border-purple-600 font-bold";
+      case "cancelled":
+        return "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/90 dark:text-rose-200 dark:border-rose-600 font-bold";
+      case "shipped":
+        return "bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-900/90 dark:text-indigo-200 dark:border-indigo-600 font-bold";
+      case "confirmed":
+      default:
+        return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/90 dark:text-blue-200 dark:border-blue-600 font-bold";
     }
+  };
 
+  const getStatusBadgeHTML = (status: string) => {
     return (
-      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${colorClasses}`}>
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${getStatusColorClass(status)}`}>
         <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
         <span>{status}</span>
       </span>
@@ -119,9 +116,7 @@ export const AdminDashboardPage: React.FC = () => {
                 : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-700 dark:border-slate-200"
               }`}
           >
-            <span className="material-symbols-outlined text-base">
-              {toast.type === "success" ? "check_circle" : "info"}
-            </span>
+            <Icon name={toast.type === "success" ? "check_circle" : "info"} className="text-base" />
             <span>{toast.message}</span>
           </div>
         ))}
@@ -142,7 +137,7 @@ export const AdminDashboardPage: React.FC = () => {
               <div id="kpi-sales" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
                 ${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold">north_east</span>
+              <Icon name="north_east" className="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold" />
             </div>
             <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Up 38% this week</p>
           </div>
@@ -161,7 +156,7 @@ export const AdminDashboardPage: React.FC = () => {
               <div id="kpi-orders" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 {totalOrdersCount.toLocaleString()}
               </div>
-              <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold">north_east</span>
+              <Icon name="north_east" className="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold" />
             </div>
             <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Up 11% this week</p>
           </div>
@@ -180,7 +175,7 @@ export const AdminDashboardPage: React.FC = () => {
               <div id="kpi-avg-order" className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
                 ${avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold">north_east</span>
+              <Icon name="north_east" className="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold" />
             </div>
             <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Avg customer spend</p>
           </div>
@@ -199,7 +194,7 @@ export const AdminDashboardPage: React.FC = () => {
               <div id="kpi-pending" className="text-xl sm:text-3xl font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">
                 {pendingOrdersCount}
               </div>
-              <span className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-sm sm:text-base font-bold">schedule</span>
+              <Icon name="schedule" className="text-amber-600 dark:text-amber-400 text-sm sm:text-base font-bold" />
             </div>
             <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-300/80 font-medium mt-1">Awaiting processing</p>
           </div>
@@ -218,7 +213,7 @@ export const AdminDashboardPage: React.FC = () => {
               <div id="kpi-completed" className="text-xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight">
                 {completedOrdersCount}
               </div>
-              <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold">task_alt</span>
+              <Icon name="task_alt" className="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold" />
             </div>
             <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-300/80 font-medium mt-1">Delivered to buyers</p>
           </div>
@@ -397,7 +392,7 @@ export const AdminDashboardPage: React.FC = () => {
                       <select
                         value={ord.status}
                         onChange={(e) => handleUpdateStatus(ord._id, ord.orderNumber, e.target.value)}
-                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-[11px] font-bold rounded-lg px-2 py-1 outline-none cursor-pointer shadow-xs"
+                        className={`text-[11px] font-bold rounded-lg px-2.5 py-1 outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                       >
                         <option value="Pending">Pending</option>
                         <option value="Confirmed">Confirmed</option>
@@ -454,7 +449,7 @@ export const AdminDashboardPage: React.FC = () => {
                         </td>
                         <td className="px-5 py-4 font-extrabold text-slate-900 dark:text-white font-mono">
                           ${ord.total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          <span className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-xs align-middle inline-block ml-0.5">north_east</span>
+                          <Icon name="north_east" className="text-emerald-600 dark:text-emerald-400 text-xs align-middle inline-block ml-0.5" />
                         </td>
                         <td className="px-5 py-4">
                           {getStatusBadgeHTML(ord.status)}
@@ -464,7 +459,7 @@ export const AdminDashboardPage: React.FC = () => {
                             <select
                               value={ord.status}
                               onChange={(e) => handleUpdateStatus(ord._id, ord.orderNumber, e.target.value)}
-                              className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none cursor-pointer focus:border-blue-500 shadow-xs"
+                              className={`text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
                             >
                               <option value="Pending">Pending</option>
                               <option value="Confirmed">Confirmed</option>
@@ -507,7 +502,7 @@ export const AdminDashboardPage: React.FC = () => {
             <div id="low-stock-container" className="divide-y divide-slate-100 dark:divide-slate-800/80 max-h-80 overflow-y-auto">
               {lowStockProducts.length === 0 ? (
                 <div className="py-8 text-center text-sm text-slate-500 dark:text-slate-400 font-medium">
-                  <span className="material-symbols-outlined text-emerald-500 text-3xl mb-1 block">check_circle</span>
+                  <Icon name="check_circle" className="text-emerald-500 text-3xl mb-1 block" />
                   All products are sufficiently stocked.
                 </div>
               ) : (
@@ -537,7 +532,7 @@ export const AdminDashboardPage: React.FC = () => {
                             <span className="text-[11px] text-slate-500 dark:text-slate-400 capitalize font-medium">
                               {item.category || "General"}
                             </span>
-                            <span className="text-slate-300 dark:text-slate-700 text-[10px]">•</span>
+                            <span className="text-slate-300 dark:text-slate-700 text-[10px]">Ã¢â‚¬Â¢</span>
                             <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
                               {item.stock} left
                             </span>
@@ -571,7 +566,7 @@ export const AdminDashboardPage: React.FC = () => {
                 onClick={() => setSelectedOrder(null)}
                 className="text-slate-400 hover:text-slate-900 dark:hover:text-white"
               >
-                <span className="material-symbols-outlined text-lg">close</span>
+                <Icon name="close" className="text-lg" />
               </button>
             </div>
 

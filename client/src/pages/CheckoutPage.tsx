@@ -4,6 +4,7 @@ import { useCartStore } from "../stores/cart.store";
 import { useAuthStore } from "../stores/auth.store";
 import { dataService } from "../services/dataService";
 import type { Order } from "../types";
+import { Icon } from "../components/common/Icon";
 
 export const CheckoutPage: React.FC = () => {
   const { items, getSubtotal, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
@@ -119,7 +120,7 @@ export const CheckoutPage: React.FC = () => {
       <main className="flex-grow max-w-2xl w-full mx-auto px-3 sm:px-6 py-6 md:py-10">
         <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-3xl p-5 md:p-8 shadow-2xl border border-outline-variant/30 text-center space-y-5 animate-fade-up">
           <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
-            <span className="material-symbols-outlined text-2xl">check_circle</span>
+            <Icon name="check_circle" className="text-2xl" />
           </div>
 
           <h2 className="text-xl md:text-3xl font-black text-on-surface">Thank You For Your Order!</h2>
@@ -194,7 +195,7 @@ export const CheckoutPage: React.FC = () => {
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 animate-fade-up">
           <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700">
-            <span className="material-symbols-outlined text-secondary text-base">info</span>
+            <Icon name="info" className="text-secondary text-base" />
             <span>{toastMessage}</span>
           </div>
         </div>
@@ -206,7 +207,7 @@ export const CheckoutPage: React.FC = () => {
           <Link to="/" className="hover:text-secondary">
             Home
           </Link>
-          <span className="material-symbols-outlined text-xs text-outline">chevron_right</span>
+          <Icon name="chevron_right" className="text-xs text-outline" />
           <span className="text-on-surface font-semibold">Your Cart</span>
         </nav>
       </div>
@@ -249,7 +250,7 @@ export const CheckoutPage: React.FC = () => {
 
       {/* Urgency Countdown Banner */}
       <div className="max-w-container-max mx-auto bg-amber-50 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 text-amber-900 dark:text-amber-200 p-2.5 sm:p-3.5 rounded-xl mb-6 text-center text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs">
-        <span className="material-symbols-outlined text-base sm:text-lg text-amber-600 dark:text-amber-400">error</span>
+        <Icon name="error" className="text-base sm:text-lg text-amber-600 dark:text-amber-400" />
         <span>
           Cart items reserved for{" "}
           <span className="font-extrabold text-slate-900 dark:text-white underline font-mono">
@@ -263,7 +264,7 @@ export const CheckoutPage: React.FC = () => {
       {items.length === 0 ? (
         <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-3xl p-8 text-center space-y-4 max-w-lg mx-auto border border-outline-variant/30 shadow-sm">
           <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center text-outline">
-            <span className="material-symbols-outlined text-2xl">shopping_cart_off</span>
+            <Icon name="shopping_cart_off" className="text-2xl" />
           </div>
           <h3 className="text-lg font-bold text-on-surface">Your Shopping Cart is Empty</h3>
           <p className="text-xs text-outline">
@@ -286,9 +287,9 @@ export const CheckoutPage: React.FC = () => {
               className="w-full flex items-center justify-between text-xs font-bold text-on-surface"
             >
               <span className="flex items-center gap-1.5 text-secondary">
-                <span className="material-symbols-outlined text-base">shopping_bag</span>
+                <Icon name="shopping_bag" className="text-base" />
                 <span>{isSummaryExpanded ? "Hide Order Summary" : "Show Order Summary"} ({getItemCount()})</span>
-                <span className="material-symbols-outlined text-sm">{isSummaryExpanded ? "expand_less" : "expand_more"}</span>
+                <Icon name={isSummaryExpanded ? "expand_less" : "expand_more"} className="text-sm" />
               </span>
               <span className="text-sm font-black text-primary dark:text-white">${grandTotal.toFixed(2)}</span>
             </button>
@@ -353,7 +354,7 @@ export const CheckoutPage: React.FC = () => {
                         onClick={() => updateQuantity(product._id, quantity - 1)}
                         className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-slate-200 dark:hover:bg-slate-600 transition"
                       >
-                        <span className="material-symbols-outlined text-[11px] sm:text-xs">remove</span>
+                        <Icon name="remove" className="text-[11px] sm:text-xs" />
                       </button>
                       <span className="w-5 sm:w-6 text-center text-xs font-bold text-on-surface">{quantity}</span>
                       <button
@@ -361,7 +362,7 @@ export const CheckoutPage: React.FC = () => {
                         onClick={() => updateQuantity(product._id, quantity + 1)}
                         className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg flex items-center justify-center text-on-surface hover:bg-slate-200 dark:hover:bg-slate-600 transition"
                       >
-                        <span className="material-symbols-outlined text-[11px] sm:text-xs">add</span>
+                        <Icon name="add" className="text-[11px] sm:text-xs" />
                       </button>
                     </div>
 
@@ -375,7 +376,7 @@ export const CheckoutPage: React.FC = () => {
                       className="p-1 sm:p-1.5 text-outline hover:text-error rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition"
                       title="Remove Item"
                     >
-                      <span className="material-symbols-outlined text-base">delete</span>
+                      <Icon name="delete" className="text-base" />
                     </button>
                   </div>
                 </div>
@@ -710,7 +711,7 @@ export const CheckoutPage: React.FC = () => {
                           : "border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800"
                       }`}
                     >
-                      <span className="material-symbols-outlined text-secondary text-lg">local_atm</span>
+                      <Icon name="local_atm" className="text-secondary text-lg" />
                       <span className="text-[10px] font-bold text-on-surface mt-1 block">COD</span>
                     </button>
 
@@ -723,7 +724,7 @@ export const CheckoutPage: React.FC = () => {
                           : "border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800"
                       }`}
                     >
-                      <span className="material-symbols-outlined text-blue-600 text-lg">account_balance_wallet</span>
+                      <Icon name="account_balance_wallet" className="text-blue-600 text-lg" />
                       <span className="text-[10px] font-bold text-on-surface mt-1 block">E-Wallet</span>
                     </button>
 
@@ -736,7 +737,7 @@ export const CheckoutPage: React.FC = () => {
                           : "border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800"
                       }`}
                     >
-                      <span className="material-symbols-outlined text-emerald-600 text-lg">account_balance</span>
+                      <Icon name="account_balance" className="text-emerald-600 text-lg" />
                       <span className="text-[10px] font-bold text-on-surface mt-1 block">Bank</span>
                     </button>
                   </div>
@@ -767,7 +768,7 @@ export const CheckoutPage: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined text-base">lock</span>
+                      <Icon name="lock" className="text-base" />
                       <span>
                         Complete Order &bull; <span>${grandTotal.toFixed(2)}</span>
                       </span>
@@ -798,7 +799,7 @@ export const CheckoutPage: React.FC = () => {
               <span>Processing...</span>
             ) : (
               <>
-                <span className="material-symbols-outlined text-base">lock</span>
+                <Icon name="lock" className="text-base" />
                 <span>Place Order</span>
               </>
             )}

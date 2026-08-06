@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Icon } from "../../components/common/Icon";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
 import { useThemeStore } from "../../stores/theme.store";
@@ -72,7 +73,7 @@ export const AdminLoginPage: React.FC = () => {
               className="text-xs font-bold text-outline hover:text-on-surface dark:hover:text-white flex items-center gap-1.5 px-2.5 py-2 rounded-xl hover:bg-surface-container dark:hover:bg-slate-800 transition whitespace-nowrap"
               title="Back to Marketplace"
             >
-              <span className="material-symbols-outlined text-lg">storefront</span>
+              <Icon name="storefront" className="text-lg" />
               <span className="hidden sm:inline">Back to Marketplace</span>
             </Link>
 
@@ -82,8 +83,8 @@ export const AdminLoginPage: React.FC = () => {
               className="p-2 text-outline hover:text-on-surface dark:hover:text-white rounded-xl hover:bg-surface-container dark:hover:bg-slate-800 transition"
               title="Toggle Theme"
             >
-              <span className="material-symbols-outlined text-xl dark:hidden">dark_mode</span>
-              <span className="material-symbols-outlined text-xl hidden dark:block">light_mode</span>
+              <Icon name="dark_mode" className="text-xl dark:hidden" />
+              <Icon name="light_mode" className="text-xl hidden dark:block" />
             </button>
           </div>
         </div>
@@ -93,17 +94,16 @@ export const AdminLoginPage: React.FC = () => {
       {toast && (
         <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none animate-fade-up">
           <div className="bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700 pointer-events-auto">
-            <span
-              className={`material-symbols-outlined text-base ${
+            <Icon
+              name={toast.type === "success" ? "check_circle" : toast.type === "error" ? "error" : "info"}
+              className={`text-base ${
                 toast.type === "success"
                   ? "text-emerald-400"
                   : toast.type === "error"
                   ? "text-rose-400"
                   : "text-blue-400"
               }`}
-            >
-              {toast.type === "success" ? "check_circle" : toast.type === "error" ? "error" : "info"}
-            </span>
+            />
             <span>{toast.message}</span>
           </div>
         </div>
@@ -138,14 +138,14 @@ export const AdminLoginPage: React.FC = () => {
             {/* Live Dashboard Snapshot Cards */}
             <div className="relative z-10 space-y-3 my-6">
               <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-sm text-blue-400">equalizer</span>
+                <Icon name="equalizer" className="text-sm text-blue-400" />
                 <span>Live Store Metrics Snapshot</span>
               </div>
 
               {/* Monthly Volume */}
               <div className="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/30 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-emerald-300 text-lg">payments</span>
+                  <Icon name="payments" className="text-emerald-300 text-lg" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-[11px] text-slate-300 font-medium">Monthly Gross Volume</div>
@@ -159,7 +159,7 @@ export const AdminLoginPage: React.FC = () => {
               {/* Active Orders */}
               <div className="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-blue-500/30 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-blue-300 text-lg">inventory_2</span>
+                  <Icon name="inventory_2" className="text-blue-300 text-lg" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-[11px] text-slate-300 font-medium">Active Store Orders</div>
@@ -179,21 +179,21 @@ export const AdminLoginPage: React.FC = () => {
                 <div className="space-y-1.5 text-[11px]">
                   <div className="flex items-center justify-between text-slate-200">
                     <span className="flex items-center gap-1.5 truncate">
-                      <span className="material-symbols-outlined text-xs text-emerald-400">check_circle</span>
+                      <Icon name="check_circle" className="text-xs text-emerald-400" />
                       <span>Order #8492 Processed ($249.00)</span>
                     </span>
                     <span className="text-[10px] text-slate-400 shrink-0">2m ago</span>
                   </div>
                   <div className="flex items-center justify-between text-slate-200">
                     <span className="flex items-center gap-1.5 truncate">
-                      <span className="material-symbols-outlined text-xs text-blue-400">person_add</span>
+                      <Icon name="person_add" className="text-xs text-blue-400" />
                       <span>New Customer Registered</span>
                     </span>
                     <span className="text-[10px] text-slate-400 shrink-0">12m ago</span>
                   </div>
                   <div className="flex items-center justify-between text-slate-200">
                     <span className="flex items-center gap-1.5 truncate">
-                      <span className="material-symbols-outlined text-xs text-amber-400">inventory</span>
+                      <Icon name="inventory" className="text-xs text-amber-400" />
                       <span>Inventory Restocked (+50)</span>
                     </span>
                     <span className="text-[10px] text-slate-400 shrink-0">45m ago</span>
@@ -206,7 +206,7 @@ export const AdminLoginPage: React.FC = () => {
             <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
               <span>Lumen Store Management</span>
               <span className="flex items-center gap-1 text-emerald-400 font-bold">
-                <span className="material-symbols-outlined text-xs">shield</span> Restricted Portal
+                <Icon name="shield" className="text-xs" /> Restricted Portal
               </span>
             </div>
           </div>
@@ -238,13 +238,11 @@ export const AdminLoginPage: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-lg">
-                      {alert.type === "success" ? "check_circle" : "error"}
-                    </span>
+                    <Icon name={alert.type === "success" ? "check_circle" : "error"} className="text-lg" />
                     <span>{alert.message}</span>
                   </div>
                   <button onClick={() => setAlert(null)} className="text-outline hover:text-primary">
-                    <span className="material-symbols-outlined text-sm">close</span>
+                    <Icon name="close" className="text-sm" />
                   </button>
                 </div>
               )}
@@ -254,7 +252,7 @@ export const AdminLoginPage: React.FC = () => {
                 <div className="mb-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-base text-secondary">account_circle</span>
+                      <Icon name="account_circle" className="text-base text-secondary" />
                       <span>
                         Active Session: <strong>{user.name}</strong>
                       </span>
@@ -291,9 +289,7 @@ export const AdminLoginPage: React.FC = () => {
                       Business Email
                     </label>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                        mail
-                      </span>
+                      <Icon name="mail" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                       <input
                         id="login-email"
                         type="email"
@@ -324,16 +320,14 @@ export const AdminLoginPage: React.FC = () => {
                       </a>
                     </div>
                     <div className="relative">
-                      <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">
-                        lock
-                      </span>
+                      <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                       <input
                         id="login-password"
                         type="password"
                         required
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
-                        placeholder="••••••••"
+                        placeholder="ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢"
                         className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                       />
                     </div>
@@ -355,7 +349,7 @@ export const AdminLoginPage: React.FC = () => {
                     type="submit"
                     className="w-full bg-secondary hover:bg-secondary-container text-white font-bold py-3 rounded-xl text-xs transition shadow-md hover:shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
                   >
-                    <span className="material-symbols-outlined text-lg">login</span>
+                    <Icon name="login" className="text-lg" />
                     <span>Sign In to Admin Portal</span>
                   </button>
                 </form>
@@ -368,7 +362,7 @@ export const AdminLoginPage: React.FC = () => {
                     onClick={handleDemoAutofill}
                     className="text-secondary font-bold hover:underline flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-sm">auto_fix_high</span>
+                    <Icon name="auto_fix_high" className="text-sm" />
                     <span>Fill Demo Admin Credentials</span>
                   </button>
                 </div>
@@ -391,7 +385,7 @@ export const AdminLoginPage: React.FC = () => {
                 </a>
               </span>
               <span className="flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm text-emerald-500">lock</span> 256-bit SSL Encrypted
+                <Icon name="lock" className="text-sm text-emerald-500" /> 256-bit SSL Encrypted
               </span>
             </div>
           </div>
