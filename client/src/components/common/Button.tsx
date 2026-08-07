@@ -1,7 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Icon } from "./Icon";
 
-// Reusable button with preset variants/sizes + optional leading icon.
+// Reusable button with preset variants/sizes, optional leading icon, an
+// optional loading spinner, and optional `to` (renders a router Link).
 type ButtonVariant = "secondary" | "blue" | "dark" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 
@@ -11,6 +13,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: string;
   iconClassName?: string;
   fullWidth?: boolean;
+  loading?: boolean;
+  to?: string;
   children?: React.ReactNode;
 }
 
@@ -33,19 +37,40 @@ export const Button = ({
   icon,
   iconClassName,
   fullWidth,
+  loading = false,
+  to,
   className,
   children,
   type = "button",
+  disabled,
   ...rest
 }: ButtonProps) => {
-  return (
-    <button
-      type={type}
-      className={`inline-flex items-center justify-center gap-1.5 font-bold transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${fullWidth ? "w-full" : ""} ${className || ""}`}
-      {...rest}
-    >
-      {icon && <Icon name={icon} className={iconClassName || "text-base"} />}
+  const classes = `inline-flex items-center justify-center gap-1.5 font-bold transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${fullWidth ? "w-full" : ""} ${className || ""}`;
+
+  const inner = (
+    <>
+      {loading ? (
+        <Icon name="loader" className="text-base animate-spin" />
+      ) : icon ? (
+        <Icon name={icon} className={iconClassName || "text-base"} />
+      ) : null}
       {children}
+    </>
+  );
+
+  if (to) {
+    // The shared onClick/aria/title props are compatible with a link; the
+    // button-specific ones (form, etc.) are harmless on an anchor.
+    return (
+      <Link to={to} className={classes} {...(rest as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>)}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <button type={type} disabled={disabled || loading} className={classes} {...rest}>
+      {inner}
     </button>
   );
 };
