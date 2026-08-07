@@ -30,7 +30,6 @@ export const HomePage = () => {
   const { showToast } = useToast();
 
   const [categories, setCategories] = useState<DisplayCategory[]>(DEFAULT_CATEGORIES);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("featured");
 
   // Carousel Hero Banner States
@@ -66,13 +65,7 @@ export const HomePage = () => {
 
   // Filter & sort products logic
   const displayProducts = useMemo(() => {
-    let result = [...allProducts];
-
-    if (selectedCategory !== "all") {
-      result = result.filter(
-        (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    }
+    const result = [...allProducts];
 
     if (sortBy === "price-low") {
       result.sort((a, b) => a.price - b.price);
@@ -83,7 +76,7 @@ export const HomePage = () => {
     }
 
     return result.slice(0, 4);
-  }, [allProducts, selectedCategory, sortBy]);
+  }, [allProducts, sortBy]);
 
   const handleQuickBuyHero = (e: React.MouseEvent, productId: string) => {
     e.preventDefault();
@@ -107,11 +100,7 @@ export const HomePage = () => {
   };
 
   const handleCategoryClick = (catId: string) => {
-    if (selectedCategory === catId) {
-      setSelectedCategory("all");
-    } else {
-      setSelectedCategory(catId);
-    }
+    navigate(`/products?category=${catId}`);
   };
 
   const nextSlide = () => {
@@ -251,16 +240,10 @@ export const HomePage = () => {
             <p className="text-xs text-outline">Browse hand-picked collections across top lifestyle &amp; tech domains</p>
           </div>
           <button
-            onClick={() => {
-              if (selectedCategory !== "all") {
-                setSelectedCategory("all");
-              } else {
-                navigate("/products");
-              }
-            }}
+            onClick={() => navigate("/products")}
             className="text-secondary text-xs sm:text-sm font-bold hover:underline flex items-center gap-0.5"
           >
-            <span>{selectedCategory !== "all" ? "Show All" : "View All"}</span>
+            <span>View All</span>
             <Icon name="chevron_right" className="text-sm" />
           </button>
         </div>
@@ -268,15 +251,11 @@ export const HomePage = () => {
         {/* 6 Category Box Grid matching original index.html */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           {categories.map((cat) => {
-            const isActive = selectedCategory === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryClick(cat.id)}
-                className={`category-card flex flex-col items-center gap-3 p-4 sm:p-5 rounded-2xl bg-surface-container-lowest dark:bg-slate-800 hover:bg-surface-container border transition-all duration-300 group shadow-xs hover:shadow-md ${isActive
-                    ? "border-secondary ring-2 ring-secondary/30 shadow-md"
-                    : "border-outline-variant/40 hover:border-secondary/50"
-                  }`}
+                className={`category-card flex flex-col items-center gap-3 p-4 sm:p-5 rounded-2xl bg-surface-container-lowest dark:bg-slate-800 hover:bg-surface-container border border-outline-variant/40 hover:border-secondary/50 transition-all duration-300 group shadow-xs hover:shadow-md`}
               >
                 <div
                   className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl ${cat.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs`}
