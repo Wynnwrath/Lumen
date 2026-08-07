@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { getOrders, updateOrderStatus, getOrdersCsv } from "../../api/orders";
 import { Icon } from "../../components/common/Icon";
 import type { Order, OrderStatus } from "../../types";
-import { getStatusColorClass } from "../../components/common/StatusBadge";
+import { getStatusClasses } from "../../components/common/StatusBadge";
 import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListLoading } from "../../components/common/skeletons";
+import { LoadingSpinner } from "../../components/common/skeletons";
 import { useToast } from "../../components/common/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { formatDate } from "../../utils/format";
@@ -25,11 +25,11 @@ export const AdminOrdersPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [tableLoading, setTableLoading] = useState(true);
   const [refreshToken, setRefreshToken] = useState(0);
-  const LIMIT = 10;
+  const PAGE_SIZE = 10;
 
   useEffect(() => {
     setTableLoading(true);
-    getOrders({ page, limit: LIMIT, status: statusFilter === "all" ? undefined : (statusFilter as OrderStatus) })
+    getOrders({ page, limit: PAGE_SIZE, status: statusFilter === "all" ? undefined : (statusFilter as OrderStatus) })
       .then((res) => {
         setPagedOrders(res.orders);
         setTotalPages(res.totalPages || 1);
@@ -144,13 +144,13 @@ export const AdminOrdersPage = () => {
 
       {/* Orders Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {tableLoading ? (
-        <ListLoading label="Loading orders..." />
+        <LoadingSpinner label="Loading orders..." />
       ) : (
       <div className="space-y-4">
         {/* Mobile View: High-Density Order Cards */}
         <div className="block md:hidden space-y-3">
           {filteredOrders.length === 0 ? (
-            <EmptyState text="No orders found matching your criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+            <EmptyState message="No orders found matching your criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
             filteredOrders.map((ord) => (
               <div
@@ -183,7 +183,7 @@ export const AdminOrdersPage = () => {
                   <OrderStatusSelect
                     value={ord.status}
                     onChange={(st) => handleUpdateStatus(ord.orderNumber, st)}
-                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusClasses(ord.status)}`}
                   />
                 </div>
 
@@ -219,7 +219,7 @@ export const AdminOrdersPage = () => {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
                 {filteredOrders.length === 0 ? (
                   <EmptyState
-                    text="No orders found matching your criteria."
+                    message="No orders found matching your criteria."
                     className="py-12 text-center text-sm text-slate-500 dark:text-slate-400"
                     colSpan={8}
                   />
@@ -247,7 +247,7 @@ export const AdminOrdersPage = () => {
                       <OrderStatusSelect
                         value={ord.status}
                         onChange={(st) => handleUpdateStatus(ord.orderNumber, st)}
-                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusClasses(ord.status)}`}
                       />
                     </td>
                     <td className="p-4 text-right">
@@ -315,7 +315,7 @@ export const AdminOrdersPage = () => {
               <p><strong className="text-slate-500">Payment:</strong> {selectedOrder.paymentMethod}</p>
               <p>
                 <strong className="text-slate-500">Status:</strong>{" "}
-                <span className={`px-2 py-0.5 rounded-full font-bold ${getStatusColorClass(selectedOrder.status)}`}>
+                <span className={`px-2 py-0.5 rounded-full font-bold ${getStatusClasses(selectedOrder.status)}`}>
                   {selectedOrder.status}
                 </span>
               </p>

@@ -8,11 +8,3 @@ export function formatDate(iso: string | undefined, opts: Intl.DateTimeFormatOpt
     return iso;
   }
 }
-
-export function formatShortDate(iso: string | undefined): string {
-  return formatDate(iso, { month: "short", day: "numeric" });
-}
-
-export function formatMoney(amount: number): string {
-  return `$${amount.toFixed(2)}`;
-}

@@ -1,14 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getCustomers } from "../api/customers";
-import type { CustomerData } from "../types";
-
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  } catch {
-    return iso;
-  }
-}
+import { formatDate } from "../utils/format";
+import type { CustomerListItem } from "../types";
 
 function deriveTier(totalSpent: number): string {
   if (totalSpent >= 2000) return "VIP Customer";
@@ -25,7 +18,7 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-const toCustomerData = (r: { _id: string; name: string; email: string; phone: string; registeredAt: string; totalOrders: number; totalSpent: number; address: string }): CustomerData => ({
+const toCustomerListItem = (r: { _id: string; name: string; email: string; phone: string; registeredAt: string; totalOrders: number; totalSpent: number; address: string }): CustomerListItem => ({
   _id: r._id,
   name: r.name,
   email: r.email,
@@ -39,13 +32,13 @@ const toCustomerData = (r: { _id: string; name: string; email: string; phone: st
 });
 
 export function useCustomers() {
-  const [customers, setCustomers] = useState<CustomerData[]>([]);
+  const [customers, setCustomers] = useState<CustomerListItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     try {
       const records = await getCustomers();
-      setCustomers(records.map(toCustomerData));
+      setCustomers(records.map(toCustomerListItem));
     } catch (error) {
       console.error("Failed to load customers", error);
     } finally {

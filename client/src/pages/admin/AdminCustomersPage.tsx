@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { Icon } from "../../components/common/Icon";
-import type { CustomerData } from "../../types";
+import type { CustomerListItem } from "../../types";
 import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListLoading } from "../../components/common/skeletons";
+import { LoadingSpinner } from "../../components/common/skeletons";
 import { useCustomers } from "../../hooks/useCustomers";
 
 // Admin customer directory: search, tier badges, order stats, profile modal.
 export const AdminCustomersPage = () => {
   const { customers, loading: customersLoading } = useCustomers();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<CustomerData | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerListItem | null>(null);
 
-  const filtered = customers.filter((c) => {
+  const filteredCustomers = customers.filter((c) => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
@@ -31,15 +31,15 @@ export const AdminCustomersPage = () => {
 
       {/* Customers Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {customersLoading ? (
-        <ListLoading label="Loading customers..." />
+        <LoadingSpinner label="Loading customers..." />
       ) : (
       <div className="space-y-4">
         {/* Mobile View: High-Density Customer Cards */}
         <div className="block md:hidden space-y-3">
-          {filtered.length === 0 ? (
-            <EmptyState text="No customers found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+          {filteredCustomers.length === 0 ? (
+            <EmptyState message="No customers found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
-            filtered.map((c) => (
+            filteredCustomers.map((c) => (
               <div
                 key={c._id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-3 shadow-xs rounded-none"
@@ -114,7 +114,7 @@ export const AdminCustomersPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
-                {filtered.map((c) => (
+                {filteredCustomers.map((c) => (
                   <tr key={c._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-4">
                       <div className="flex items-center gap-3">

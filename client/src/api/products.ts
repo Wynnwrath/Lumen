@@ -1,5 +1,5 @@
 import api from "./client";
-import type { ApiResponse, PaginationMeta, Product } from "../types";
+import type { ApiResponse, PaginationMeta, Product, ProductStatus } from "../types";
 
 // Paginated products response: data + pagination info.
 export interface ProductsResponse extends PaginationMeta {
@@ -13,7 +13,9 @@ export interface ProductPayload {
   price: number;
   originalPrice?: number;
   stock: number;
-  status: "active" | "inactive" | "out_of_stock";
+  status: ProductStatus;
+  isSale?: boolean;
+  arrival?: boolean;
   images: string[];
   description?: string;
 }

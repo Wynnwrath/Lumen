@@ -7,7 +7,7 @@ import { Icon } from "../components/common/Icon";
 import { ProductCard, trackSpotlight } from "../components/common/ProductCard";
 import { ProductGridSkeleton } from "../components/common/skeletons";
 import { useToast } from "../components/common/ToastProvider";
-import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_COLORS } from "../constants/home";
+import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_META } from "../constants/home";
 import { useAddToCart } from "../hooks/useAddToCart";
 import type { Product } from "../types";
 
@@ -18,7 +18,7 @@ function mapCategories(cats: { slug: string; name: string; icon: string }[]): Di
     id: c.slug,
     label: c.name,
     icon: c.icon || "category",
-    bgColor: CATEGORY_COLORS[c.icon] || "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
+    bgColor: CATEGORY_META[c.slug]?.bgColor || "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
   }));
 }
 
@@ -36,13 +36,13 @@ export const HomePage = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
 
   useEffect(() => {
     getProducts({ limit: 100 })
-      .then((res) => setAllProducts(res.products))
-      .catch(() => setAllProducts([]))
+      .then((res) => setFetchedProducts(res.products))
+      .catch(() => setFetchedProducts([]))
       .finally(() => setProductsLoading(false));
   }, []);
 
@@ -65,38 +65,38 @@ export const HomePage = () => {
 
   // Filter & sort products logic
   const displayProducts = useMemo(() => {
-    const result = [...allProducts];
+    const sortedProducts = [...fetchedProducts];
 
-    if (sortBy === "price-low") {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortBy === "price-high") {
-      result.sort((a, b) => b.price - a.price);
+    if (sortBy === "price-asc") {
+      sortedProducts.sort((a, b) => a.price - b.price);
+    } else if (sortBy === "price-desc") {
+      sortedProducts.sort((a, b) => b.price - a.price);
     } else if (sortBy === "rating") {
-      result.sort((a, b) => b.rating - a.rating);
+      sortedProducts.sort((a, b) => b.rating - a.rating);
     }
 
-    return result.slice(0, 4);
-  }, [allProducts, sortBy]);
+    return sortedProducts.slice(0, 4);
+  }, [fetchedProducts, sortBy]);
 
-  const handleQuickBuyHero = (e: React.MouseEvent, productId: string) => {
+  const handleQuickBuyHero = (e: React.MouseEvent, slideId: string) => {
     e.preventDefault();
-    const slide = HERO_SLIDES.find((s) => s.id === productId);
+    const slide = HERO_SLIDES.find((s) => s.id === slideId);
     if (!slide?.match) return;
 
     const { match } = slide;
-    const prod = allProducts.find(
+    const matchedProduct = fetchedProducts.find(
       (p) =>
         (match.name != null && p.name.toLowerCase().includes(match.name.toLowerCase())) ||
         (match.category != null && p.category.toLowerCase() === match.category.toLowerCase())
     );
 
-    if (!prod) {
+    if (!matchedProduct) {
       showToast(`Product not found for "${slide.title}"`, "error");
       return;
     }
 
-    addItem(prod, 1);
-    showToast(`Added "${prod.name}" to cart!`, "success");
+    addItem(matchedProduct, 1);
+    showToast(`Added "${matchedProduct.name}" to cart!`, "success");
   };
 
   const handleCategoryClick = (catId: string) => {
@@ -291,8 +291,8 @@ export const HomePage = () => {
             >
               <option value="featured">Featured</option>
               <option value="rating">Top Rated</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
+              <option value="price-asc">Price: Low-High</option>
+              <option value="price-desc">Price: High-Low</option>
             </select>
           </div>
         </div>
@@ -314,7 +314,7 @@ export const HomePage = () => {
             to="/products"
             className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-container text-white px-9 py-4 rounded-full font-extrabold text-sm shadow-md transition-all hover:scale-105 active:scale-95 btn-sheen"
           >
-            <span>Explore Full Catalog ({allProducts.length}+ Products)</span>
+            <span>Explore Full Catalog ({fetchedProducts.length}+ Products)</span>
             <Icon name="arrow_forward" className="text-lg" />
           </Link>
         </div>

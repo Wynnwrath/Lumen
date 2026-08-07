@@ -146,7 +146,7 @@ export const MobileNav = () => {
                   className="w-full flex items-center gap-3 p-3 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition text-left"
                 >
                   <Icon name="logout" />
-                  <span>Log Out</span>
+                  <span>Sign Out</span>
                 </button>
               </div>
             ) : (

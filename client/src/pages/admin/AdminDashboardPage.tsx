@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { updateOrderStatus } from "../../api/orders";
 import { updateProduct } from "../../api/products";
-import { getDashboardCharts } from "../../api/dashboard";
+import { getDashboardCharts, type DashboardCharts } from "../../api/dashboard";
 import type { Order, OrderStatus, Product } from "../../types";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
@@ -25,7 +25,7 @@ export const AdminDashboardPage = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [restockProduct, setRestockProduct] = useState<Product | null>(null);
   const { showToast } = useToast();
-  const [charts, setCharts] = useState<{ revenueByDay: { date: string; label: string; total: number }[]; ordersByStatus: { status: string; count: number }[] }>({
+  const [charts, setCharts] = useState<DashboardCharts>({
     revenueByDay: [],
     ordersByStatus: [],
   });
@@ -157,7 +157,7 @@ export const AdminDashboardPage = () => {
 
         {/* Avg Order Value */}
         <KpiCard
-          label="Avg. Order"
+          label="Average Order"
           chip="Average"
           chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
           value={`$${avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}

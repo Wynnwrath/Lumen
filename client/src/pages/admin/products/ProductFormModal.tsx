@@ -2,17 +2,15 @@ import React from "react";
 import { Icon } from "../../../components/common/Icon";
 import { Button } from "../../../components/common/Button";
 import { Modal } from "../../../components/common/Modal";
-import { AdminField } from "./AdminField";
+import { FormField } from "../../../components/common/FormField";
 import { ProductImage } from "../../../components/common/ProductImage";
-import type { Category, Product, ToastMessage } from "../../../types";
-import type { ProductStatus } from "../../../hooks/useProductForm";
+import type { Category, Product, ProductStatus } from "../../../types";
 
 interface ProductFormModalProps {
   open: boolean;
   onClose: () => void;
   editingProduct: Product | null;
   categories: Category[];
-  showToast: (message: string, type?: ToastMessage["type"]) => void;
   formName: string;
   setFormName: React.Dispatch<React.SetStateAction<string>>;
   formCategory: string;
@@ -30,7 +28,11 @@ interface ProductFormModalProps {
   imageUploading: boolean;
   formDescription: string;
   setFormDescription: React.Dispatch<React.SetStateAction<string>>;
-  handleImageFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  formIsSale: boolean;
+  setFormIsSale: React.Dispatch<React.SetStateAction<boolean>>;
+  formArrival: boolean;
+  setFormArrival: React.Dispatch<React.SetStateAction<boolean>>;
+  handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSaveProduct: (e: React.FormEvent) => void;
 }
 
@@ -39,7 +41,6 @@ export const ProductFormModal = ({
   onClose,
   editingProduct,
   categories,
-  showToast,
   formName,
   setFormName,
   formCategory,
@@ -57,7 +58,11 @@ export const ProductFormModal = ({
   imageUploading,
   formDescription,
   setFormDescription,
-  handleImageFile,
+  formIsSale,
+  setFormIsSale,
+  formArrival,
+  setFormArrival,
+  handleImageChange,
   handleSaveProduct,
 }: ProductFormModalProps) => {
   return (
@@ -70,9 +75,6 @@ export const ProductFormModal = ({
       className="max-w-4xl"
       headerActions={
         <>
-          <Button variant="blue" onClick={() => showToast("Draft saved to memory", "info")} className="hidden sm:flex">
-            <Icon name="bookmark" className="text-sm" />Save Draft
-          </Button>
           <Button variant="blue" type="submit" form="product-form">
             <Icon name="check" className="text-sm" />{editingProduct ? "Save Changes" : "Add Product"}
           </Button>
@@ -90,7 +92,7 @@ export const ProductFormModal = ({
                 General Information
               </h4>
 
-              <AdminField label="Product Name *">
+              <FormField label="Product Name *">
                 <input
                   type="text"
                   required
@@ -99,9 +101,9 @@ export const ProductFormModal = ({
                   placeholder="Puffer Jacket With Pocket Detail"
                   className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
-              </AdminField>
+              </FormField>
 
-              <AdminField label="Description Product">
+              <FormField label="Product Description">
                 <textarea
                   rows={4}
                   value={formDescription}
@@ -109,7 +111,7 @@ export const ProductFormModal = ({
                   placeholder="Detailed specs, fabric details, features, or materials..."
                   className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
-              </AdminField>
+              </FormField>
             </div>
 
             {/* Card 2: Pricing And Stock */}
@@ -119,7 +121,7 @@ export const ProductFormModal = ({
               </h4>
 
               <div className="grid grid-cols-2 gap-4">
-                <AdminField label="Base Pricing ($) *">
+                <FormField label="Price ($) *">
                   <input
                     type="number"
                     step="0.01"
@@ -130,8 +132,8 @@ export const ProductFormModal = ({
                     placeholder="47.55"
                     className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                   />
-                </AdminField>
-                <AdminField label="Original Price ($)">
+                </FormField>
+                <FormField label="Original Price ($)">
                   <input
                     type="number"
                     step="0.01"
@@ -141,11 +143,11 @@ export const ProductFormModal = ({
                     placeholder="60.00"
                     className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                   />
-                </AdminField>
+                </FormField>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <AdminField label="Stock Quantity *">
+                <FormField label="Stock Quantity *">
                   <input
                     type="number"
                     min="0"
@@ -155,8 +157,8 @@ export const ProductFormModal = ({
                     placeholder="77"
                     className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                   />
-                </AdminField>
-                <AdminField label="Product Status *">
+                </FormField>
+                <FormField label="Product Status *">
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as ProductStatus)}
@@ -167,7 +169,22 @@ export const ProductFormModal = ({
                     <option value="inactive">Inactive (Hidden from Customers)</option>
                     <option value="out_of_stock">Out of Stock</option>
                   </select>
-                </AdminField>
+                </FormField>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField label="On Sale">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <input type="checkbox" checked={formIsSale} onChange={(e) => setFormIsSale(e.target.checked)} className="h-4 w-4 accent-blue-600" />
+                    Mark as sale item
+                  </label>
+                </FormField>
+                <FormField label="New Arrival">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <input type="checkbox" checked={formArrival} onChange={(e) => setFormArrival(e.target.checked)} className="h-4 w-4 accent-blue-600" />
+                    Mark as new arrival
+                  </label>
+                </FormField>
               </div>
             </div>
           </div>
@@ -177,7 +194,7 @@ export const ProductFormModal = ({
             {/* Card 3: Upload Img Preview Canvas */}
             <div className="bg-white dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
               <h4 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                Upload Img
+                Upload Image
               </h4>
 
               {/* Primary Canvas Image Box */}
@@ -207,7 +224,7 @@ export const ProductFormModal = ({
                 </div>
               </div>
 
-              <AdminField label="Upload from Device">
+              <FormField label="Upload from Device">
                 <label
                   className={`w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed px-3 py-3 text-xs font-bold transition cursor-pointer ${
                     imageUploading
@@ -217,11 +234,11 @@ export const ProductFormModal = ({
                 >
                   <Icon name={imageUploading ? "loader" : "upload"} className="text-base" />
                   <span>{imageUploading ? "Uploading..." : "Choose Image File"}</span>
-                  <input type="file" accept="image/*" className="hidden" onChange={handleImageFile} disabled={imageUploading} />
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} disabled={imageUploading} />
                 </label>
-              </AdminField>
+              </FormField>
 
-              <AdminField label="Image URL Address">
+              <FormField label="Image URL">
                 <input
                   type="url"
                   value={formImage}
@@ -229,7 +246,7 @@ export const ProductFormModal = ({
                   placeholder="Paste an image URL (e.g. https://...)"
                   className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
-              </AdminField>
+              </FormField>
             </div>
 
             {/* Card 4: Category */}
@@ -238,7 +255,7 @@ export const ProductFormModal = ({
                 Category
               </h4>
 
-              <AdminField label="Product Category *">
+              <FormField label="Product Category *">
                 <select
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
@@ -251,7 +268,7 @@ export const ProductFormModal = ({
                     </option>
                   ))}
                 </select>
-              </AdminField>
+              </FormField>
             </div>
           </div>
         </div>

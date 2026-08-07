@@ -7,7 +7,7 @@ import { Icon } from "../components/common/Icon";
 import { Button } from "../components/common/Button";
 import { useToast } from "../components/common/ToastProvider";
 
-const PASSWORD_CHECKS = (password: string) => [
+const getPasswordChecks = (password: string) => [
   { ok: password.length >= 8, msg: "at least 8 characters" },
   { ok: /[A-Z]/.test(password), msg: "an uppercase letter" },
   { ok: /[a-z]/.test(password), msg: "a lowercase letter" },
@@ -75,7 +75,7 @@ export const LoginPage = () => {
       setAlert({ message: "Please fill in all required fields.", type: "error" });
       return;
     }
-    const failed = PASSWORD_CHECKS(regPassword).find((c) => !c.ok);
+    const failed = getPasswordChecks(regPassword).find((c) => !c.ok);
     if (failed) {
       setAlert({ message: `Password must include ${failed.msg}.`, type: "error" });
       return;
@@ -134,8 +134,6 @@ export const LoginPage = () => {
           </div>
         </div>
       </header>
-
-      {/* Toast Notification Container */}
 
       {/* Main Customer Auth Section */}
       <main className="flex-grow flex items-center justify-center p-3 sm:p-6 md:p-8 my-2 sm:my-6">
@@ -296,8 +294,9 @@ export const LoginPage = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => showToast("Google Sign-In ready for production API", "info")}
-                    className="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface dark:bg-slate-900 hover:bg-surface-container dark:hover:bg-slate-700 border border-outline-variant/60 rounded-xl text-xs font-bold text-on-surface dark:text-white transition"
+                    disabled
+                    onClick={() => showToast("Google sign-in is coming soon", "info")}
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface dark:bg-slate-900 hover:bg-surface-container dark:hover:bg-slate-700 border border-outline-variant/60 rounded-xl text-xs font-bold text-on-surface dark:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">
                       <path
@@ -321,8 +320,9 @@ export const LoginPage = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => showToast("Apple Sign-In ready for production API", "info")}
-                    className="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface dark:bg-slate-900 hover:bg-surface-container dark:hover:bg-slate-700 border border-outline-variant/60 rounded-xl text-xs font-bold text-on-surface dark:text-white transition"
+                    disabled
+                    onClick={() => showToast("Apple sign-in is coming soon", "info")}
+                    className="flex items-center justify-center gap-2 py-2.5 px-4 bg-surface dark:bg-slate-900 hover:bg-surface-container dark:hover:bg-slate-700 border border-outline-variant/60 rounded-xl text-xs font-bold text-on-surface dark:text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-4 h-4 fill-current text-on-surface dark:text-white" viewBox="0 0 24 24">
                       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.32c.66-.8 1.11-1.92.99-3.04-.96.04-2.12.64-2.8 1.44-.6.7-1.13 1.84-.99 2.94 1.07.08 2.14-.54 2.8-1.34z" />
@@ -488,7 +488,7 @@ export const LoginPage = () => {
                             required
                             value={regPassword}
                             onChange={(e) => setRegPassword(e.target.value)}
-                            placeholder="Min 6 chars"
+                            placeholder="Min 8 chars"
                             className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                           />
                         </div>

@@ -11,7 +11,7 @@ export const TopProductsChart = ({ data }: TopProductsChartProps) => {
       <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Top Selling Products</h2>
       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-4 font-medium">Units sold by product</p>
       {data.length === 0 ? (
-        <EmptyState text="No orders recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
+        <EmptyState message="No orders recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
       ) : (
         <ResponsiveContainer width="100%" height={data.length * 52}>
           <BarChart data={data} layout="vertical" margin={{ left: 8, right: 16 }}>

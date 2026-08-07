@@ -6,7 +6,7 @@ import { Button } from "../../components/common/Button";
 import { KpiCard } from "../../components/common/KpiCard";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListLoading } from "../../components/common/skeletons";
+import { LoadingSpinner } from "../../components/common/skeletons";
 import { ProductImage } from "../../components/common/ProductImage";
 import { useToast } from "../../components/common/ToastProvider";
 import { useProducts } from "../../hooks/useProducts";
@@ -45,9 +45,13 @@ export const AdminProductsPage = () => {
     imageUploading,
     formDescription,
     setFormDescription,
+    formIsSale,
+    setFormIsSale,
+    formArrival,
+    setFormArrival,
     handleOpenAddModal,
     handleOpenEditModal,
-    handleImageFile,
+    handleImageChange,
     handleSaveProduct,
   } = useProductForm(categories, refreshProducts);
 
@@ -81,7 +85,7 @@ export const AdminProductsPage = () => {
   };
 
   // Filtered Products
-  const filtered = products.filter((p) => {
+  const filteredProducts = products.filter((p) => {
     // Category Filter
     if (categoryFilter !== "all" && p.category.toLowerCase() !== categoryFilter.toLowerCase()) {
       return false;
@@ -191,15 +195,15 @@ export const AdminProductsPage = () => {
 
       {/* Products Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {productsLoading ? (
-        <ListLoading label="Loading products..." />
+        <LoadingSpinner label="Loading products..." />
       ) : (
       <section className="space-y-4">
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}
         <div className="block md:hidden space-y-3">
-          {filtered.length === 0 ? (
-            <EmptyState text="No products found matching your filter criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+          {filteredProducts.length === 0 ? (
+            <EmptyState message="No products found matching your filter criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
-            filtered.map((product) => {
+            filteredProducts.map((product) => {
               const isStockActive = product.status === "active" && product.stock > 0;
               return (
                 <div
@@ -285,10 +289,10 @@ export const AdminProductsPage = () => {
                 </tr>
               </thead>
               <tbody id="products-tbody" className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
-                {filtered.length === 0 ? (
-                  <EmptyState text="No products found matching your filter criteria." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
+                {filteredProducts.length === 0 ? (
+                  <EmptyState message="No products found matching your filter criteria." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
                 ) : (
-                  filtered.map((product) => (
+                  filteredProducts.map((product) => (
                     <tr
                       key={product._id}
                       className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800"
@@ -373,7 +377,6 @@ export const AdminProductsPage = () => {
         onClose={() => setShowModal(false)}
         editingProduct={editingProduct}
         categories={categories}
-        showToast={showToast}
         formName={formName}
         setFormName={setFormName}
         formCategory={formCategory}
@@ -391,7 +394,11 @@ export const AdminProductsPage = () => {
         imageUploading={imageUploading}
         formDescription={formDescription}
         setFormDescription={setFormDescription}
-        handleImageFile={handleImageFile}
+        formIsSale={formIsSale}
+        setFormIsSale={setFormIsSale}
+        formArrival={formArrival}
+        setFormArrival={setFormArrival}
+        handleImageChange={handleImageChange}
         handleSaveProduct={handleSaveProduct}
       />
     </div>

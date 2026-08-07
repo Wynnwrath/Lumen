@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Icon } from "../../../components/common/Icon";
 import { EmptyState } from "../../../components/common/EmptyState";
-import { StatusBadge, getStatusColorClass } from "../../../components/common/StatusBadge";
+import { StatusBadge, getStatusClasses } from "../../../components/common/StatusBadge";
 import { OrderStatusSelect } from "../../../components/common/OrderStatusSelect";
 import { formatDate } from "../../../utils/format";
 import type { Order, OrderStatus } from "../../../types";
@@ -51,7 +51,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
         {/* Mobile View: High-Density Transaction Cards */}
         <div className="block md:hidden space-y-3 mt-3">
           {recentOrders.length === 0 ? (
-            <EmptyState text="No orders recorded yet." />
+            <EmptyState message="No orders recorded yet." />
           ) : (
             recentOrders.map((ord) => (
               <div
@@ -82,7 +82,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
                   <OrderStatusSelect
                     value={ord.status}
                     onChange={(st) => onUpdateStatus(ord.orderNumber, st)}
-                    className={`text-[11px] font-bold rounded-lg px-2.5 py-1 outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
+                    className={`text-[11px] font-bold rounded-lg px-2.5 py-1 outline-none border cursor-pointer ${getStatusClasses(ord.status)}`}
                   />
 
                   <button
@@ -112,7 +112,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
             </thead>
             <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800 text-xs sm:text-sm">
               {recentOrders.length === 0 ? (
-                <EmptyState text="No orders recorded yet." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
+                <EmptyState message="No orders recorded yet." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
               ) : (
                 recentOrders.map((ord) => (
                   <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-dashed border-slate-200 dark:border-slate-800">
@@ -138,7 +138,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
                         <OrderStatusSelect
                           value={ord.status}
                           onChange={(st) => onUpdateStatus(ord.orderNumber, st)}
-                          className={`text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
+                          className={`text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none border cursor-pointer ${getStatusClasses(ord.status)}`}
                         />
                         <button
                           onClick={() => onOpenDetails(ord)}

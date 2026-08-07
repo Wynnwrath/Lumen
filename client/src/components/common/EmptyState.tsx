@@ -7,26 +7,26 @@ interface EmptyStateProps {
   title?: string;
   subtitle?: string;
   action?: React.ReactNode;
-  text?: string;      // plain text mode (admin lists)
+  message?: string;   // plain text mode (admin lists)
   colSpan?: number;   // set this to render a <td colSpan> row inside a table
   className?: string;
 }
 
-export const EmptyState = ({ icon, title, subtitle, action, text, colSpan, className }: EmptyStateProps) => {
+export const EmptyState = ({ icon, title, subtitle, action, message, colSpan, className }: EmptyStateProps) => {
   // plain text row inside a table (admin desktop lists)
   if (colSpan) {
     return (
       <tr>
         <td colSpan={colSpan} className={className || "py-12 text-center text-sm text-slate-500 dark:text-slate-400"}>
-          {text}
+          {message}
         </td>
       </tr>
     );
   }
 
   // plain text block (admin mobile lists)
-  if (text) {
-    return <div className={className || "py-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium"}>{text}</div>;
+  if (message) {
+    return <div className={className || "py-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium"}>{message}</div>;
   }
 
   // full empty-state card

@@ -1,7 +1,8 @@
 import { EmptyState } from "../../../components/common/EmptyState";
+import type { DashboardCharts } from "../../../api/dashboard";
 
 interface RevenueBarChartProps {
-  data: { date: string; label: string; total: number }[];
+  data: DashboardCharts["revenueByDay"];
 }
 
 export const RevenueBarChart = ({ data }: RevenueBarChartProps) => {
@@ -13,7 +14,7 @@ export const RevenueBarChart = ({ data }: RevenueBarChartProps) => {
       <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Weekly Revenue</h2>
       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-4 font-medium">Sales for the last 7 days</p>
       {data.length === 0 ? (
-        <EmptyState text="No sales recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
+        <EmptyState message="No sales recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
       ) : (
         <div className="flex items-end justify-between gap-2 px-1 h-40">
           {data.map((day) => {

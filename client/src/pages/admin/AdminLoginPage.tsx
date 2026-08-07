@@ -86,8 +86,6 @@ export const AdminLoginPage = () => {
         </div>
       </header>
 
-      {/* Toast Notification Container */}
-
       {/* Main Auth Section */}
       <main className="flex-grow flex items-center justify-center p-3 sm:p-6 md:p-8 my-2 sm:my-6">
         <div className="w-full max-w-5xl bg-surface-container-lowest dark:bg-slate-800 border border-outline-variant/30 rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-0 lg:min-h-[640px]">

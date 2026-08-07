@@ -117,7 +117,7 @@ export const ProductsPage = () => {
         if (sortBy === "price-asc") return a.price - b.price;
         if (sortBy === "price-desc") return b.price - a.price;
         if (sortBy === "rating") return b.rating - a.rating;
-        if (sortBy === "newest") return (b.arrival || b.isNew ? 1 : 0) - (a.arrival || a.isNew ? 1 : 0);
+        if (sortBy === "newest") return (b.arrival ? 1 : 0) - (a.arrival ? 1 : 0);
         return 0;
       });
   }, [

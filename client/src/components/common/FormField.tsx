@@ -1,15 +1,25 @@
-import type { ChangeEvent } from "react";
+import type { ReactNode } from "react";
 
 interface FormFieldProps {
   label: string;
+  children?: ReactNode;   // when provided, renders children (admin-style wrapper)
   type?: string;
-  value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   required?: boolean;
 }
 
-export const FormField = ({ label, type = "text", value, onChange, placeholder, required }: FormFieldProps) => {
+// Label wrapper for admin forms (children mode) or a labeled input (checkout mode).
+export const FormField = ({ label, children, type = "text", value, onChange, placeholder, required }: FormFieldProps) => {
+  if (children) {
+    return (
+      <div>
+        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">{label}</label>
+        {children}
+      </div>
+    );
+  }
   return (
     <div>
       <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-0.5">

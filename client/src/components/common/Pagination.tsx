@@ -12,7 +12,7 @@ export const Pagination = ({ page, totalPages, onChange }: PaginationProps) => (
       disabled={page <= 1}
       className="px-3.5 py-2 rounded-xl bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold border border-outline-variant/40 hover:border-secondary transition disabled:opacity-40 disabled:cursor-not-allowed"
     >
-      Prev
+      Previous
     </button>
     <span className="text-xs font-bold text-on-surface">
       Page {page} of {totalPages}

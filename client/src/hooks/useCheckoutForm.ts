@@ -44,16 +44,16 @@ export const useCheckoutForm = () => {
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
   const totals = calculateOrderTotals(items, appliedDiscountRate);
-  const { subtotal: rawSubtotal, discountAmount, shippingFee, estimatedTax, grandTotal } = totals;
+  const { subtotal: subtotalBeforeDiscount, discountAmount, shippingFee, estimatedTax, grandTotal } = totals;
 
   // Asks the server to validate the code, then applies it as a discount rate.
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!couponCode.trim()) return;
 
-    const result = await checkCoupon(couponCode, rawSubtotal);
+    const result = await checkCoupon(couponCode, subtotalBeforeDiscount);
     if (result) {
-      setAppliedDiscountRate(result.rate);
+      setAppliedDiscountRate(result.discountRate);
       setCouponMessage({ text: result.label, isError: false });
     } else {
       setCouponMessage({ text: "Invalid Coupon Code. Try 'LUMEN10'", isError: true });
@@ -134,7 +134,7 @@ export const useCheckoutForm = () => {
     handleApplyCoupon,
     handleSubmitOrder,
     // Derived totals
-    rawSubtotal,
+    subtotalBeforeDiscount,
     discountAmount,
     shippingFee,
     estimatedTax,

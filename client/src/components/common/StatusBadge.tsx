@@ -1,5 +1,5 @@
 // Colored pill classes shared by the badge and the status dropdowns.
-export const getStatusColorClass = (status: string) => {
+export const getStatusClasses = (status: string) => {
   switch (status.toLowerCase()) {
     case "completed":
       return "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/90 dark:text-emerald-200 dark:border-emerald-600 font-bold";
@@ -20,7 +20,7 @@ export const getStatusColorClass = (status: string) => {
 
 export const StatusBadge = ({ status }: { status: string }) => {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${getStatusColorClass(status)}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border ${getStatusClasses(status)}`}>
       <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
       <span>{status}</span>
     </span>

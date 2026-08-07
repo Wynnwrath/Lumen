@@ -1,3 +1,5 @@
+export type ProductStatus = "active" | "out_of_stock" | "inactive";
+
 export interface Product {
   _id: string;
   name: string;
@@ -5,7 +7,7 @@ export interface Product {
   price: number;
   originalPrice?: number;
   stock: number;
-  status: "active" | "out_of_stock" | "inactive";
+  status: ProductStatus;
   rating: number;
   reviewsCount: number;
   arrival: boolean;
@@ -13,7 +15,6 @@ export interface Product {
   images: string[];
   description?: string;
   specs: Record<string, string>;
-  isNew?: boolean;
 }
 
 export interface Category {

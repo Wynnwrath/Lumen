@@ -1,7 +1,8 @@
 import { EmptyState } from "../../../components/common/EmptyState";
+import type { DashboardCharts } from "../../../api/dashboard";
 
 interface OrdersByStatusListProps {
-  data: { status: string; count: number }[];
+  data: DashboardCharts["ordersByStatus"];
 }
 
 export const OrdersByStatusList = ({ data }: OrdersByStatusListProps) => {
@@ -10,7 +11,7 @@ export const OrdersByStatusList = ({ data }: OrdersByStatusListProps) => {
       <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Orders by Status</h2>
       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-4 font-medium">Current order distribution</p>
       {data.length === 0 ? (
-        <EmptyState text="No orders recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
+        <EmptyState message="No orders recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
       ) : (
         <div className="space-y-3">
           {data.map((s) => {

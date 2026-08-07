@@ -26,15 +26,15 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
   const isOutOfStock = product.stock <= 0;
 
   // the little status pill in the top-left corner
-  let stockBadge: React.ReactNode = null;
+  let statusBadge: React.ReactNode = null;
   if (isOutOfStock) {
-    stockBadge = <span className="bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Out of Stock</span>;
+    statusBadge = <span className="bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Out of Stock</span>;
   } else if (product.stock <= 3) {
-    stockBadge = <span className="bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Only {product.stock} Left</span>;
-  } else if (product.arrival || product.isNew) {
-    stockBadge = <span className="bg-secondary-container text-on-secondary-container text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">New</span>;
+    statusBadge = <span className="bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Only {product.stock} Left</span>;
+  } else if (product.arrival) {
+    statusBadge = <span className="bg-secondary-container text-on-secondary-container text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">New</span>;
   } else if (product.isSale) {
-    stockBadge = <span className="bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Sale</span>;
+    statusBadge = <span className="bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Sale</span>;
   }
 
   const wishlistButton = (
@@ -160,7 +160,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
         <Link to={`/product/${product._id}`} className="w-full h-full block">
           <ProductImage src={product.images[0]} alt={product.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
         </Link>
-        <div className="absolute top-2 left-2 z-10">{stockBadge}</div>
+        <div className="absolute top-2 left-2 z-10">{statusBadge}</div>
         {wishlistButton}
       </div>
       <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between space-y-1.5 sm:space-y-2">

@@ -5,11 +5,10 @@ import { ProductImage } from "../components/common/ProductImage";
 import { QuantityStepper } from "../components/common/QuantityStepper";
 import { EmptyState } from "../components/common/EmptyState";
 import { useCheckoutForm } from "../hooks/useCheckoutForm";
-import { CheckoutSteps } from "./checkout/CheckoutSteps";
 import { PromoCodeBox } from "./checkout/PromoCodeBox";
 import { PaymentMethodSelector } from "./checkout/PaymentMethodSelector";
 import { OrderConfirmationReceipt } from "./checkout/OrderConfirmationReceipt";
-import { FormField } from "./checkout/FormField";
+import { FormField } from "../components/common/FormField";
 
 // Checkout: form + coupon + summary (state lives in useCheckoutForm), then receipt.
 export const CheckoutPage = () => {
@@ -51,7 +50,7 @@ export const CheckoutPage = () => {
     placedOrder,
     handleApplyCoupon,
     handleSubmitOrder,
-    rawSubtotal,
+    subtotalBeforeDiscount,
     discountAmount,
     shippingFee,
     estimatedTax,
@@ -65,8 +64,6 @@ export const CheckoutPage = () => {
 
   return (
     <main className="flex-grow max-w-container-max w-full mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-20 lg:pb-8">
-      {/* Toast Notification Container */}
-
       {/* Breadcrumb Navigation */}
       <div className="mb-3 flex items-center justify-between">
         <nav className="flex items-center gap-1.5 text-xs text-outline font-medium">
@@ -82,9 +79,6 @@ export const CheckoutPage = () => {
       <h1 className="text-2xl sm:text-4xl font-extrabold text-on-surface text-center tracking-tight mb-4 sm:mb-8">
         Checkout
       </h1>
-
-      {/* 3-Step Checkout Progress Indicator */}
-      <CheckoutSteps />
 
       {/* MAIN CHECKOUT FLOW VIEW */}
       {items.length === 0 ? (
@@ -172,7 +166,7 @@ export const CheckoutPage = () => {
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-on-surface-variant font-medium">
                   <span>Subtotal</span>
-                  <span className="font-bold text-on-surface">${rawSubtotal.toFixed(2)}</span>
+                  <span className="font-bold text-on-surface">${subtotalBeforeDiscount.toFixed(2)}</span>
                 </div>
                 {appliedDiscountRate > 0 && (
                   <div className="flex justify-between text-emerald-600 font-medium">

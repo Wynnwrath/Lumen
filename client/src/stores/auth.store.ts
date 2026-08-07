@@ -49,6 +49,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-
-// True when logged in. Derives from `user` so it stays in sync automatically.
-export const useIsAuthenticated = () => useAuthStore((s) => !!s.user);

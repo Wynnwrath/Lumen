@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { createProduct, updateProduct } from "../api/products";
 import { uploadProductImage } from "../api/storage";
-import type { Category, Product } from "../types";
+import type { Category, Product, ProductStatus } from "../types";
 import { useToast } from "../components/common/ToastProvider";
 import { FALLBACK_PRODUCT_IMAGE } from "../constants";
-
-export type ProductStatus = "active" | "inactive" | "out_of_stock";
 
 // Add/edit product form state + save logic, so AdminProductsPage stays readable.
 export const useProductForm = (
@@ -27,6 +25,8 @@ export const useProductForm = (
   const [formImage, setFormImage] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
   const [formDescription, setFormDescription] = useState("");
+  const [formIsSale, setFormIsSale] = useState(false);
+  const [formArrival, setFormArrival] = useState(false);
 
   // Reset everything for a fresh "Add product" modal.
   const handleOpenAddModal = () => {
@@ -37,6 +37,8 @@ export const useProductForm = (
     setFormOriginalPrice("");
     setFormStock("");
     setFormStatus("active");
+    setFormIsSale(false);
+    setFormArrival(false);
     setFormImage(FALLBACK_PRODUCT_IMAGE);
     setFormDescription("");
     setShowModal(true);
@@ -51,13 +53,15 @@ export const useProductForm = (
     setFormOriginalPrice((p.originalPrice || p.price).toString());
     setFormStock(p.stock.toString());
     setFormStatus(p.status || (p.stock > 0 ? "active" : "out_of_stock"));
+    setFormIsSale(p.isSale);
+    setFormArrival(p.arrival);
     setFormImage(p.images[0] || "");
     setFormDescription(p.description || "");
     setShowModal(true);
   };
 
   // Upload a chosen image file to Supabase and use its URL.
-  const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImageUploading(true);
@@ -83,6 +87,8 @@ export const useProductForm = (
       originalPrice: Number(formOriginalPrice) || priceNum,
       stock: stockNum,
       status: stockNum <= 0 && formStatus !== "inactive" ? "out_of_stock" : formStatus,
+      isSale: formIsSale,
+      arrival: formArrival,
       images: [formImage || FALLBACK_PRODUCT_IMAGE],
       description: formDescription || "Product from Lumen catalog.",
     };
@@ -124,9 +130,13 @@ export const useProductForm = (
     imageUploading,
     formDescription,
     setFormDescription,
+    formIsSale,
+    setFormIsSale,
+    formArrival,
+    setFormArrival,
     handleOpenAddModal,
     handleOpenEditModal,
-    handleImageFile,
+    handleImageChange,
     handleSaveProduct,
   };
 };

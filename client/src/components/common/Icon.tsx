@@ -185,6 +185,6 @@ interface IconProps extends PhosphorIconProps {
 }
 
 export const Icon = ({ name, size = "1em", weight, className, filled, ...rest }: IconProps) => {
-  const Cmp = ICON_MAP[name] || SquaresFour;
-  return <Cmp size={size} weight={filled ? "fill" : weight || "regular"} className={className} {...rest} />;
+  const IconComponent = ICON_MAP[name] || SquaresFour;
+  return <IconComponent size={size} weight={filled ? "fill" : weight || "regular"} className={className} {...rest} />;
 };

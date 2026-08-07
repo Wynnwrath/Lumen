@@ -1,4 +1,4 @@
-export interface CustomerRecord {
+export interface CustomerApiRecord {
   _id: string;
   name: string;
   email: string;
@@ -9,7 +9,7 @@ export interface CustomerRecord {
   address: string;
 }
 
-export interface CustomerData {
+export interface CustomerListItem {
   _id: string;
   name: string;
   email: string;

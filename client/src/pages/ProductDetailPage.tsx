@@ -127,8 +127,6 @@ export const ProductDetailPage = () => {
 
   return (
     <div className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8 flex-grow w-full pb-20 lg:pb-8">
-      {/* Toast Notification Container */}
-
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-xs text-outline overflow-x-auto whitespace-nowrap hide-scroll">
         <Link to="/" className="hover:text-secondary transition">Home</Link>

@@ -8,7 +8,7 @@ import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListLoading } from "../../components/common/skeletons";
+import { LoadingSpinner } from "../../components/common/skeletons";
 import { useToast } from "../../components/common/ToastProvider";
 import { useCategories } from "../../hooks/useCategories";
 import { useProducts } from "../../hooks/useProducts";
@@ -179,13 +179,13 @@ export const AdminCategoriesPage = () => {
 
       {/* Categories Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {categoriesLoading ? (
-        <ListLoading label="Loading categories..." />
+        <LoadingSpinner label="Loading categories..." />
       ) : (
       <section className="space-y-4">
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredCategories.length === 0 ? (
-            <EmptyState text="No categories found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+            <EmptyState message="No categories found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
             filteredCategories.map((cat) => {
               const count = categoryCounts.get(cat._id) ?? 0;
@@ -261,7 +261,7 @@ export const AdminCategoriesPage = () => {
               </thead>
               <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
                 {filteredCategories.length === 0 ? (
-                  <EmptyState text="No categories found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={5} />
+                  <EmptyState message="No categories found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={5} />
                 ) : (
                   filteredCategories.map((cat) => {
                     const count = categoryCounts.get(cat._id) ?? 0;

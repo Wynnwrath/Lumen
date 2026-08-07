@@ -19,7 +19,7 @@ export const AdminLayout = () => {
     navigate("/admin/login");
   };
 
-  const getPageInfo = () => {
+  const getPageConfig = () => {
     if (location.pathname === "/admin" || location.pathname === "/admin/dashboard") {
       return {
         title: "General Metrics",
@@ -34,19 +34,19 @@ export const AdminLayout = () => {
     }
     if (location.pathname === "/admin/categories") {
       return {
-        title: "Categories Taxonomy",
+        title: "Categories",
         showTimeFilter: false,
       };
     }
     if (location.pathname === "/admin/orders") {
       return {
-        title: "Orders & Fulfillment",
+        title: "Orders List",
         showTimeFilter: true,
       };
     }
     if (location.pathname === "/admin/customers") {
       return {
-        title: "Customer Directory",
+        title: "Customers",
         showTimeFilter: false,
       };
     }
@@ -56,10 +56,10 @@ export const AdminLayout = () => {
     };
   };
 
-  const { title, showTimeFilter } = getPageInfo();
+  const { title, showTimeFilter } = getPageConfig();
 
   const navItems = [
-    { path: "/admin", label: "General metrics", icon: "grid_view" },
+    { path: "/admin", label: "General Metrics", icon: "grid_view" },
     { path: "/admin/products", label: "Products Catalog", icon: "inventory_2" },
     { path: "/admin/categories", label: "Categories", icon: "category" },
     { path: "/admin/orders", label: "Orders List", icon: "shopping_cart" },
@@ -185,10 +185,9 @@ export const AdminLayout = () => {
           {/* Top Action Controls */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {showTimeFilter && (
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/90 px-2.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-700/80 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/90 px-2.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-700/80 text-xs font-bold text-slate-700 dark:text-slate-200">
                 <Icon name="calendar_today" className="text-sm text-slate-500 dark:text-slate-400" />
                 <span className="text-[11px] sm:text-xs">Last 7 days</span>
-                <Icon name="expand_more" className="text-sm text-slate-500 dark:text-slate-400" />
               </div>
             )}
 

@@ -22,7 +22,7 @@ export const PublicHeader = () => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [searchProducts, setSearchProducts] = useState<Product[]>([]);
+  const [catalog, setCatalog] = useState<Product[]>([]);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const cartModalRef = useRef<HTMLDivElement>(null);
@@ -33,8 +33,8 @@ export const PublicHeader = () => {
 
   useEffect(() => {
     getProducts({ limit: 100 })
-      .then((res) => setSearchProducts(res.products))
-      .catch(() => setSearchProducts([]));
+      .then((res) => setCatalog(res.products))
+      .catch(() => setCatalog([]));
   }, []);
 
   // close each dropdown when clicking outside its container
@@ -44,13 +44,13 @@ export const PublicHeader = () => {
 
   const liveSearchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase().trim();
-    return searchProducts.filter(
+    const query = searchQuery.toLowerCase().trim();
+    return catalog.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
+        p.name.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query)
     );
-  }, [searchQuery, searchProducts]);
+  }, [searchQuery, catalog]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -300,7 +300,7 @@ export const PublicHeader = () => {
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm font-bold text-on-surface">Your cart is empty</p>
-                        <p className="text-xs text-outline">Looks like you haven{`'`}t added anything yet.</p>
+                        <p className="text-xs text-outline">Looks like you haven&apos;t added anything yet.</p>
                       </div>
                       <button
                         onClick={() => {
