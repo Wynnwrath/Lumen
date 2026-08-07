@@ -6,6 +6,8 @@ import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { LoadingSpinner } from "../../components/common/skeletons";
+import { AdminPagination } from "../../components/common/AdminPagination";
+import { usePagination } from "../../hooks/usePagination";
 import { useCustomers } from "../../hooks/useCustomers";
 
 // Admin customer directory: search, tier badges, order stats, profile modal.
@@ -21,6 +23,8 @@ export const AdminCustomersPage = () => {
     }
     return true;
   });
+
+  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredCustomers, 10);
 
   return (
     <div className="space-y-6">
@@ -39,7 +43,7 @@ export const AdminCustomersPage = () => {
           {filteredCustomers.length === 0 ? (
             <EmptyState message="No customers found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
-            filteredCustomers.map((c) => (
+            paginated.map((c) => (
               <div
                 key={c._id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-3 shadow-xs rounded-none"
@@ -114,7 +118,10 @@ export const AdminCustomersPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
-                {filteredCustomers.map((c) => (
+                {filteredCustomers.length === 0 ? (
+                  <EmptyState message="No customers found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
+                ) : (
+                paginated.map((c) => (
                   <tr key={c._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -155,13 +162,23 @@ export const AdminCustomersPage = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
       )}
+
+      <AdminPagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        start={start}
+        end={end}
+        onChange={setPage}
+      />
 
       {/* 1-to-1 Customer Detailed Profile Modal (admin-customers.html parity) */}
       <Modal

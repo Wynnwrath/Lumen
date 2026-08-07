@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Icon } from "../../components/common/Icon";
 import { deleteProduct, updateProduct } from "../../api/products";
 import type { Product } from "../../types";
 import { Button } from "../../components/common/Button";
@@ -7,8 +6,11 @@ import { KpiCard } from "../../components/common/KpiCard";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { LoadingSpinner } from "../../components/common/skeletons";
+import { AdminPagination } from "../../components/common/AdminPagination";
+import { RowActions } from "../../components/common/RowActions";
 import { ProductImage } from "../../components/common/ProductImage";
 import { useToast } from "../../components/common/ToastProvider";
+import { usePagination } from "../../hooks/usePagination";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useProductForm } from "../../hooks/useProductForm";
@@ -104,6 +106,8 @@ export const AdminProductsPage = () => {
     }
     return true;
   });
+
+  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredProducts, 10);
 
   return (
     <div className="space-y-6 w-full font-sans">
@@ -203,7 +207,7 @@ export const AdminProductsPage = () => {
           {filteredProducts.length === 0 ? (
             <EmptyState message="No products found matching your filter criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
-            filteredProducts.map((product) => {
+            paginated.map((product) => {
               const isStockActive = product.status === "active" && product.stock > 0;
               return (
                 <div
@@ -219,18 +223,17 @@ export const AdminProductsPage = () => {
 
                   {/* Product Metadata & Action Bar */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between h-20 py-0.5">
-                    {/* Top Row: Product Name & Trash Icon */}
+                    {/* Top Row: Product Name & Row Actions */}
                     <div className="flex items-start justify-between gap-2">
                       <h4 className="font-extrabold text-sm text-slate-900 dark:text-white truncate tracking-tight">
                         {product.name}
                       </h4>
-                      <button
-                        onClick={() => handleDeleteProduct(product._id, product.name)}
-                        className="p-1 text-rose-400 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition shrink-0 -mr-1 -mt-1"
-                        title="Delete Product"
-                      >
-                        <Icon name="delete" className="text-lg" />
-                      </button>
+                      <RowActions
+                        actions={[
+                          { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(product) },
+                          { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteProduct(product._id, product.name) },
+                        ]}
+                      />
                     </div>
 
                     {/* Price Subtitle */}
@@ -238,16 +241,8 @@ export const AdminProductsPage = () => {
                       ${product.price.toFixed(2).replace(/\.00$/, "")}
                     </p>
 
-                    {/* Bottom Row: Quick Edit Pill Button & In Stock Toggle Switch */}
-                    <div className="flex items-center justify-between gap-2 mt-auto">
-                      <button
-                        onClick={() => handleOpenEditModal(product)}
-                        className="px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-300 text-xs font-extrabold hover:bg-blue-100 transition border border-blue-100 dark:border-blue-800/60 shadow-2xs"
-                      >
-                        Quick Edit
-                      </button>
-
-                      <div className="flex items-center gap-2">
+                    {/* Bottom Row: In Stock Toggle Switch */}
+                    <div className="flex items-center justify-end gap-2 mt-auto">
                         <span className="text-xs font-medium text-slate-400 dark:text-slate-400">
                           {isStockActive ? "In Stock" : product.stock === 0 ? "Out of Stock" : "Inactive"}
                         </span>
@@ -265,7 +260,6 @@ export const AdminProductsPage = () => {
                             }`}
                           />
                         </button>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -292,7 +286,7 @@ export const AdminProductsPage = () => {
                 {filteredProducts.length === 0 ? (
                   <EmptyState message="No products found matching your filter criteria." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
                 ) : (
-                  filteredProducts.map((product) => (
+                  paginated.map((product) => (
                     <tr
                       key={product._id}
                       className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800"
@@ -344,22 +338,12 @@ export const AdminProductsPage = () => {
                         </button>
                       </td>
                       <td className="px-5 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handleOpenEditModal(product)}
-                            className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition"
-                            title="Edit Product"
-                          >
-                            <Icon name="edit" className="text-base" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product._id, product.name)}
-                            className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
-                            title="Delete Product"
-                          >
-                            <Icon name="delete" className="text-base" />
-                          </button>
-                        </div>
+                        <RowActions
+                          actions={[
+                            { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(product) },
+                            { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteProduct(product._id, product.name) },
+                          ]}
+                        />
                       </td>
                     </tr>
                   ))
@@ -370,6 +354,15 @@ export const AdminProductsPage = () => {
         </div>
       </section>
       )}
+
+      <AdminPagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        start={start}
+        end={end}
+        onChange={setPage}
+      />
 
       {/* Add / Edit Product Modal (SalesSync 2-Column UI 1-to-1) */}
       <ProductFormModal

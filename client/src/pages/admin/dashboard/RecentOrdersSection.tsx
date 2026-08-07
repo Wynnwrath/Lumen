@@ -3,6 +3,8 @@ import { Icon } from "../../../components/common/Icon";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { StatusBadge, getStatusClasses } from "../../../components/common/StatusBadge";
 import { OrderStatusSelect } from "../../../components/common/OrderStatusSelect";
+import { AdminPagination } from "../../../components/common/AdminPagination";
+import { usePagination } from "../../../hooks/usePagination";
 import { formatDate } from "../../../utils/format";
 import type { Order, OrderStatus } from "../../../types";
 
@@ -23,6 +25,8 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
       return true;
     });
   }, [orders, orderFilter]);
+
+  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(recentOrders, 8);
 
   return (
     <div className="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/90 shadow-sm overflow-hidden transition-colors duration-200 rounded-none">
@@ -53,7 +57,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
           {recentOrders.length === 0 ? (
             <EmptyState message="No orders recorded yet." />
           ) : (
-            recentOrders.map((ord) => (
+            paginated.map((ord) => (
               <div
                 key={ord._id}
                 className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 space-y-2.5 shadow-xs"
@@ -114,7 +118,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
               {recentOrders.length === 0 ? (
                 <EmptyState message="No orders recorded yet." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
               ) : (
-                recentOrders.map((ord) => (
+                paginated.map((ord) => (
                   <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-dashed border-slate-200 dark:border-slate-800">
                     <td className="px-5 py-4 font-bold text-slate-900 dark:text-slate-100 font-mono">
                       {ord.orderNumber}
@@ -155,6 +159,15 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
             </tbody>
           </table>
         </div>
+
+        <AdminPagination
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          start={start}
+          end={end}
+          onChange={setPage}
+        />
       </div>
     </div>
   );

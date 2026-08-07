@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { createCategory, updateCategory, deleteCategory } from "../../api/categories";
 import { getErrorMessage } from "../../api/client";
-import type { Category } from "../../types";
+import type { Category, Product } from "../../types";
 import { Icon } from "../../components/common/Icon";
 import { Button } from "../../components/common/Button";
 import { KpiCard } from "../../components/common/KpiCard";
@@ -9,7 +9,11 @@ import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { LoadingSpinner } from "../../components/common/skeletons";
+import { AdminPagination } from "../../components/common/AdminPagination";
+import { RowActions } from "../../components/common/RowActions";
+import { ProductImage } from "../../components/common/ProductImage";
 import { useToast } from "../../components/common/ToastProvider";
+import { usePagination } from "../../hooks/usePagination";
 import { useCategories } from "../../hooks/useCategories";
 import { useProducts } from "../../hooks/useProducts";
 
@@ -22,12 +26,25 @@ export const AdminCategoriesPage = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [viewCategory, setViewCategory] = useState<Category | null>(null);
 
   const [formName, setFormName] = useState("");
   const [formIcon, setFormIcon] = useState("devices");
   const [formDescription, setFormDescription] = useState("");
 
   const [deleteBlockedMessage, setDeleteBlockedMessage] = useState<string | null>(null);
+
+  // Products belonging to a category (matches slug, id, or name).
+  const getCategoryProducts = (cat: Category): Product[] =>
+    products.filter(
+      (p) =>
+        p.category === cat.slug ||
+        p.category === cat._id ||
+        (p.category && p.category.toLowerCase() === cat.name.toLowerCase()) ||
+        (p.category && p.category.toLowerCase() === cat.slug.toLowerCase())
+    );
+
+  const viewProducts = viewCategory ? getCategoryProducts(viewCategory) : [];
 
   // Memoized Product Counts per Category (single pass, equivalent to the old O(N·M) getAssignedCount)
   const categoryCounts = useMemo(() => {
@@ -71,6 +88,8 @@ export const AdminCategoriesPage = () => {
       c.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (c.description || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredCategories, 10);
 
   const handleOpenAddModal = () => {
     setEditingCategory(null);
@@ -187,7 +206,7 @@ export const AdminCategoriesPage = () => {
           {filteredCategories.length === 0 ? (
             <EmptyState message="No categories found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
-            filteredCategories.map((cat) => {
+            paginated.map((cat) => {
               const count = categoryCounts.get(cat._id) ?? 0;
               return (
                 <div
@@ -201,18 +220,18 @@ export const AdminCategoriesPage = () => {
 
                   {/* Metadata & Actions */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between h-20 py-0.5">
-                    {/* Top Row: Category Title & Trash Icon */}
+                    {/* Top Row: Category Title & Row Actions */}
                     <div className="flex items-start justify-between gap-2">
                       <h4 className="font-extrabold text-sm text-slate-900 dark:text-white truncate tracking-tight">
                         {cat.name}
                       </h4>
-                      <button
-                        onClick={() => handleDeleteCategory(cat)}
-                        className="p-1 text-rose-400 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition shrink-0 -mr-1 -mt-1"
-                        title="Delete Category"
-                      >
-                        <Icon name="delete" className="text-lg" />
-                      </button>
+                      <RowActions
+                        actions={[
+                          { label: "View Products", icon: "view_list", onClick: () => setViewCategory(cat) },
+                          { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(cat) },
+                          { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteCategory(cat) },
+                        ]}
+                      />
                     </div>
 
                     {/* Subtitle: Slug */}
@@ -220,15 +239,8 @@ export const AdminCategoriesPage = () => {
                       /{cat.slug}
                     </p>
 
-                    {/* Bottom Row: Quick Edit Pill & Items Count */}
-                    <div className="flex items-center justify-between gap-2 mt-auto">
-                      <button
-                        onClick={() => handleOpenEditModal(cat)}
-                        className="px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-300 text-xs font-extrabold hover:bg-blue-100 transition border border-blue-100 dark:border-blue-800/60 shadow-2xs"
-                      >
-                        Quick Edit
-                      </button>
-
+                    {/* Bottom Row: Items Count */}
+                    <div className="flex items-center justify-end gap-2 mt-auto">
                       {count > 0 ? (
                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shrink-0">
                           {count} items
@@ -260,10 +272,10 @@ export const AdminCategoriesPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
-                {filteredCategories.length === 0 ? (
-                  <EmptyState message="No categories found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={5} />
-                ) : (
-                  filteredCategories.map((cat) => {
+                  {filteredCategories.length === 0 ? (
+                    <EmptyState message="No categories found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={5} />
+                  ) : (
+                  paginated.map((cat) => {
                     const count = categoryCounts.get(cat._id) ?? 0;
 
                     return (
@@ -301,22 +313,13 @@ export const AdminCategoriesPage = () => {
                           )}
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => handleOpenEditModal(cat)}
-                              className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition"
-                              title="Edit Category"
-                            >
-                              <Icon name="edit" className="text-base" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteCategory(cat)}
-                              className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
-                              title="Delete Category"
-                            >
-                              <Icon name="delete" className="text-base" />
-                            </button>
-                          </div>
+                          <RowActions
+                            actions={[
+                              { label: "View Products", icon: "view_list", onClick: () => setViewCategory(cat) },
+                              { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(cat) },
+                              { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteCategory(cat) },
+                            ]}
+                          />
                         </td>
                       </tr>
                     );
@@ -328,6 +331,15 @@ export const AdminCategoriesPage = () => {
         </div>
       </section>
       )}
+
+      <AdminPagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        start={start}
+        end={end}
+        onChange={setPage}
+      />
 
       {/* Add / Edit Category Modal */}
       <Modal
@@ -388,6 +400,46 @@ export const AdminCategoriesPage = () => {
                 />
               </div>
         </form>
+      </Modal>
+
+      {/* View Category Products Modal */}
+      <Modal
+        open={!!viewCategory}
+        onClose={() => setViewCategory(null)}
+        title={viewCategory ? `${viewCategory.name}` : ""}
+        subtitle={viewCategory ? `${viewProducts.length} product(s) in this category` : ""}
+        icon={<Icon name={viewCategory?.icon || "category"} className="text-xl" />}
+        className="max-w-2xl"
+        footer={
+          <Button variant="outline" onClick={() => setViewCategory(null)}>Close</Button>
+        }
+      >
+        {viewProducts.length === 0 ? (
+          <p className="text-center text-sm text-slate-500 dark:text-slate-400 py-8 font-medium">
+            No products assigned to this category yet.
+          </p>
+        ) : (
+          <div className="max-h-[50vh] overflow-y-auto space-y-2 pr-1">
+            {viewProducts.map((p) => (
+              <div key={p._id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+                <ProductImage
+                  src={p.images[0]}
+                  alt={p.name}
+                  className="w-11 h-11 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.name}</p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                    ${p.price.toFixed(2)} &bull; {p.stock} in stock
+                  </p>
+                </div>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold shrink-0 ${p.stock === 0 ? "bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800" : "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"}`}>
+                  {p.stock === 0 ? "Out" : `${p.stock} left`}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </Modal>
 
       {/* Deletion Blocked Warning Modal */}
