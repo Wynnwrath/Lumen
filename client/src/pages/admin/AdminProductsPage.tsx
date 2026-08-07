@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { Icon } from "../../components/common/Icon";
 import { createProduct, updateProduct, deleteProduct } from "../../api/products";
+import { uploadProductImage } from "../../api/storage";
 import type { Product } from "../../types";
 import { Button } from "../../components/common/Button";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
+import { ListRowsSkeleton } from "../../components/common/ProductCardSkeleton";
 import { useToast } from "../../components/common/ToastProvider";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 
 export const AdminProductsPage = () => {
-  const { products, refresh: refreshProducts } = useProducts();
+  const { products, refresh: refreshProducts, loading: productsLoading } = useProducts();
   const { categories } = useCategories();
   const { showToast } = useToast();
 
@@ -31,6 +33,7 @@ export const AdminProductsPage = () => {
   const [formStock, setFormStock] = useState("");
   const [formStatus, setFormStatus] = useState<"active" | "inactive" | "out_of_stock">("active");
   const [formImage, setFormImage] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
   const [formDescription, setFormDescription] = useState("");
 
   // KPI calculations
@@ -63,6 +66,20 @@ export const AdminProductsPage = () => {
     setFormImage(p.images[0] || "");
     setFormDescription(p.description || "");
     setShowModal(true);
+  };
+
+  const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(true);
+    try {
+      const url = await uploadProductImage(file);
+      setFormImage(url);
+    } catch (error) {
+      showToast("Image upload failed. Please try again.", "error");
+    } finally {
+      setImageUploading(false);
+    }
   };
 
   const handleSaveProduct = async (e: React.FormEvent) => {
@@ -229,6 +246,9 @@ export const AdminProductsPage = () => {
       </section>
 
       {/* Products Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
+      {productsLoading ? (
+        <ListRowsSkeleton rows={6} />
+      ) : (
       <section className="space-y-4">
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}
         <div className="block md:hidden space-y-3">
@@ -401,6 +421,7 @@ export const AdminProductsPage = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Add / Edit Product Modal (SalesSync 2-Column UI 1-to-1) */}
       <Modal
@@ -562,6 +583,21 @@ export const AdminProductsPage = () => {
                       <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                         <Icon name="add" className="text-lg" />
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Upload from Device</label>
+                      <label
+                        className={`w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed px-3 py-3 text-xs font-bold transition cursor-pointer ${
+                          imageUploading
+                            ? "border-slate-300 dark:border-slate-600 text-slate-400"
+                            : "border-blue-300 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                        }`}
+                      >
+                        <Icon name={imageUploading ? "loader" : "upload"} className="text-base" />
+                        <span>{imageUploading ? "Uploading..." : "Choose Image File"}</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={handleImageFile} disabled={imageUploading} />
+                      </label>
                     </div>
 
                     <div>

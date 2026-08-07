@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Icon } from "../../components/common/Icon";
 import { updateOrderStatus } from "../../api/orders";
 import { updateProduct } from "../../api/products";
+import { getDashboardCharts } from "../../api/dashboard";
 import type { Order, Product } from "../../types";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
@@ -19,6 +20,16 @@ export const AdminDashboardPage = () => {
   const [orderFilter, setOrderFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { showToast } = useToast();
+  const [charts, setCharts] = useState<{ revenueByDay: { date: string; label: string; total: number }[]; ordersByStatus: { status: string; count: number }[] }>({
+    revenueByDay: [],
+    ordersByStatus: [],
+  });
+
+  useEffect(() => {
+    getDashboardCharts()
+      .then(setCharts)
+      .catch(() => {});
+  }, []);
 
   const refreshData = () => {
     refreshOrders();
@@ -175,6 +186,61 @@ export const AdminDashboardPage = () => {
         />
       </section>
 
+      {/* Charts Row: Weekly Revenue & Orders by Status */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full">
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900 p-5 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm rounded-none">
+          <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Weekly Revenue</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-4 font-medium">Sales for the last 7 days</p>
+          {charts.revenueByDay.length === 0 ? (
+            <EmptyState text="No sales recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
+          ) : (
+            <div className="flex items-end justify-between gap-2 px-1 h-40">
+              {charts.revenueByDay.map((day) => {
+                const max = Math.max(...charts.revenueByDay.map((d) => d.total), 1);
+                const pct = Math.round((day.total / max) * 100);
+                return (
+                  <div key={day.date} className="flex-1 flex flex-col items-center gap-1.5">
+                    <span className="text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300">
+                      ${day.total > 0 ? day.total.toFixed(0) : "0"}
+                    </span>
+                    <div
+                      className={`w-full rounded-t-lg transition-all ${day.total > 0 ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-800"}`}
+                      style={{ height: `${pct}%` }}
+                    />
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">{day.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="lg:col-span-5 bg-white dark:bg-slate-900 p-5 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm rounded-none">
+          <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Orders by Status</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-4 font-medium">Current order distribution</p>
+          {charts.ordersByStatus.length === 0 ? (
+            <EmptyState text="No orders recorded yet." className="py-10 text-center text-sm text-slate-500 dark:text-slate-400" />
+          ) : (
+            <div className="space-y-3">
+              {charts.ordersByStatus.map((s) => {
+                const total = charts.ordersByStatus.reduce((sum, x) => sum + x.count, 0) || 1;
+                const pct = Math.round((s.count / total) * 100);
+                return (
+                  <div key={s.status} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900 dark:text-slate-100">{s.status}</span>
+                      <span className="font-mono font-semibold text-slate-500 dark:text-slate-400">{s.count} ({pct}%)</span>
+                    </div>
+                    <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Bottom Row: Recent Transactions Table & Inventory Warnings */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full">

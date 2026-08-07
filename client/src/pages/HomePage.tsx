@@ -6,6 +6,7 @@ import { useCartStore } from "../stores/cart.store";
 import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
 import { ProductCard, trackSpotlight } from "../components/common/ProductCard";
+import { ProductGridSkeleton } from "../components/common/ProductCardSkeleton";
 import { useToast } from "../components/common/ToastProvider";
 
 const HERO_SLIDES = [
@@ -134,11 +135,13 @@ export const HomePage = () => {
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   useEffect(() => {
     getProducts({ limit: 100 })
       .then((res) => setAllProducts(res.products))
-      .catch(() => setAllProducts([]));
+      .catch(() => setAllProducts([]))
+      .finally(() => setProductsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -409,11 +412,15 @@ export const HomePage = () => {
         </div>
 
         {/* 2-Column Grid on Mobile Viewports */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
-          {displayProducts.map((product) => (
-            <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
-          ))}
-        </div>
+        {productsLoading ? (
+          <ProductGridSkeleton count={4} />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
+            {displayProducts.map((product) => (
+              <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
+            ))}
+          </div>
+        )}
 
         {/* View Full Catalog CTA Button */}
         <div className="text-center pt-8">

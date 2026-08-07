@@ -10,6 +10,7 @@ import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { CartPage } from "./pages/CartPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { LoginPage } from "./pages/LoginPage";
+import { MyOrdersPage } from "./pages/MyOrdersPage";
 
 // Admin Pages
 import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
@@ -47,6 +48,7 @@ export const App = () => {
           <Route path="product/:id" element={<ProductDetailPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="checkout" element={<CheckoutPage />} />
+          <Route path="orders" element={<MyOrdersPage />} />
         </Route>
         <Route
           path="/admin"

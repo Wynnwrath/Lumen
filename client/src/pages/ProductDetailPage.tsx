@@ -6,6 +6,7 @@ import { useWishlistStore } from "../stores/wishlist.store";
 import { Icon } from "../components/common/Icon";
 import { ProductCard } from "../components/common/ProductCard";
 import { QuantityStepper } from "../components/common/QuantityStepper";
+import { Skeleton } from "../components/common/Skeleton";
 import { useToast } from "../components/common/ToastProvider";
 import type { Product } from "../types";
 
@@ -61,8 +62,20 @@ export const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-container-max mx-auto px-6 py-20 text-center">
-        <p className="text-xs text-outline">Loading product...</p>
+      <div className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-6">
+            <Skeleton className="w-full aspect-square" />
+          </div>
+          <div className="lg:col-span-6 space-y-4">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-16 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        </div>
       </div>
     );
   }

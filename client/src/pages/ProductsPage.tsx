@@ -6,6 +6,7 @@ import { useWishlistStore } from "../stores/wishlist.store";
 import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
 import { ProductCard } from "../components/common/ProductCard";
+import { ProductGridSkeleton } from "../components/common/ProductCardSkeleton";
 import { EmptyState } from "../components/common/EmptyState";
 import { useToast } from "../components/common/ToastProvider";
 
@@ -29,13 +30,17 @@ export const ProductsPage = () => {
   const [sortBy, setSortBy] = useState<"rating" | "featured" | "price-asc" | "price-desc" | "newest">("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   useEffect(() => {
     getProducts({ limit: 100 })
       .then((res) => setProducts(res.products))
-      .catch(() => setProducts([]));
+      .catch(() => setProducts([]))
+      .finally(() => setProductsLoading(false));
   }, []);
 
   // Prune stale wishlist ids that no longer match any product in the catalog
@@ -121,6 +126,14 @@ export const ProductsPage = () => {
     sortBy,
     wishlistIds,
   ]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const pagedProducts = filteredProducts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Reset to page 1 whenever the filter set changes
+  useEffect(() => {
+    setPage(1);
+  }, [selectedCategory, searchQuery, onlySale, onlyWishlist, onlyInStock, maxPrice, sortBy]);
 
   const hasActiveFilters =
     selectedCategory !== "all" ||
@@ -394,7 +407,9 @@ export const ProductsPage = () => {
           </div>
 
           {/* Product Cards Container (2-Column Mobile Grid) */}
-          {filteredProducts.length === 0 ? (
+          {productsLoading ? (
+            <ProductGridSkeleton count={8} />
+          ) : filteredProducts.length === 0 ? (
             onlyWishlist ? (
               <EmptyState
                 icon="favorite"
@@ -424,16 +439,39 @@ export const ProductsPage = () => {
             )
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
-              {filteredProducts.map((product) => (
+              {pagedProducts.map((product) => (
                 <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
               ))}
             </div>
           ) : (
             /* List View */
             <div className="space-y-3">
-              {filteredProducts.map((product) => (
+              {pagedProducts.map((product) => (
                 <ProductCard key={product._id} product={product} variant="list" onAddToCart={handleAddToCart} />
               ))}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!productsLoading && filteredProducts.length > 0 && totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 pt-4">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="px-3.5 py-2 rounded-xl bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold border border-outline-variant/40 hover:border-secondary transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Prev
+              </button>
+              <span className="text-xs font-bold text-on-surface">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="px-3.5 py-2 rounded-xl bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold border border-outline-variant/40 hover:border-secondary transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
           )}
         </section>

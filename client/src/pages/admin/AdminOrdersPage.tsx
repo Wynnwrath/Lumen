@@ -1,23 +1,43 @@
-import { useState } from "react";
-import { updateOrderStatus } from "../../api/orders";
+import { useState, useEffect } from "react";
+import { getOrders, updateOrderStatus, getOrdersCsv } from "../../api/orders";
+import { Icon } from "../../components/common/Icon";
 import type { Order } from "../../types";
 import { getStatusColorClass } from "../../components/common/StatusBadge";
 import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
+import { ListRowsSkeleton } from "../../components/common/ProductCardSkeleton";
 import { useOrders } from "../../hooks/useOrders";
 
 export const AdminOrdersPage = () => {
-  const { orders, refresh: refreshOrders } = useOrders();
+  const { orders: allOrders, refresh: refreshOrders } = useOrders();
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [pagedOrders, setPagedOrders] = useState<Order[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [tableLoading, setTableLoading] = useState(true);
+  const [refreshToken, setRefreshToken] = useState(0);
+  const LIMIT = 10;
+
+  useEffect(() => {
+    setTableLoading(true);
+    getOrders({ page, limit: LIMIT, status: statusFilter === "all" ? undefined : statusFilter })
+      .then((res) => {
+        setPagedOrders(res.orders);
+        setTotalPages(res.totalPages || 1);
+      })
+      .catch(() => setPagedOrders([]))
+      .finally(() => setTableLoading(false));
+  }, [page, statusFilter, refreshToken]);
 
   const handleUpdateStatus = async (orderNumber: string, newStatus: string) => {
     try {
       await updateOrderStatus(orderNumber, newStatus);
       await refreshOrders();
+      setRefreshToken((t) => t + 1);
       if (selectedOrder && selectedOrder.orderNumber === orderNumber) {
         setSelectedOrder({ ...selectedOrder, status: newStatus as any });
       }
@@ -26,10 +46,22 @@ export const AdminOrdersPage = () => {
     }
   };
 
-  const filteredOrders = orders.filter((ord) => {
-    if (statusFilter !== "all" && ord.status.toLowerCase() !== statusFilter.toLowerCase()) {
-      return false;
+  const handleExportCsv = async () => {
+    try {
+      const csv = await getOrdersCsv();
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "orders.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to export orders", error);
     }
+  };
+
+  const filteredOrders = pagedOrders.filter((ord) => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchNum = ord.orderNumber.includes(q);
@@ -39,10 +71,10 @@ export const AdminOrdersPage = () => {
     return true;
   });
 
-  const totalRevenue = orders
+  const totalRevenue = allOrders
     .filter((o) => o.status !== "Cancelled")
     .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const pendingOrdersCount = orders.filter(
+  const pendingOrdersCount = allOrders.filter(
     (o) => o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing"
   ).length;
 
@@ -53,9 +85,19 @@ export const AdminOrdersPage = () => {
         <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by order # or customer name..." />
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleExportCsv}
+            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2.5 rounded-lg transition shadow-sm"
+          >
+            <Icon name="download" className="text-sm" />
+            <span>Export CSV</span>
+          </button>
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
             className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
           >
             <option value="all">All Statuses</option>
@@ -72,7 +114,7 @@ export const AdminOrdersPage = () => {
       {/* Orders Summary Strip */}
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 px-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
         <span>
-          <span className="font-extrabold text-slate-900 dark:text-white">{orders.length}</span> orders
+          <span className="font-extrabold text-slate-900 dark:text-white">{allOrders.length}</span> orders
         </span>
         <span className="text-slate-300 dark:text-slate-600">•</span>
         <span>
@@ -88,6 +130,9 @@ export const AdminOrdersPage = () => {
       </div>
 
       {/* Orders Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
+      {tableLoading ? (
+        <ListRowsSkeleton rows={5} />
+      ) : (
       <div className="space-y-4">
         {/* Mobile View: High-Density Order Cards */}
         <div className="block md:hidden space-y-3">
@@ -214,6 +259,30 @@ export const AdminOrdersPage = () => {
           </div>
         </div>
       </div>
+      )}
+
+      {/* Pagination Controls */}
+      {!tableLoading && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 pt-1">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Prev
+          </button>
+          <span className="text-xs font-bold text-slate-900 dark:text-white">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Invoice Modal */}
       <Modal

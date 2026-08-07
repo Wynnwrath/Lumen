@@ -5,10 +5,11 @@ import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
+import { ListRowsSkeleton } from "../../components/common/ProductCardSkeleton";
 import { useCustomers } from "../../hooks/useCustomers";
 
 export const AdminCustomersPage = () => {
-  const { customers } = useCustomers();
+  const { customers, loading: customersLoading } = useCustomers();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerData | null>(null);
 
@@ -28,6 +29,9 @@ export const AdminCustomersPage = () => {
       </div>
 
       {/* Customers Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
+      {customersLoading ? (
+        <ListRowsSkeleton rows={5} />
+      ) : (
       <div className="space-y-4">
         {/* Mobile View: High-Density Customer Cards */}
         <div className="block md:hidden space-y-3">
@@ -160,6 +164,7 @@ export const AdminCustomersPage = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* 1-to-1 Customer Detailed Profile Modal (admin-customers.html parity) */}
       <Modal

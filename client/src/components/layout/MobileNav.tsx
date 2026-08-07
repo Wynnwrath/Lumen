@@ -123,7 +123,7 @@ export const MobileNav = () => {
                   <span>My Profile</span>
                 </button>
                 <button
-                  onClick={() => handleMobileNavigate("/cart")}
+                  onClick={() => handleMobileNavigate("/orders")}
                   className="w-full flex items-center gap-3 p-3 text-xs font-bold text-on-surface hover:bg-surface-container dark:hover:bg-slate-800 rounded-xl transition text-left"
                 >
                   <Icon name="shopping_bag" className="text-secondary" />

@@ -7,12 +7,13 @@ import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
+import { ListRowsSkeleton } from "../../components/common/ProductCardSkeleton";
 import { useToast } from "../../components/common/ToastProvider";
 import { useCategories } from "../../hooks/useCategories";
 import { useProducts } from "../../hooks/useProducts";
 
 export const AdminCategoriesPage = () => {
-  const { categories, refresh: refreshCategories } = useCategories();
+  const { categories, refresh: refreshCategories, loading: categoriesLoading } = useCategories();
   const { products } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const { showToast } = useToast();
@@ -161,6 +162,9 @@ export const AdminCategoriesPage = () => {
       </section>
 
       {/* Categories Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
+      {categoriesLoading ? (
+        <ListRowsSkeleton rows={4} />
+      ) : (
       <section className="space-y-4">
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}
         <div className="block md:hidden space-y-3">
@@ -307,6 +311,7 @@ export const AdminCategoriesPage = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Add / Edit Category Modal */}
       <Modal
