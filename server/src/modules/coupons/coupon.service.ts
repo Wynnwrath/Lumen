@@ -1,6 +1,11 @@
 import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../../utils/AppError.js";
 import { calcDiscount } from "../../utils/calcDiscount.js";
+import type { createCouponSchema, updateCouponSchema } from "./coupon.validator.js";
+import type { z } from "zod";
+
+type CreateCouponInput = z.infer<typeof createCouponSchema>;
+type UpdateCouponInput = z.infer<typeof updateCouponSchema>;
 
 export const couponService = {
   // Checks a code at checkout and returns the discount it gives on a subtotal.
@@ -17,6 +22,35 @@ export const couponService = {
   },
 
   async getAll() {
-    return prisma.coupon.findMany();
+    return prisma.coupon.findMany({ orderBy: { createdAt: "desc" } });
+  },
+
+  async create(input: CreateCouponInput) {
+    return prisma.coupon.create({
+      data: {
+        code: input.code.toUpperCase(),
+        discountPercent: input.discountPercent,
+        isActive: input.isActive ?? true,
+      },
+    });
+  },
+
+  async update(code: string, input: UpdateCouponInput) {
+    const coupon = await prisma.coupon.findUnique({ where: { code } });
+    if (!coupon) throw new AppError("Coupon not found", 404, "NOT_FOUND");
+    return prisma.coupon.update({
+      where: { code },
+      data: {
+        ...(input.code ? { code: input.code.toUpperCase() } : {}),
+        ...(input.discountPercent !== undefined ? { discountPercent: input.discountPercent } : {}),
+        ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
+      },
+    });
+  },
+
+  async remove(code: string) {
+    const coupon = await prisma.coupon.findUnique({ where: { code } });
+    if (!coupon) throw new AppError("Coupon not found", 404, "NOT_FOUND");
+    return prisma.coupon.delete({ where: { code } });
   },
 };

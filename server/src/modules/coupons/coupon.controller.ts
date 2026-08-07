@@ -15,4 +15,19 @@ export const couponController = {
     const coupons = await couponService.getAll();
     res.json({ success: true, data: toApi(coupons) });
   }),
+
+  create: asyncHandler(async (req: Request, res: Response) => {
+    const coupon = await couponService.create(req.body);
+    res.status(201).json({ success: true, data: toApi(coupon) });
+  }),
+
+  update: asyncHandler(async (req: Request, res: Response) => {
+    const coupon = await couponService.update(req.params.code, req.body);
+    res.json({ success: true, data: toApi(coupon) });
+  }),
+
+  remove: asyncHandler(async (req: Request, res: Response) => {
+    const coupon = await couponService.remove(req.params.code);
+    res.json({ success: true, data: toApi(coupon) });
+  }),
 };

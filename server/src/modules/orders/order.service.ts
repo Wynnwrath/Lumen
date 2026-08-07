@@ -67,6 +67,11 @@ export const orderService = {
         if (!coupon) throw new AppError("Invalid or expired coupon", 400, "INVALID_COUPON");
         // Clamp so a huge percent can't make the total negative.
         discount = Math.min(calcDiscount(subtotal, coupon.discountPercent), subtotal);
+        // Track redemptions for the admin coupon manager.
+        await tx.coupon.update({
+          where: { code: coupon.code },
+          data: { usageCount: { increment: 1 } },
+        });
       }
 
       const total = Math.round((subtotal + tax + shipping - discount) * 100) / 100;

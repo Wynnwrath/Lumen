@@ -9,8 +9,18 @@ import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { LoadingSpinner } from "../../components/common/skeletons";
+import { AdminPagination } from "../../components/common/AdminPagination";
+import { RowActions } from "../../components/common/RowActions";
 import { useToast } from "../../components/common/ToastProvider";
+import { usePagination } from "../../hooks/usePagination";
 import { formatDate } from "../../utils/format";
+
+// Deterministic sort so the list never reshuffles on refresh/toggle.
+const sortCoupons = (list: Coupon[]) =>
+  [...list].sort((a, b) => {
+    if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
+    return a._id < b._id ? 1 : -1;
+  });
 
 // Toggle switch used for a coupon's active state. Shows a spinner while saving.
 const ToggleSwitch = ({ checked, onChange, disabled, loading }: { checked: boolean; onChange: () => void; disabled?: boolean; loading?: boolean }) => (
@@ -58,7 +68,7 @@ export const AdminCouponsPage = () => {
 
   const loadCoupons = useCallback(async () => {
     try {
-      setCoupons(await getCoupons());
+      setCoupons(sortCoupons(await getCoupons()));
     } catch (error) {
       showToast(getErrorMessage(error), "error");
     } finally {
@@ -82,6 +92,8 @@ export const AdminCouponsPage = () => {
 
   const activeCount = coupons.filter((c) => c.isActive).length;
   const totalUsage = coupons.reduce((sum, c) => sum + c.usageCount, 0);
+
+  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredCoupons, 10);
 
   const handleOpenAddModal = () => {
     setEditingCoupon(null);
@@ -128,11 +140,18 @@ export const AdminCouponsPage = () => {
   const handleToggleActive = async (coupon: Coupon) => {
     if (togglingId) return;
     setTogglingId(coupon._id);
+    // Optimistic flip: update in place so the list doesn't reload/rearrange.
+    setCoupons((prev) =>
+      sortCoupons(prev.map((c) => (c._id === coupon._id ? { ...c, isActive: !c.isActive } : c)))
+    );
     try {
       await updateCoupon(coupon.code, { isActive: !coupon.isActive });
       showToast(`${coupon.code} ${coupon.isActive ? "deactivated" : "activated"}`, "info");
-      await loadCoupons();
     } catch (error) {
+      // Revert on failure.
+      setCoupons((prev) =>
+        sortCoupons(prev.map((c) => (c._id === coupon._id ? { ...c, isActive: coupon.isActive } : c)))
+      );
       showToast(getErrorMessage(error), "error");
     } finally {
       setTogglingId(null);
@@ -158,8 +177,6 @@ export const AdminCouponsPage = () => {
           chip="All"
           chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
           value={coupons.length}
-          icon="loyalty"
-          iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
           subtext="Discount codes on file"
           id="stat-total-coupons"
         />
@@ -169,8 +186,6 @@ export const AdminCouponsPage = () => {
           chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
           value={activeCount}
           valueClassName="text-emerald-600 dark:text-emerald-400"
-          icon="check_circle"
-          iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
           subtext="Redeemable at checkout"
           id="stat-active-coupons"
         />
@@ -179,8 +194,6 @@ export const AdminCouponsPage = () => {
           chip="Redemptions"
           chipClassName="bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/60"
           value={totalUsage}
-          icon="local_atm"
-          iconClassName="text-purple-600 dark:text-purple-400 text-sm sm:text-base font-bold"
           subtext="Times redeemed"
           id="stat-total-usage"
           className="col-span-2 sm:col-span-1"
@@ -207,7 +220,7 @@ export const AdminCouponsPage = () => {
             {filteredCoupons.length === 0 ? (
               <EmptyState message="No coupons found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
             ) : (
-              filteredCoupons.map((coupon) => (
+              paginated.map((coupon) => (
                 <div
                   key={coupon._id}
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-xs flex items-center gap-3.5 transition-colors rounded-none"
@@ -221,13 +234,13 @@ export const AdminCouponsPage = () => {
                       <span className="font-mono font-extrabold text-sm text-slate-900 dark:text-white truncate tracking-tight">
                         {coupon.code}
                       </span>
-                      <button
-                        onClick={() => handleDelete(coupon)}
-                        className="p-1 text-rose-400 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 transition shrink-0"
-                        title="Delete Coupon"
-                      >
-                        <Icon name="delete" className="text-base" />
-                      </button>
+                      <RowActions
+                        actions={[
+                          { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(coupon) },
+                          { label: coupon.isActive ? "Deactivate" : "Activate", icon: coupon.isActive ? "block" : "check", onClick: () => handleToggleActive(coupon) },
+                          { label: "Delete", icon: "delete", danger: true, onClick: () => handleDelete(coupon) },
+                        ]}
+                      />
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <DiscountBadge percent={coupon.discountPercent} />
@@ -242,12 +255,6 @@ export const AdminCouponsPage = () => {
                           {coupon.isActive ? "Active" : "Inactive"}
                         </span>
                       </div>
-                      <button
-                        onClick={() => handleOpenEditModal(coupon)}
-                        className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-300 text-xs font-extrabold hover:bg-blue-100 transition border border-blue-100 dark:border-blue-800/60"
-                      >
-                        Quick Edit
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -273,7 +280,7 @@ export const AdminCouponsPage = () => {
                   {filteredCoupons.length === 0 ? (
                     <EmptyState message="No coupons found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
                   ) : (
-                    filteredCoupons.map((coupon) => (
+                    paginated.map((coupon) => (
                       <tr key={coupon._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800">
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
@@ -303,22 +310,13 @@ export const AdminCouponsPage = () => {
                           {formatDate(coupon.createdAt, { month: "short", day: "numeric", year: "numeric" })}
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => handleOpenEditModal(coupon)}
-                              className="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg transition"
-                              title="Edit Coupon"
-                            >
-                              <Icon name="edit" className="text-base" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(coupon)}
-                              className="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
-                              title="Delete Coupon"
-                            >
-                              <Icon name="delete" className="text-base" />
-                            </button>
-                          </div>
+                          <RowActions
+                            actions={[
+                              { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(coupon) },
+                              { label: coupon.isActive ? "Deactivate" : "Activate", icon: coupon.isActive ? "block" : "check", onClick: () => handleToggleActive(coupon) },
+                              { label: "Delete", icon: "delete", danger: true, onClick: () => handleDelete(coupon) },
+                            ]}
+                          />
                         </td>
                       </tr>
                     ))
@@ -329,6 +327,15 @@ export const AdminCouponsPage = () => {
           </div>
         </section>
       )}
+
+      <AdminPagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        start={start}
+        end={end}
+        onChange={setPage}
+      />
 
       {/* Add / Edit Coupon Modal */}
       <Modal
