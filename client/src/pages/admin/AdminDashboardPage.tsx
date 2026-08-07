@@ -15,6 +15,7 @@ import { OrdersByStatusList } from "./dashboard/OrdersByStatusList";
 import { RecentOrdersSection } from "./dashboard/RecentOrdersSection";
 import { LowStockPanel } from "./dashboard/LowStockPanel";
 
+// Admin overview: KPI cards, revenue/status charts, recent orders, low-stock alerts.
 export const AdminDashboardPage = () => {
   const { orders, refresh: refreshOrders } = useOrders();
   const { products, refresh: refreshProducts } = useProducts();

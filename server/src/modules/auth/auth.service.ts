@@ -6,9 +6,11 @@ import type { RegisterUserInput, LoginInput } from "./auth.validator.js";
 
 export const authService = {
   async registerUser(input: RegisterUserInput) {
+    // Emails are unique, so check first.
     const exists = await prisma.user.findUnique({ where: { email: input.email } });
     if (exists) throw new AppError("Email already registered", 400, "EMAIL_EXISTS");
 
+    // Never store the raw password.
     const hashed = await hashPassword(input.password);
     const user = await prisma.user.create({
       data: { name: input.name, email: input.email, password: hashed, phone: input.phone },
@@ -23,6 +25,7 @@ export const authService = {
     });
     if (!user) throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
 
+    // Same error for "no user" and "wrong password" so we don't leak which one.
     const match = await comparePassword(input.password, user.password);
     if (!match) throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
 

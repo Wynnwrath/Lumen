@@ -7,6 +7,7 @@ import { requireFound } from "../../utils/requireFound.js";
 import { calcDiscount } from "../../utils/calcDiscount.js";
 import { sendOrderConfirmation } from "../../utils/email.js";
 
+// Human-friendly order reference like LMN-<timestamp><random>.
 function generateOrderNumber(): string {
   const ts = Date.now().toString(36).slice(-4);
   const rand = Math.floor(1000 + Math.random() * 9000);
@@ -14,6 +15,8 @@ function generateOrderNumber(): string {
 }
 
 export const orderService = {
+  // Places an order. Everything runs inside a transaction so it's all-or-nothing:
+  // if any step fails (stock, coupon, insert) the whole order rolls back.
   async createOrder(input: CreateOrderInput, customerId: string) {
     const order = await prisma.$transaction(async (tx) => {
       const productIds = input.items.map((i) => i.product);
@@ -29,6 +32,7 @@ export const orderService = {
           throw new AppError(`Insufficient stock for ${product.name}`, 400, "INSUFFICIENT_STOCK");
         }
         subtotal += product.price * item.quantity;
+        // Snapshot name/price/image so past orders keep what the customer actually paid.
         orderItems.push({
           productId: product.id,
           name: product.name,
@@ -37,18 +41,17 @@ export const orderService = {
           image: (product.images as string[])?.[0] || "",
         });
 
-        const result = await tx.product.updateMany({
-          where: { id: product.id, stock: { gte: item.quantity } },
-          data: { stock: { decrement: item.quantity } },
+        // Lower stock; mark out_of_stock when it hits 0.
+        await tx.product.update({
+          where: { id: product.id },
+          data: {
+            stock: { decrement: item.quantity },
+            ...(product.stock - item.quantity === 0 ? { status: "out_of_stock" } : {}),
+          },
         });
-        if (result.count === 0) {
-          throw new AppError(`Insufficient stock for ${product.name}`, 400, "INSUFFICIENT_STOCK");
-        }
-        if (product.stock - item.quantity === 0) {
-          await tx.product.update({ where: { id: product.id }, data: { status: "out_of_stock" } });
-        }
       }
 
+      // Same pricing rules the client preview uses.
       const shipping = subtotal >= 100 ? 0 : 12.0;
       const tax = Math.round(subtotal * 0.08 * 100) / 100;
       let discount = 0;
@@ -58,6 +61,7 @@ export const orderService = {
           where: { code: input.couponCode.toUpperCase(), isActive: true },
         });
         if (!coupon) throw new AppError("Invalid or expired coupon", 400, "INVALID_COUPON");
+        // Clamp so a huge percent can't make the total negative.
         discount = Math.min(calcDiscount(subtotal, coupon.discountPercent), subtotal);
       }
 
@@ -84,6 +88,7 @@ export const orderService = {
       return order;
     });
 
+    // Fire the confirmation email after the order is safely saved.
     const user = await prisma.user.findUnique({
       where: { id: customerId },
       select: { email: true, name: true },
@@ -100,12 +105,13 @@ export const orderService = {
     return order;
   },
 
+  // Admin list with status filter + pagination.
   async getAll(query: OrderQuery) {
     const where: Prisma.OrderWhereInput = {};
     if (query.status) where.status = query.status;
 
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 20;
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 20;
 
     const [items, total] = await Promise.all([
       prisma.order.findMany({
@@ -132,6 +138,7 @@ export const orderService = {
     return requireFound(order, "Order");
   },
 
+  // Orders belonging to the logged-in customer.
   async getMine(customerId: string) {
     return prisma.order.findMany({
       where: { customerId },
@@ -140,6 +147,7 @@ export const orderService = {
     });
   },
 
+  // All orders flattened into a CSV for download.
   async exportCsv() {
     const orders = await prisma.order.findMany({
       include: {
@@ -149,6 +157,7 @@ export const orderService = {
       orderBy: { createdAt: "desc" },
     });
 
+    // Quote values that contain commas/quotes/newlines so the CSV stays valid.
     const escape = (value: unknown): string => {
       const s = String(value ?? "");
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;

@@ -5,6 +5,7 @@ import type { Order } from "../../types";
 import { formatDate } from "../../utils/format";
 import type { ReactNode } from "react";
 
+// Shared "view order" modal: status/payment/address, items, and totals.
 interface OrderDetailsModalProps {
   order: Order | null;
   onClose: () => void;

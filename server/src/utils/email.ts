@@ -13,6 +13,8 @@ interface OrderEmailData {
   items: OrderEmailItem[];
 }
 
+// Sends the order confirmation email. If there's no RESEND_API_KEY
+// (like in local dev), log it to the console instead.
 export async function sendOrderConfirmation(to: string, order: OrderEmailData): Promise<void> {
   const apiKey = config.resendApiKey;
   const subject = `Your Lumen order ${order.orderNumber} is confirmed`;

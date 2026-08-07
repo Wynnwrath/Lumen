@@ -23,7 +23,8 @@ import { AdminCustomersPage } from "./pages/admin/AdminCustomersPage";
 import { useAuthStore } from "./stores/auth.store";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 
-// Protected Admin Route Component
+// Client-side guard for admin routes: redirects to /admin/login if not an admin.
+// (Real security is the server's protect + authorize middleware.)
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthStore();
   if (!user || user.role !== "admin") {
@@ -32,6 +33,7 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// The whole app's routing table.
 export const App = () => {
   return (
     <>

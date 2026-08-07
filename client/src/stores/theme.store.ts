@@ -7,6 +7,7 @@ interface ThemeState {
   toggle: () => void;
 }
 
+// Adds/removes the `dark` class on <html>; Tailwind's darkMode: "class" uses it.
 function applyTheme(mode: ThemeMode) {
   const root = document.documentElement;
   if (mode === "dark") {
@@ -16,6 +17,7 @@ function applyTheme(mode: ThemeMode) {
   }
 }
 
+// Light/dark mode, persisted so the choice sticks across reloads.
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
@@ -28,7 +30,7 @@ export const useThemeStore = create<ThemeState>()(
     }),
     {
       name: "lumen-theme",
-      version: 1,
+      // Re-apply the saved theme on reload (before the app paints).
       onRehydrateStorage: () => (state) => {
         if (state) applyTheme(state.mode);
       },

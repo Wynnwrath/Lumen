@@ -4,6 +4,8 @@ import { config } from "../config/env.js";
 import { AppError } from "../utils/AppError.js";
 import type { JwtPayload, RequestWithUser } from "../types/request.js";
 
+// Checks the JWT in the Authorization header. If valid, attach the user to
+// req.user and continue; otherwise stop with a 401.
 export function protect(req: RequestWithUser, _res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith("Bearer ")) {
@@ -20,6 +22,7 @@ export function protect(req: RequestWithUser, _res: Response, next: NextFunction
   }
 }
 
+// Role gate used after `protect`: authorize("admin"), authorize("customer", "admin"), etc.
 export function authorize(...roles: string[]) {
   return (req: RequestWithUser, _res: Response, next: NextFunction): void => {
     if (!req.user) {

@@ -14,11 +14,14 @@ interface AuthState {
   logout: () => void;
 }
 
+// Zustand store for auth. `persist` keeps the session in localStorage so a
+// refresh doesn't log you out. The axios interceptor reads `token` from here.
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
       token: null,
+      // All three call the real backend, then stash user + token.
       login: async (email, password) => {
         const res = await api.post<ApiResponse<AuthResult>>("/auth/login", { email, password });
         const { user, token } = res.data.data;
@@ -35,6 +38,7 @@ export const useAuthStore = create<AuthState>()(
         set({ user, token });
       },
       logout: () => {
+        // Clearing cart + wishlist on logout keeps accounts from mixing on a shared device.
         useCartStore.getState().clearCart();
         useWishlistStore.getState().clear();
         set({ user: null, token: null });
@@ -42,15 +46,9 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "lumen-auth",
-      version: 1,
-      partialize: (s) => ({ user: s.user, token: s.token }),
-      migrate: (persisted) => {
-        const state = persisted as { user?: { _id?: string } | null; token?: string | null };
-        return { user: state.user ?? null, token: state.token ?? null };
-      },
     }
   )
 );
 
-// derived selector — reactivity is guaranteed because it subscribes to `user`
+// True when logged in. Derives from `user` so it stays in sync automatically.
 export const useIsAuthenticated = () => useAuthStore((s) => !!s.user);

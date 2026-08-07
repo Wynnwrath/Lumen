@@ -4,6 +4,8 @@ import { useThemeStore } from "../../stores/theme.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { Icon } from "../common/Icon";
 
+// Admin shell: sidebar + header + the admin page. Also guards nothing here;
+// route protection lives in App.tsx (ProtectedAdminRoute).
 export const AdminLayout = () => {
   const { mode, toggle } = useThemeStore();
   const { user, logout } = useAuthStore();

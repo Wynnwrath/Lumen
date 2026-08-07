@@ -1,3 +1,4 @@
+// Subtotal/discount/shipping/tax/total breakdown, shared by order views.
 interface OrderSummaryProps {
   subtotal: number;
   discount?: number;

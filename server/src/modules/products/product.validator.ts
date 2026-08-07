@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const specsSchema = z.record(z.string(), z.string()).optional();
 
+// Rules for the product fields. `update` reuses these but makes every field optional.
 export const createProductSchema = z.object({
   name: z.string().min(1),
   category: z.string().min(1),
@@ -18,6 +19,7 @@ export const createProductSchema = z.object({
 
 export const updateProductSchema = createProductSchema.partial();
 
+// Query params for GET /products. z.coerce turns "?page=2" strings into numbers.
 export const productQuerySchema = z.object({
   category: z.string().optional(),
   minPrice: z.coerce.number().optional(),

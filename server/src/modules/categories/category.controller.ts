@@ -4,6 +4,7 @@ import { categoryService } from "./category.service.js";
 import type { CreateCategoryInput } from "./category.validator.js";
 import { toApi } from "../../utils/toApi.js";
 
+// Thin layer: delegate to the service, wrap the result in the envelope.
 export const categoryController = {
   getAll: asyncHandler(async (_req: Request, res: Response) => {
     const categories = await categoryService.findAll();

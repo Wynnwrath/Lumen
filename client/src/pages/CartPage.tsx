@@ -6,6 +6,7 @@ import { CartItemRow } from "../components/common/CartItemRow";
 import { EmptyState } from "../components/common/EmptyState";
 import { calculateOrderTotals } from "../services/pricing";
 
+// Cart page: line items + order summary, then go to checkout.
 export const CartPage = () => {
   const { items, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
   const navigate = useNavigate();

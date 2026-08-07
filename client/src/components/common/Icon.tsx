@@ -1,7 +1,6 @@
 import type { Icon as PhosphorIcon, IconProps as PhosphorIconProps } from "@phosphor-icons/react";
 import {
-  ArrowClockwise,
-  ArrowLeft,
+  ArrowClockwise,  ArrowLeft,
   ArrowRight,
   ArrowUpRight,
   ArrowsClockwise,
@@ -86,6 +85,7 @@ import {
   YoutubeLogo,
 } from "@phosphor-icons/react";
 
+// Maps a snake_case name to a Phosphor icon component (used everywhere).
 const ICON_MAP: Record<string, PhosphorIcon> = {
   account_balance: Bank,
   account_balance_wallet: Wallet,

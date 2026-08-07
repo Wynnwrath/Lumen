@@ -5,6 +5,7 @@ import { ToastProvider } from "./components/common/ToastProvider";
 import App from "./App";
 import "./index.css";
 
+// App entry point. Providers wrap the app: toasts, then routing.
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ToastProvider>

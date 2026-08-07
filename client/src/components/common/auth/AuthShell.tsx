@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+// Two-column auth layout: left brand/banner panel + right form.
 interface AuthShellProps {
   left?: ReactNode;
   children: ReactNode;

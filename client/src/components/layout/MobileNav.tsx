@@ -5,6 +5,7 @@ import { useAuthStore } from "../../stores/auth.store";
 import { Icon } from "../common/Icon";
 import { useClickOutside } from "../../hooks/useClickOutside";
 
+// Bottom navigation dock shown on phones (< md), with an account sheet.
 export const MobileNav = () => {
   const { getItemCount } = useCartStore();
   const { user, logout } = useAuthStore();

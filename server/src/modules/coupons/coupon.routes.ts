@@ -6,6 +6,7 @@ import { couponController } from "./coupon.controller.js";
 
 const router = Router();
 
+// Anyone can check a coupon at checkout; listing all coupons is admin-only.
 router.post("/validate", validate(validateCouponSchema), couponController.validateCoupon);
 router.get("/", protect, authorize("admin"), couponController.getAll);
 

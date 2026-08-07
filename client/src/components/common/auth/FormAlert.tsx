@@ -1,6 +1,7 @@
 import { Icon } from "../Icon";
 import type { ReactNode } from "react";
 
+// Error/success banner shown above auth forms.
 interface FormAlertProps {
   type: "error" | "success";
   title?: string;

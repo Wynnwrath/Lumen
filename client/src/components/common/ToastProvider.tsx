@@ -2,6 +2,7 @@ import React, { createContext, useContext, useRef, useState } from "react";
 import type { ToastMessage } from "../../types";
 import { Toast } from "./Toast";
 
+// Global toast notifications via context, so any component can call useToast().
 interface ToastContextValue {
   showToast: (message: string, type?: ToastMessage["type"]) => void;
 }

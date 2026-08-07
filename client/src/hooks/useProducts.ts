@@ -1,7 +1,25 @@
-import { useFetch } from "./useFetch";
+import { useCallback, useEffect, useState } from "react";
 import { getAdminProducts } from "../api/products";
+import type { Product } from "../types";
 
 export function useProducts() {
-  const { data, refresh, loading } = useFetch(() => getAdminProducts().then((r) => r.products));
-  return { products: data ?? [], refresh, loading };
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    try {
+      const res = await getAdminProducts();
+      setProducts(res.products);
+    } catch (error) {
+      console.error("Failed to load products", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return { products, refresh, loading };
 }

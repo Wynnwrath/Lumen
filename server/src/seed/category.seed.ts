@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 
+// Demo store departments.
 const SEED_CATEGORIES = [
   { slug: "electronics", name: "Electronics", icon: "devices", description: "Smartphones, laptops, audio gear, and cutting-edge gadgetry." },
   { slug: "fashion", name: "Fashion", icon: "checkroom", description: "Apparel, footwear, and designer streetwear for men and women." },
@@ -9,6 +10,7 @@ const SEED_CATEGORIES = [
   { slug: "luxury", name: "Luxury Items", icon: "diamond", description: "High-end jewelry, fine timepieces, Italian leather, and collectibles." },
 ];
 
+// Only seeds if the table is empty (idempotent).
 export async function seedCategories(): Promise<void> {
   const count = await prisma.category.count();
   if (count === 0) {

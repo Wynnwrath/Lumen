@@ -1,3 +1,5 @@
+// Throw this instead of a plain Error so the error handler knows
+// the status code + code to send back.
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly code?: string;

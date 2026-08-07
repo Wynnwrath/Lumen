@@ -1,4 +1,4 @@
-// colored pill classes shared by the badge and the status dropdowns
+// Colored pill classes shared by the badge and the status dropdowns.
 export const getStatusColorClass = (status: string) => {
   switch (status.toLowerCase()) {
     case "completed":

@@ -1,3 +1,2 @@
-// Prisma Client generates the Category type automatically.
-// This thin re-export preserves the ICategory name for backward compatibility.
+// Re-export Prisma's generated Category type under the old ICategory name.
 export type { Category as ICategory } from "@prisma/client";

@@ -3,6 +3,7 @@ import { Icon } from "./Icon";
 import { QuantityStepper } from "./QuantityStepper";
 import type { CartItem } from "../../types";
 
+// One line in the cart: image, name, quantity stepper (or read-only count), line total.
 interface CartItemRowProps {
   item: CartItem;
   onUpdateQuantity?: (productId: string, qty: number) => void;

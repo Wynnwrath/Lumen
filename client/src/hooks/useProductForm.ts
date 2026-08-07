@@ -7,6 +7,7 @@ import { FALLBACK_PRODUCT_IMAGE } from "../constants";
 
 export type ProductStatus = "active" | "inactive" | "out_of_stock";
 
+// Add/edit product form state + save logic, so AdminProductsPage stays readable.
 export const useProductForm = (
   categories: Category[],
   refreshProducts: () => Promise<void>
@@ -27,6 +28,7 @@ export const useProductForm = (
   const [imageUploading, setImageUploading] = useState(false);
   const [formDescription, setFormDescription] = useState("");
 
+  // Reset everything for a fresh "Add product" modal.
   const handleOpenAddModal = () => {
     setEditingProduct(null);
     setFormName("");
@@ -40,6 +42,7 @@ export const useProductForm = (
     setShowModal(true);
   };
 
+  // Pre-fill the form with the product being edited.
   const handleOpenEditModal = (p: Product) => {
     setEditingProduct(p);
     setFormName(p.name);
@@ -53,6 +56,7 @@ export const useProductForm = (
     setShowModal(true);
   };
 
+  // Upload a chosen image file to Supabase and use its URL.
   const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -67,6 +71,7 @@ export const useProductForm = (
     }
   };
 
+  // Create or update, then refresh the list.
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     const priceNum = Number(formPrice) || 0;

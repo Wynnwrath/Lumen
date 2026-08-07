@@ -14,7 +14,7 @@ export interface CustomerData {
   name: string;
   email: string;
   phone: string;
-  avatar: string;
+  initials: string;
   tier: string;
   totalOrders: number;
   totalSpent: number;

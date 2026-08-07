@@ -1,6 +1,7 @@
 import type { ToastMessage } from "../../types";
 import { Icon } from "./Icon";
 
+// Style/icon/color per toast type. Rendered by ToastProvider.
 const TOAST_STYLES: Record<ToastMessage["type"], string> = {
   info: "bg-slate-900 text-white border-slate-700",
   success: "bg-slate-900 text-white border-slate-700",

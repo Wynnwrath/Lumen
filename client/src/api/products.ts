@@ -1,10 +1,12 @@
 import api from "./client";
 import type { ApiResponse, PaginationMeta, Product } from "../types";
 
+// Paginated products response: data + pagination info.
 export interface ProductsResponse extends PaginationMeta {
   products: Product[];
 }
 
+// What the client sends when creating/updating a product.
 export interface ProductPayload {
   name: string;
   category: string;
@@ -16,11 +18,13 @@ export interface ProductPayload {
   description?: string;
 }
 
+// Every function unwraps res.data.data so callers get the payload directly.
 export async function getProducts(params?: Record<string, string | number | boolean>) {
   const res = await api.get<ApiResponse<ProductsResponse>>("/products", { params });
   return res.data.data;
 }
 
+// Admin endpoint that returns everything (including inactive).
 export async function getAdminProducts() {
   const res = await api.get<ApiResponse<ProductsResponse>>("/products/manage");
   return res.data.data;

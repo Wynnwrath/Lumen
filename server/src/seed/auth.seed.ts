@@ -1,6 +1,8 @@
 import { prisma } from "../lib/prisma.js";
 import { hashPassword } from "../modules/auth/auth.model.js";
 
+// Creates the demo customer + admin so you can log in right away.
+// Each check is idempotent (only inserts if the email doesn't exist yet).
 export async function seedDefaultUsers(): Promise<void> {
   const exists = await prisma.user.findUnique({ where: { email: "alex.morgan@lumen.com" } });
   if (!exists) {

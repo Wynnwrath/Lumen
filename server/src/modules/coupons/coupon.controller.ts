@@ -3,6 +3,7 @@ import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { couponService } from "./coupon.service.js";
 import { toApi } from "../../utils/toApi.js";
 
+// Thin layer: delegate to the service, wrap the result in the envelope.
 export const couponController = {
   validateCoupon: asyncHandler(async (req: Request, res: Response) => {
     const { code, subtotal } = req.body;

@@ -22,6 +22,7 @@ export const categoryService = {
 
   async remove(slug: string) {
     const category = await findOrThrow(slug);
+    // Categories still used by products can't be deleted.
     const assignedCount = await prisma.product.count({ where: { category: slug } });
     if (assignedCount > 0) {
       throw new AppError(

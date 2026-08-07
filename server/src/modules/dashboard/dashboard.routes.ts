@@ -4,6 +4,7 @@ import { dashboardController } from "./dashboard.controller.js";
 
 const router = Router();
 
+// Admin-only metrics endpoints.
 router.get("/stats", protect, authorize("admin"), dashboardController.stats);
 router.get("/charts", protect, authorize("admin"), dashboardController.charts);
 

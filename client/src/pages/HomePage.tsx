@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getCategories } from "../api/categories";
+import { getProducts } from "../api/products";
 import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/common/Icon";
 import { ProductCard, trackSpotlight } from "../components/common/ProductCard";
@@ -8,7 +9,7 @@ import { ProductGridSkeleton } from "../components/common/skeletons";
 import { useToast } from "../components/common/ToastProvider";
 import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_COLORS } from "../constants/home";
 import { useAddToCart } from "../hooks/useAddToCart";
-import { useCatalogProducts } from "../hooks/useCatalogProducts";
+import type { Product } from "../types";
 
 type DisplayCategory = { id: string; label: string; icon: string; bgColor: string };
 
@@ -21,6 +22,7 @@ function mapCategories(cats: { slug: string; name: string; icon: string }[]): Di
   }));
 }
 
+// Storefront landing page: hero carousel, category chips, featured/new products.
 export const HomePage = () => {
   const navigate = useNavigate();
   const handleAddToCart = useAddToCart();
@@ -35,7 +37,15 @@ export const HomePage = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
-  const { products: allProducts, loading: productsLoading } = useCatalogProducts();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  useEffect(() => {
+    getProducts({ limit: 100 })
+      .then((res) => setAllProducts(res.products))
+      .catch(() => setAllProducts([]))
+      .finally(() => setProductsLoading(false));
+  }, []);
 
   useEffect(() => {
     getCategories()

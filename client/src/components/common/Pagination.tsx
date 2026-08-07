@@ -1,3 +1,4 @@
+// Prev/Next pager used by list pages.
 interface PaginationProps {
   page: number;
   totalPages: number;

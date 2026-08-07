@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Icon } from "../common/Icon";
 import { useToast } from "../../components/common/ToastProvider";
 
+// Storefront footer: brand blurb, link columns, socials, newsletter form (demo only).
 export const PublicFooter = () => {
   const { showToast } = useToast();
   const [newsletterEmail, setNewsletterEmail] = useState("");

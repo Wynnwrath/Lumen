@@ -13,15 +13,18 @@ import customerRoutes from "./modules/customers/customer.routes.js";
 
 const app = express();
 
+// Trust the proxy so rate limiting sees real client IPs behind it.
 app.set("trust proxy", 1);
 app.use(helmet());
 app.use(cors({ origin: config.clientUrl, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 
+// Simple health/liveness endpoint.
 app.get("/api", (_req, res) => {
   res.json({ success: true, data: { name: "Lumen API", version: "1.0.0" } });
 });
 
+// Mount every feature's routes under /api.
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
@@ -30,10 +33,12 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/customers", customerRoutes);
 
+// Nothing matched -> 404.
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: { message: "Route not found", code: "NOT_FOUND" } });
 });
 
+// Last stop for anything thrown; converts it to a JSON error.
 app.use(errorHandler);
 
 export default app;

@@ -3,6 +3,7 @@ import { PublicHeader } from "./PublicHeader";
 import { PublicFooter } from "./PublicFooter";
 import { MobileNav } from "./MobileNav";
 
+// Wraps every storefront page: header + page + footer (+ mobile bottom nav).
 export const PublicLayout = () => {
   return (
     <div className="min-h-screen flex flex-col pb-16 md:pb-0 bg-background text-on-background">

@@ -11,13 +11,14 @@ import type { Order } from "../types";
 export type PaymentMethod = "Cash on Delivery" | "E-Wallet" | "Bank Transfer";
 export type CouponMessage = { text: string; isError: boolean } | null;
 
+// All checkout form state + logic in one place so CheckoutPage stays readable.
 export const useCheckoutForm = () => {
   const { items, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  // Form States
+  // Form States (pre-filled from the logged-in user when available).
   const [email, setEmail] = useState(user ? user.email : "");
   const [emailOffers, setEmailOffers] = useState(true);
   const [deliveryType, setDeliveryType] = useState<"home" | "pickup">("home");
@@ -45,6 +46,7 @@ export const useCheckoutForm = () => {
   const totals = calculateOrderTotals(items, appliedDiscountRate);
   const { subtotal: rawSubtotal, discountAmount, shippingFee, estimatedTax, grandTotal } = totals;
 
+  // Asks the server to validate the code, then applies it as a discount rate.
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!couponCode.trim()) return;
@@ -58,6 +60,7 @@ export const useCheckoutForm = () => {
     }
   };
 
+  // Sends the order to the backend, then shows the confirmation receipt.
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;

@@ -1,13 +1,13 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../stores/theme.store";
 import { useCartStore } from "../../stores/cart.store";
 import { useWishlistStore } from "../../stores/wishlist.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { getProducts } from "../../api/products";
+import type { Product } from "../../types";
 import { Icon } from "../common/Icon";
 import { useClickOutside } from "../../hooks/useClickOutside";
-import { useFetch } from "../../hooks/useFetch";
 
 export const PublicHeader = () => {
   const { mode, toggle } = useThemeStore();
@@ -21,6 +21,7 @@ export const PublicHeader = () => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [searchProducts, setSearchProducts] = useState<Product[]>([]);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const cartModalRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,11 @@ export const PublicHeader = () => {
   const itemCount = getItemCount();
   const subtotal = getSubtotal();
 
-  const { data: searchProducts } = useFetch(() => getProducts({ limit: 100 }).then((r) => r.products));
+  useEffect(() => {
+    getProducts({ limit: 100 })
+      .then((res) => setSearchProducts(res.products))
+      .catch(() => setSearchProducts([]));
+  }, []);
 
   // close each dropdown when clicking outside its container
   useClickOutside(searchRef, () => setShowSearchDropdown(false));
@@ -39,12 +44,11 @@ export const PublicHeader = () => {
   const liveSearchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
-    return (searchProducts ?? [])
-      .filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q)
-      );
+    return searchProducts.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+    );
   }, [searchQuery, searchProducts]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

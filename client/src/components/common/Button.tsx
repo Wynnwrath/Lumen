@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "./Icon";
 
+// Reusable button with preset variants/sizes + optional leading icon.
 type ButtonVariant = "secondary" | "blue" | "dark" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 

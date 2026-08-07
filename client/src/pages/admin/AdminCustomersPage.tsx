@@ -8,6 +8,7 @@ import { EmptyState } from "../../components/common/EmptyState";
 import { ListRowsSkeleton } from "../../components/common/skeletons";
 import { useCustomers } from "../../hooks/useCustomers";
 
+// Admin customer directory: search, tier badges, order stats, profile modal.
 export const AdminCustomersPage = () => {
   const { customers, loading: customersLoading } = useCustomers();
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,11 +46,9 @@ export const AdminCustomersPage = () => {
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={c.avatar}
-                      alt={c.name}
-                      className="w-12 h-12 rounded-full object-cover bg-slate-200 shrink-0 border border-slate-200 dark:border-slate-700"
-                    />
+                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center font-extrabold text-sm shrink-0 border border-blue-200 dark:border-blue-800">
+                      {c.initials}
+                    </div>
                     <div className="min-w-0">
                       <h4 className="font-extrabold text-sm text-slate-900 dark:text-white truncate">
                         {c.name}
@@ -119,11 +118,9 @@ export const AdminCustomersPage = () => {
                   <tr key={c._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={c.avatar}
-                          alt={c.name}
-                          className="w-10 h-10 rounded-full object-cover bg-slate-200 shrink-0"
-                        />
+                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center font-extrabold text-xs shrink-0">
+                          {c.initials}
+                        </div>
                         <div>
                           <p className="font-bold text-slate-900 dark:text-white">{c.name}</p>
                           <p className="text-[11px] text-slate-500">{c.email}</p>
@@ -172,7 +169,13 @@ export const AdminCustomersPage = () => {
         onClose={() => setSelectedCustomer(null)}
         title={selectedCustomer ? selectedCustomer.name : ""}
         subtitle={selectedCustomer ? selectedCustomer.email : undefined}
-        icon={selectedCustomer ? <img src={selectedCustomer.avatar} alt={selectedCustomer.name} className="w-full h-full object-cover" /> : undefined}
+        icon={
+          selectedCustomer ? (
+            <div className="w-full h-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-extrabold text-lg">
+              {selectedCustomer.initials}
+            </div>
+          ) : undefined
+        }
         headerIconClassName="w-11 h-11 rounded-full border-2 border-blue-600 overflow-hidden"
         className="max-w-2xl"
         footer={<Button onClick={() => setSelectedCustomer(null)}>Close Profile</Button>}

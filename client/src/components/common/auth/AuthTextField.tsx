@@ -1,6 +1,7 @@
 import { Icon } from "../Icon";
 import type { InputHTMLAttributes } from "react";
 
+// Labeled input with a leading icon, used on login/register forms.
 interface AuthTextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   icon: string;
   label: string;

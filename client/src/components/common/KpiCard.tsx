@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "./Icon";
 
+// Stat card for admin dashboards (label, big number, chip, icon).
 interface KpiCardProps {
   id?: string;
   label: string;

@@ -4,6 +4,7 @@ import { validate } from "../../middleware/validate.js";
 import { registerUserSchema, loginSchema } from "./auth.validator.js";
 import { authController } from "./auth.controller.js";
 
+// Slow down repeated login attempts (20 per 15 min) to make brute-forcing harder.
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 20,

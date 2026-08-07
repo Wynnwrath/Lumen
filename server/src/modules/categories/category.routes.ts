@@ -6,6 +6,7 @@ import { categoryController } from "./category.controller.js";
 
 const router = Router();
 
+// Public read; admin-only writes. Categories are looked up by their slug.
 router.get("/", categoryController.getAll);
 router.post("/", protect, authorize("admin"), validate(createCategorySchema), categoryController.create);
 router.patch("/:slug", protect, authorize("admin"), validate(updateCategorySchema), categoryController.update);

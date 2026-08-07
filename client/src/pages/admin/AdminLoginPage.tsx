@@ -7,6 +7,7 @@ import { useAuthStore } from "../../stores/auth.store";
 import { useThemeStore } from "../../stores/theme.store";
 import { AuthShell } from "../../components/common/auth/AuthShell";
 
+// Admin login page (uses the auth store's loginAdmin + AuthShell layout).
 export const AdminLoginPage = () => {
   const navigate = useNavigate();
   const { user, loginAdmin, logout } = useAuthStore();

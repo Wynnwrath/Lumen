@@ -1,3 +1,6 @@
+// Static content for the HomePage hero carousel, category chips, and colors.
+// `match` on each slide ties the banner to a real product for quick-buy.
+
 export interface HeroSlideMatch {
   name?: string;
   category?: string;

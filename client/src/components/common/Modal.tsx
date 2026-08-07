@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "./Icon";
 
+// Shared modal: overlay + card with header (title/icon/actions), scrollable body, optional footer.
 interface ModalProps {
   open: boolean;
   onClose: () => void;

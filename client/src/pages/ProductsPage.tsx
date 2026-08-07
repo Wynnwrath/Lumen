@@ -1,14 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useWishlistStore } from "../stores/wishlist.store";
+import { getProducts } from "../api/products";
+import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
 import { ProductCard } from "../components/common/ProductCard";
 import { ProductGridSkeleton } from "../components/common/skeletons";
 import { EmptyState } from "../components/common/EmptyState";
 import { Pagination } from "../components/common/Pagination";
 import { useAddToCart } from "../hooks/useAddToCart";
-import { useCatalogProducts } from "../hooks/useCatalogProducts";
 
+// Product listing with filters (category/search/sale/wishlist), sorting, and pagination.
 export const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const handleAddToCart = useAddToCart();
@@ -31,7 +33,15 @@ export const ProductsPage = () => {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
 
-  const { products, loading: productsLoading } = useCatalogProducts();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  useEffect(() => {
+    getProducts({ limit: 100 })
+      .then((res) => setProducts(res.products))
+      .catch(() => setProducts([]))
+      .finally(() => setProductsLoading(false));
+  }, []);
 
   // Prune stale wishlist ids that no longer match any product in the catalog
   useEffect(() => {

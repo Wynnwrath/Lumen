@@ -13,6 +13,7 @@ import { useOrders } from "../../hooks/useOrders";
 import { formatDate } from "../../utils/format";
 import { OrderStatusSelect } from "../../components/common/OrderStatusSelect";
 
+// Admin order management: paginated list, search, status updates, CSV export.
 export const AdminOrdersPage = () => {
   const { orders: allOrders, refresh: refreshOrders } = useOrders();
   const { showToast } = useToast();

@@ -3,6 +3,7 @@ import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { authService } from "./auth.service.js";
 import { toApi } from "../../utils/toApi.js";
 
+// Thin layer: receives the request, delegates to the service, sends the reply.
 export const authController = {
   register: asyncHandler(async (req: Request, res: Response) => {
     const result = await authService.registerUser(req.body);

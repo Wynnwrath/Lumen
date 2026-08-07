@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma.js";
 
 export const customerService = {
+  // Admin customer directory: one row per customer with their order stats.
   async getAll() {
     const users = await prisma.user.findMany({
       where: { role: "customer" },
@@ -9,6 +10,7 @@ export const customerService = {
     });
 
     return users.map((u) => {
+      // Don't count cancelled orders as sales.
       const active = u.orders.filter((o) => o.status !== "Cancelled");
       const totalSpent = active.reduce((sum, o) => sum + (o.total || 0), 0);
       return {
@@ -19,6 +21,7 @@ export const customerService = {
         registeredAt: u.createdAt,
         totalOrders: u.orders.length,
         totalSpent,
+        // First order's address as a stand-in shipping address.
         address: u.orders[0]?.address ?? "",
       };
     });

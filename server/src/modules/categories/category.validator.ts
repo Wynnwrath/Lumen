@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const createCategorySchema = z.object({
+  // Normalize the slug: "Home & Living" -> "home-living".
   slug: z.string().min(1).transform((s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-")),
   name: z.string().min(1),
   icon: z.string().optional(),

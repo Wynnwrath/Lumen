@@ -1,16 +1,14 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { productService } from "./product.service.js";
 import type { RequestWithUser } from "../../types/request.js";
 import type { ProductQuery } from "./product.validator.js";
 import { toApi } from "../../utils/toApi.js";
 
+// Thin layer: delegate to the service, wrap the result in the envelope.
 export const productController = {
   getAll: asyncHandler(async (req, res: Response) => {
-    // Query is validated + coerced by validate(productQuerySchema, "query") in the route,
-    // which stores the parsed result on req.validatedQuery.
-    const query = (req as Request & { validatedQuery?: ProductQuery }).validatedQuery ?? {};
-    const result = await productService.findAll(query);
+    const result = await productService.findAll(req.query as unknown as ProductQuery);
     res.json({ success: true, data: toApi(result) });
   }),
 

@@ -16,6 +16,7 @@ const PASSWORD_CHECKS = (password: string) => [
   { ok: /[^A-Za-z0-9]/.test(password), msg: "a special character" },
 ];
 
+// Customer login/register page with a live password-strength checklist.
 export const LoginPage = () => {
   const navigate = useNavigate();
   const { user, login, register, logout } = useAuthStore();

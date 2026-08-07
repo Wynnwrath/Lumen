@@ -10,6 +10,8 @@ import { productController } from "./product.controller.js";
 
 const router = Router();
 
+// Browsing is public; writing (create/update/delete) is admin-only.
+// `manage` must come before `/:id` so it isn't treated as an id.
 router.get("/", validate(productQuerySchema, "query"), productController.getAll);
 router.get("/manage", protect, authorize("admin"), productController.getAllForAdmin);
 router.get("/:id", productController.getById);

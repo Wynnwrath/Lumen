@@ -14,6 +14,7 @@ import { useProductForm } from "../../hooks/useProductForm";
 import { ProductFormModal } from "./products/ProductFormModal";
 import { FALLBACK_PRODUCT_IMAGE } from "../../constants";
 
+// Admin product CRUD: list, search, toggle status, add/edit via modal (useProductForm).
 export const AdminProductsPage = () => {
   const { products, refresh: refreshProducts, loading: productsLoading } = useProducts();
   const { categories } = useCategories();

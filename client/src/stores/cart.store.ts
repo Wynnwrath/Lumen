@@ -12,12 +12,15 @@ interface CartState {
   getItemCount: () => number;
 }
 
+// Cart state, persisted to localStorage so it survives a refresh.
+// Kept browser-side on purpose (per-browser, no account needed).
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
       addItem: (product, qty = 1) => {
         set((state) => {
+          // If it's already in the cart, bump the quantity instead of adding a duplicate.
           const existing = state.items.find((i) => i.product._id === product._id);
           if (existing) {
             return {
@@ -34,6 +37,7 @@ export const useCartStore = create<CartState>()(
       updateQuantity: (productId, qty) =>
         set((state) => ({
           items:
+            // Quantity of 0 or less removes the line.
             qty <= 0
               ? state.items.filter((i) => i.product._id !== productId)
               : state.items.map((i) => (i.product._id === productId ? { ...i, quantity: qty } : i)),
@@ -42,6 +46,6 @@ export const useCartStore = create<CartState>()(
       getSubtotal: () => get().items.reduce((sum, i) => sum + i.product.price * i.quantity, 0),
       getItemCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),
-    { name: "lumen-cart", version: 1 }
+    { name: "lumen-cart" }
   )
 );

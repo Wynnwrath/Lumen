@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const orderItemSchema = z.object({
+  // `product` is the product's id (matches what the client sends).
   product: z.string().min(1),
   quantity: z.number().int().min(1),
 });

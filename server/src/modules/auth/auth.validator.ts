@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// Rules for the data each auth endpoint accepts. Zod validates at runtime
+// AND gives us the TypeScript type for free via z.infer.
+
 export const registerUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),

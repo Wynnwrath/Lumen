@@ -9,17 +9,20 @@ interface WishlistState {
   clear: () => void;
 }
 
+// Saved product ids, persisted to localStorage.
 export const useWishlistStore = create<WishlistState>()(
   persist(
     (set, get) => ({
       ids: [],
       toggle: (productId) =>
         set((state) => ({
+          // Add if missing, remove if present.
           ids: state.ids.includes(productId)
             ? state.ids.filter((id) => id !== productId)
             : [...state.ids, productId],
         })),
       has: (productId) => get().ids.includes(productId),
+      // Drop ids for products that no longer exist in the catalog.
       prune: (validIds) =>
         set((state) => {
           const valid = new Set(validIds);
@@ -28,6 +31,6 @@ export const useWishlistStore = create<WishlistState>()(
         }),
       clear: () => set({ ids: [] }),
     }),
-    { name: "lumen-wishlist", version: 1 }
+    { name: "lumen-wishlist" }
   )
 );

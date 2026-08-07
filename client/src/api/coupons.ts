@@ -1,6 +1,7 @@
 import api from "./client";
 import type { ApiResponse } from "../types";
 
+// What the server returns when a coupon code is accepted.
 export interface CouponValidation {
   code: string;
   discountPercent: number;

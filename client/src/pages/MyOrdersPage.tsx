@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { getMyOrders } from "../api/orders";
 import type { Order } from "../types";
-import { useFetch } from "../hooks/useFetch";
 import { Icon } from "../components/common/Icon";
 import { StatusBadge, getStatusColorClass } from "../components/common/StatusBadge";
 import { EmptyState } from "../components/common/EmptyState";
@@ -11,17 +10,23 @@ import { OrderDetailsModal } from "../components/common/OrderDetailsModal";
 import { ListRowsSkeleton } from "../components/common/skeletons";
 import { formatDate } from "../utils/format";
 
+// "My Orders" for a logged-in customer: list + order details modal.
 export const MyOrdersPage = () => {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
-  const { data, loading } = useFetch(getMyOrders, { enabled: !!user });
-  const orders = data ?? [];
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     if (!user) {
       navigate("/login");
+      return;
     }
+    getMyOrders()
+      .then(setOrders)
+      .catch(() => setOrders([]))
+      .finally(() => setLoading(false));
   }, [user, navigate]);
 
   return (

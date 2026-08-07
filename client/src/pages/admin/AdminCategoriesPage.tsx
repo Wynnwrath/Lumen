@@ -13,6 +13,7 @@ import { useToast } from "../../components/common/ToastProvider";
 import { useCategories } from "../../hooks/useCategories";
 import { useProducts } from "../../hooks/useProducts";
 
+// Admin category CRUD with product-assignment counts and a delete guard.
 export const AdminCategoriesPage = () => {
   const { categories, refresh: refreshCategories, loading: categoriesLoading } = useCategories();
   const { products } = useProducts();
@@ -53,16 +54,15 @@ export const AdminCategoriesPage = () => {
     0
   );
 
-  const { topCategoryName } = categories.reduce(
-    (acc, cat) => {
-      const count = categoryCounts.get(cat._id) ?? 0;
-      if (count > acc.maxCount) {
-        return { topCategoryName: cat.name, maxCount: count };
-      }
-      return acc;
-    },
-    { topCategoryName: "None", maxCount: -1 }
-  );
+  let topCategoryName = "None";
+  let maxCount = -1;
+  for (const cat of categories) {
+    const count = categoryCounts.get(cat._id) ?? 0;
+    if (count > maxCount) {
+      topCategoryName = cat.name;
+      maxCount = count;
+    }
+  }
 
   // Filter categories by search
   const filteredCategories = categories.filter(

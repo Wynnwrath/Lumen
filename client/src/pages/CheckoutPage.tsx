@@ -10,6 +10,7 @@ import { PaymentMethodSelector } from "./checkout/PaymentMethodSelector";
 import { OrderConfirmationReceipt } from "./checkout/OrderConfirmationReceipt";
 import { FormField } from "./checkout/FormField";
 
+// Checkout: form + coupon + summary (state lives in useCheckoutForm), then receipt.
 export const CheckoutPage = () => {
   const { items, getItemCount, updateQuantity, removeItem } = useCartStore();
   const {

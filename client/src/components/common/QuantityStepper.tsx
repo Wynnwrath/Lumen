@@ -1,5 +1,6 @@
 import { Icon } from "./Icon";
 
+// +/- quantity control used in cart and checkout.
 interface QuantityStepperProps {
   value: number;
   onChange: (next: number) => void;

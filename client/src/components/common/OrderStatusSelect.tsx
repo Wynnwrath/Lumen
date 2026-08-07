@@ -1,6 +1,7 @@
 import type { OrderStatus } from "../../types";
 import { ORDER_STATUSES } from "../../constants";
 
+// Dropdown of the 6 allowed order statuses, used in admin pages.
 interface OrderStatusSelectProps {
   value: OrderStatus | string;
   onChange: (status: OrderStatus) => void;

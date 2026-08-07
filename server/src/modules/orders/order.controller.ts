@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { orderService } from "./order.service.js";
 import type { RequestWithUser } from "../../types/request.js";
@@ -6,6 +6,7 @@ import type { OrderQuery } from "./order.validator.js";
 import { requireUser } from "../../utils/requireUser.js";
 import { toApi } from "../../utils/toApi.js";
 
+// Thin layer: delegate to the service, wrap the result in the envelope.
 export const orderController = {
   create: asyncHandler(async (req: RequestWithUser, res: Response) => {
     const order = await orderService.createOrder(req.body, requireUser(req).id);
@@ -13,10 +14,7 @@ export const orderController = {
   }),
 
   getAll: asyncHandler(async (req, res: Response) => {
-    // Query is validated + coerced by validate(orderQuerySchema, "query") in the route,
-    // which stores the parsed result on req.validatedQuery.
-    const query = (req as Request & { validatedQuery?: OrderQuery }).validatedQuery ?? {};
-    const result = await orderService.getAll(query);
+    const result = await orderService.getAll(req.query as unknown as OrderQuery);
     res.json({ success: true, data: toApi(result) });
   }),
 

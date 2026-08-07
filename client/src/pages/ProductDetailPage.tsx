@@ -11,6 +11,7 @@ import { useToast } from "../components/common/ToastProvider";
 import { FALLBACK_PRODUCT_IMAGE } from "../constants";
 import type { Product } from "../types";
 
+// Single product view: gallery, add to cart, specs, related products.
 export const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

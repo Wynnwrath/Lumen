@@ -1,3 +1,3 @@
-// Prisma Client generates the Product type automatically.
-// This thin re-export preserves the IProduct name for backward compatibility.
+// Re-export Prisma's generated Product type under the old IProduct name
+// so existing imports keep working.
 export type { Product as IProduct } from "@prisma/client";

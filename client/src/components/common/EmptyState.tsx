@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "./Icon";
 
+// "Nothing here" placeholder in three flavors: full card, plain text, or a table row.
 interface EmptyStateProps {
   icon?: string;
   title?: string;

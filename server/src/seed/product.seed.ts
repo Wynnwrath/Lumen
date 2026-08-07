@@ -1,5 +1,6 @@
 ﻿import { prisma } from "../lib/prisma.js";
 
+// Demo products shown in the storefront.
 const SEED_PRODUCTS = [
   {
     name: "iPhone 16 Pro Max 256GB Titanium",
@@ -156,6 +157,7 @@ const SEED_PRODUCTS = [
   },
 ];
 
+// Only seeds if the table is empty (idempotent).
 export async function seedProducts(): Promise<void> {
   const count = await prisma.product.count();
   if (count === 0) {

@@ -6,6 +6,7 @@ export interface DashboardCharts {
   ordersByStatus: { status: string; count: number }[];
 }
 
+// Chart data for the admin dashboard.
 export async function getDashboardCharts() {
   const res = await api.get<ApiResponse<DashboardCharts>>("/dashboard/charts");
   return res.data.data;
