@@ -1,5 +1,6 @@
-import { Icon } from "../../../components/common/Icon";
 import { ProductImage } from "../../../components/common/ProductImage";
+import { Button } from "../../../components/common/Button";
+import { EmptyState } from "../../../components/common/EmptyState";
 import type { Product } from "../../../types";
 
 interface LowStockPanelProps {
@@ -23,10 +24,7 @@ export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
 
         <div id="low-stock-container" className="divide-y divide-slate-100 dark:divide-slate-800/80 max-h-80 overflow-y-auto">
           {products.length === 0 ? (
-            <div className="py-8 text-center text-sm text-slate-500 dark:text-slate-400 font-medium">
-              <Icon name="check_circle" className="text-emerald-500 text-3xl mb-1 block" />
-              All products are sufficiently stocked.
-            </div>
+            <EmptyState message="All products are sufficiently stocked." />
           ) : (
             products.map((item) => {
               return (
@@ -55,12 +53,7 @@ export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => onRestock(item)}
-                    className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition shadow-xs shrink-0"
-                  >
-                    Restock
-                  </button>
+                  <Button variant="blue" size="sm" onClick={() => onRestock(item)}>Restock</Button>
                 </div>
               );
             })

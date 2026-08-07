@@ -1,4 +1,6 @@
 import { useMemo } from "react";
+import { EmptyState } from "../../../components/common/EmptyState";
+import { formatMoney } from "../../../utils/format";
 import type { Order } from "../../../types";
 
 interface AwaitingConfirmationPanelProps {
@@ -36,24 +38,25 @@ export const AwaitingConfirmationPanel = ({ orders }: AwaitingConfirmationPanelP
       </div>
 
       {awaiting.length === 0 ? (
-        <div className="py-6 text-center text-sm text-slate-500 dark:text-slate-400 font-medium">
-          All delivered orders have been confirmed.
-        </div>
+        <EmptyState message="All delivered orders have been confirmed." />
       ) : (
         <div className="divide-y divide-slate-100 dark:divide-slate-800/80 max-h-64 overflow-y-auto">
-          {awaiting.slice(0, 6).map((o) => (
-            <div key={o._id} className="py-2.5 px-1 flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="font-mono font-bold text-slate-900 dark:text-white shrink-0">#{o.orderNumber}</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[140px]">{o.customer.name}</span>
-                <span className="text-slate-500 dark:text-slate-400 shrink-0">{o.items.length} items</span>
+          {awaiting.slice(0, 6).map((o) => {
+            const days = daysSince(o);
+            return (
+              <div key={o._id} className="py-2.5 px-1 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="font-mono font-bold text-slate-900 dark:text-white shrink-0">#{o.orderNumber}</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[140px]">{o.customer.name}</span>
+                  <span className="text-slate-500 dark:text-slate-400 shrink-0">{o.items.length} items</span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="font-mono font-bold text-slate-900 dark:text-white">{formatMoney(o.total)}</span>
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">{days > 0 ? `${days}d` : "today"}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <span className="font-mono font-bold text-slate-900 dark:text-white">${o.total.toFixed(2)}</span>
-                <span className="text-slate-500 dark:text-slate-400 font-medium">{daysSince(o) > 0 ? `${daysSince(o)}d` : "today"}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
           {awaiting.length > 6 && (
             <p className="text-center text-[11px] text-slate-500 dark:text-slate-400 py-2">+{awaiting.length - 6} more</p>
           )}

@@ -9,6 +9,8 @@ import { LoadingSpinner } from "../../components/common/skeletons";
 import { AdminPagination } from "../../components/common/AdminPagination";
 import { usePagination } from "../../hooks/usePagination";
 import { useCustomers } from "../../hooks/useCustomers";
+import { TierBadge } from "../../components/common/TierBadge";
+import { formatMoney } from "../../utils/format";
 
 // Admin customer directory: search, tier badges, order stats, profile modal.
 export const AdminCustomersPage = () => {
@@ -61,24 +63,14 @@ export const AdminCustomersPage = () => {
                     </div>
                   </div>
 
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold shrink-0 ${
-                      c.tier.includes("VIP")
-                        ? "bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-400 border border-purple-200 dark:border-purple-800"
-                        : c.tier.includes("Pro")
-                          ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400 border border-blue-200 dark:border-blue-800"
-                          : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
-                    }`}
-                  >
-                    {c.tier}
-                  </span>
+                  <TierBadge tier={c.tier} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-xs rounded-none">
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase font-bold block">Lifetime Spend</span>
                     <span className="font-mono font-extrabold text-slate-900 dark:text-white text-xs">
-                      ${c.totalSpent.toFixed(2)}
+                      {formatMoney(c.totalSpent)}
                     </span>
                   </div>
                   <div>
@@ -91,12 +83,7 @@ export const AdminCustomersPage = () => {
 
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                   <span className="text-[10px] text-slate-400">Joined: {c.registeredAt}</span>
-                  <button
-                    onClick={() => setSelectedCustomer(c)}
-                    className="px-3.5 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 transition shadow-xs"
-                  >
-                    View Profile
-                  </button>
+                  <Button variant="blue" size="sm" onClick={() => setSelectedCustomer(c)}>View Profile</Button>
                 </div>
               </div>
             ))
@@ -135,31 +122,17 @@ export const AdminCustomersPage = () => {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${c.tier.includes("VIP")
-                            ? "bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-400"
-                            : c.tier.includes("Pro")
-                              ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
-                              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                          }`}
-                      >
-                        {c.tier}
-                      </span>
+                      <TierBadge tier={c.tier} />
                     </td>
                     <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
                       {c.totalOrders} Orders
                     </td>
                     <td className="p-4 font-mono font-extrabold text-slate-900 dark:text-white">
-                      ${c.totalSpent.toFixed(2)}
+                      {formatMoney(c.totalSpent)}
                     </td>
                     <td className="p-4 text-slate-500 font-medium">{c.registeredAt}</td>
                     <td className="p-4 text-right">
-                      <button
-                        onClick={() => setSelectedCustomer(c)}
-                        className="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-500 transition"
-                      >
-                        View Profile
-                      </button>
+                      <Button variant="blue" size="sm" onClick={() => setSelectedCustomer(c)}>View Profile</Button>
                     </td>
                   </tr>
                 ))
@@ -205,16 +178,7 @@ export const AdminCustomersPage = () => {
                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
                   Account Status
                 </p>
-                <span
-                  className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${selectedCustomer.tier.includes("VIP")
-                      ? "bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300"
-                      : selectedCustomer.tier.includes("Pro")
-                        ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
-                        : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                    }`}
-                >
-                  {selectedCustomer.tier}
-                </span>
+                  <TierBadge tier={selectedCustomer.tier} />
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
@@ -229,7 +193,7 @@ export const AdminCustomersPage = () => {
                   Lifetime Spend
                 </p>
                 <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">
-                  ${selectedCustomer.totalSpent.toFixed(2)}
+                      {formatMoney(selectedCustomer.totalSpent)}
                 </p>
               </div>
             </div>

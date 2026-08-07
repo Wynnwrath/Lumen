@@ -3,9 +3,11 @@ import { Icon } from "../../../components/common/Icon";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { StatusBadge, getStatusClasses } from "../../../components/common/StatusBadge";
 import { OrderStatusSelect } from "../../../components/common/OrderStatusSelect";
+import { Button } from "../../../components/common/Button";
 import { AdminPagination } from "../../../components/common/AdminPagination";
 import { usePagination } from "../../../hooks/usePagination";
-import { formatDate } from "../../../utils/format";
+import { formatDate, formatMoney } from "../../../utils/format";
+import { isPendingStatus } from "../../../constants";
 import type { Order, OrderStatus } from "../../../types";
 
 interface RecentOrdersSectionProps {
@@ -20,7 +22,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
   // Filtered recent orders
   const recentOrders = useMemo(() => {
     return orders.filter((o) => {
-      if (orderFilter === "pending") return o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing";
+      if (orderFilter === "pending") return isPendingStatus(o.status);
       if (orderFilter === "completed") return o.status === "Completed" || o.status === "Received";
       return true;
     });
@@ -70,7 +72,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
                     <StatusBadge status={ord.status} />
                   </div>
                   <span className="font-mono font-extrabold text-sm text-slate-900 dark:text-white">
-                    ${ord.total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formatMoney(ord.total)}
                   </span>
                 </div>
 
@@ -89,12 +91,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
                     className={`text-[11px] font-bold rounded-lg px-2.5 py-1 outline-none border cursor-pointer ${getStatusClasses(ord.status)}`}
                   />
 
-                  <button
-                    onClick={() => onOpenDetails(ord)}
-                    className="px-3 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 transition shadow-xs"
-                  >
-                    Details
-                  </button>
+                  <Button variant="blue" size="sm" onClick={() => onOpenDetails(ord)}>Details</Button>
                 </div>
               </div>
             ))
@@ -131,7 +128,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
                       {formatDate(ord.createdAt, { month: "short", day: "numeric" })}
                     </td>
                     <td className="px-5 py-4 font-extrabold text-slate-900 dark:text-white font-mono">
-                      ${ord.total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatMoney(ord.total)}
                       <Icon name="north_east" className="text-emerald-600 dark:text-emerald-400 text-xs align-middle inline-block ml-0.5" />
                     </td>
                     <td className="px-5 py-4">
@@ -144,13 +141,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
                           onChange={(st) => onUpdateStatus(ord.orderNumber, st)}
                           className={`text-xs font-bold rounded-lg px-2.5 py-1.5 outline-none border cursor-pointer ${getStatusClasses(ord.status)}`}
                         />
-                        <button
-                          onClick={() => onOpenDetails(ord)}
-                          className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline px-1 py-1"
-                          title="View Order Details"
-                        >
-                          Details
-                        </button>
+                        <Button variant="outline" size="sm" onClick={() => onOpenDetails(ord)}>Details</Button>
                       </div>
                     </td>
                   </tr>

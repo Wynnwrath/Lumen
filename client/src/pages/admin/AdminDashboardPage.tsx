@@ -5,11 +5,15 @@ import { getDashboardCharts, type DashboardCharts } from "../../api/dashboard";
 import type { Order, OrderStatus, Product } from "../../types";
 import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
+import { Button } from "../../components/common/Button";
+import { StatusBadge } from "../../components/common/StatusBadge";
+import { OrderStatusSelect } from "../../components/common/OrderStatusSelect";
 import { useToast } from "../../components/common/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { useProducts } from "../../hooks/useProducts";
 import { useCustomers } from "../../hooks/useCustomers";
-import { formatDate } from "../../utils/format";
+import { formatDate, formatMoney } from "../../utils/format";
+import { isPendingStatus } from "../../constants";
 import { RevenueBarChart } from "./dashboard/RevenueBarChart";
 import { OrdersByStatusList } from "./dashboard/OrdersByStatusList";
 import { TopProductsChart } from "./dashboard/TopProductsChart";
@@ -53,7 +57,7 @@ export const AdminDashboardPage = () => {
 
   const totalOrdersCount = useMemo(() => orders.length, [orders]);
   const pendingOrdersCount = useMemo(
-    () => orders.filter((o) => o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing").length,
+    () => orders.filter((o) => isPendingStatus(o.status)).length,
     [orders]
   );
   const completedOrdersCount = useMemo(
@@ -111,7 +115,7 @@ export const AdminDashboardPage = () => {
           label="Total Sales"
           chip="Sales"
           chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
-          value={`$${totalSales.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatMoney(totalSales)}
           valueClassName="font-mono"
           icon="north_east"
           iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
@@ -161,7 +165,7 @@ export const AdminDashboardPage = () => {
           label="Average Order"
           chip="Average"
           chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
-          value={`$${avgOrderValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatMoney(avgOrderValue)}
           valueClassName="font-mono"
           icon="north_east"
           iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
@@ -239,14 +243,9 @@ export const AdminDashboardPage = () => {
         footer={
           <div className="flex justify-between items-center w-full">
             <span className="font-black text-slate-900 dark:text-white text-sm">
-              Total Amount: ${selectedOrder ? selectedOrder.total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}
+              Total Amount: {selectedOrder ? formatMoney(selectedOrder.total) : ""}
             </span>
-            <button
-              onClick={() => setSelectedOrder(null)}
-              className="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold"
-            >
-              Close
-            </button>
+            <Button variant="dark" onClick={() => setSelectedOrder(null)}>Close</Button>
           </div>
         }
       >
@@ -257,25 +256,16 @@ export const AdminDashboardPage = () => {
               <p><strong className="text-slate-500 font-semibold">Date:</strong> {formatDate(selectedOrder.createdAt, { month: "short", day: "numeric" })}</p>
               <p><strong className="text-slate-500 font-semibold">Address:</strong> {selectedOrder.address}</p>
               <p><strong className="text-slate-500 font-semibold">Payment:</strong> {selectedOrder.paymentMethod}</p>
-              <p><strong className="text-slate-500 font-semibold">Status:</strong> <span className="font-bold text-blue-600">{selectedOrder.status}</span></p>
+              <p><strong className="text-slate-500 font-semibold">Status:</strong> <StatusBadge status={selectedOrder.status} /></p>
             </div>
 
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Update Status:</label>
-              <div className="flex flex-wrap gap-2">
-                {(["Pending", "Confirmed", "Preparing", "Shipped", "Completed", "Cancelled"] as const).map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => handleUpdateStatus(selectedOrder.orderNumber, st)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${selectedOrder.status === st
-                      ? "bg-blue-600 text-white"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                      }`}
-                  >
-                    {st}
-                  </button>
-                ))}
-              </div>
+              <OrderStatusSelect
+                value={selectedOrder.status}
+                onChange={(st) => handleUpdateStatus(selectedOrder.orderNumber, st)}
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+              />
             </div>
           </>
         )}

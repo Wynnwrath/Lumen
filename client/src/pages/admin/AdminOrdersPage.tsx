@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { updateOrderStatus, getOrdersCsv, downloadCsv } from "../../api/orders";
-import { Icon } from "../../components/common/Icon";
 import type { Order, OrderStatus } from "../../types";
 import { getStatusClasses } from "../../components/common/StatusBadge";
 import { Button } from "../../components/common/Button";
@@ -12,7 +11,8 @@ import { AdminPagination } from "../../components/common/AdminPagination";
 import { useToast } from "../../components/common/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { usePagination } from "../../hooks/usePagination";
-import { formatDate } from "../../utils/format";
+import { formatDate, formatMoney } from "../../utils/format";
+import { ORDER_STATUSES, isPendingStatus } from "../../constants";
 import { OrderStatusSelect } from "../../components/common/OrderStatusSelect";
 
 // Admin order management: client-side filtered list, status updates, CSV export.
@@ -65,9 +65,7 @@ export const AdminOrdersPage = () => {
   const totalRevenue = orders
     .filter((o) => o.status !== "Cancelled")
     .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const pendingOrdersCount = orders.filter(
-    (o) => o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing"
-  ).length;
+  const pendingOrdersCount = orders.filter((o) => isPendingStatus(o.status)).length;
 
   return (
     <div className="space-y-6">
@@ -83,13 +81,9 @@ export const AdminOrdersPage = () => {
         />
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleExportCsv}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2.5 rounded-lg transition shadow-sm"
-          >
-            <Icon name="download" className="text-sm" />
-            <span>Export CSV</span>
-          </button>
+          <Button variant="blue" icon="download" onClick={handleExportCsv}>
+            Export CSV
+          </Button>
           <select
             value={statusFilter}
             onChange={(e) => {
@@ -99,13 +93,9 @@ export const AdminOrdersPage = () => {
             className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
           >
             <option value="all">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Preparing">Preparing</option>
-            <option value="Shipped">Shipped</option>
-            <option value="Completed">Completed</option>
-            <option value="Received">Received</option>
-            <option value="Cancelled">Cancelled</option>
+            {ORDER_STATUSES.map((st) => (
+              <option key={st} value={st}>{st}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -118,7 +108,7 @@ export const AdminOrdersPage = () => {
         <span className="text-slate-300 dark:text-slate-600">•</span>
         <span>
           <span className="font-extrabold text-slate-900 dark:text-white font-mono">
-            ${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {formatMoney(totalRevenue)}
           </span>{" "}
           revenue
         </span>
@@ -156,7 +146,7 @@ export const AdminOrdersPage = () => {
                     </p>
                   </div>
                   <span className="font-mono font-extrabold text-base text-blue-600 dark:text-blue-400">
-                    ${ord.total.toFixed(2)}
+                    {formatMoney(ord.total)}
                   </span>
                 </div>
 
@@ -174,12 +164,9 @@ export const AdminOrdersPage = () => {
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                  <button
-                    onClick={() => setSelectedOrder(ord)}
-                    className="w-full py-2 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold text-xs text-slate-800 dark:text-slate-200 hover:bg-slate-200 transition text-center"
-                  >
+                  <Button variant="outline" size="sm" fullWidth onClick={() => setSelectedOrder(ord)}>
                     View Invoice
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))
@@ -227,7 +214,7 @@ export const AdminOrdersPage = () => {
                     </td>
                     <td className="p-4 font-semibold text-slate-600 dark:text-slate-400">{ord.paymentMethod}</td>
                     <td className="p-4 font-mono font-extrabold text-slate-900 dark:text-white">
-                      ${ord.total.toFixed(2)}
+                      {formatMoney(ord.total)}
                     </td>
                     <td className="p-4">
                       <OrderStatusSelect
@@ -237,12 +224,9 @@ export const AdminOrdersPage = () => {
                       />
                     </td>
                     <td className="p-4 text-right">
-                      <button
-                        onClick={() => setSelectedOrder(ord)}
-                        className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 transition"
-                      >
+                      <Button variant="outline" size="sm" onClick={() => setSelectedOrder(ord)}>
                         View Invoice
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                   ))
@@ -273,7 +257,7 @@ export const AdminOrdersPage = () => {
         footer={
           <div className="flex justify-between items-center w-full">
             <span className="font-black text-slate-900 dark:text-white text-sm">
-              Total Due: ${selectedOrder ? selectedOrder.total.toFixed(2) : ""}
+              Total Due: {selectedOrder ? formatMoney(selectedOrder.total) : ""}
             </span>
             <Button variant="blue" onClick={() => setSelectedOrder(null)}>Done</Button>
           </div>
@@ -302,7 +286,7 @@ export const AdminOrdersPage = () => {
                 {selectedOrder.items.map((item) => (
                   <div key={`${item.name}-${item.quantity}`} className="flex items-center justify-between text-xs p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                     <span className="font-semibold text-slate-900 dark:text-white">{item.name} &times; {item.quantity}</span>
-                    <span className="font-mono font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="font-mono font-bold">{formatMoney(item.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>
@@ -311,23 +295,23 @@ export const AdminOrdersPage = () => {
             <div className="space-y-1.5 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/60">
               <div className="flex justify-between text-slate-600 dark:text-slate-400">
                 <span>Subtotal</span>
-                <span className="font-mono font-semibold text-slate-900 dark:text-white">${selectedOrder.subtotal.toFixed(2)}</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">{formatMoney(selectedOrder.subtotal)}</span>
               </div>
               {selectedOrder.discount > 0 && (
                 <div className="flex justify-between text-emerald-600">
                   <span>Coupon Discount</span>
-                  <span className="font-mono font-semibold">-${selectedOrder.discount.toFixed(2)}</span>
+                  <span className="font-mono font-semibold">-{formatMoney(selectedOrder.discount)}</span>
                 </div>
               )}
               <div className="flex justify-between text-slate-600 dark:text-slate-400">
                 <span>Shipping</span>
                 <span className="font-mono font-semibold text-slate-900 dark:text-white">
-                  {selectedOrder.shipping === 0 ? "FREE" : `$${selectedOrder.shipping.toFixed(2)}`}
+                  {selectedOrder.shipping === 0 ? "FREE" : formatMoney(selectedOrder.shipping)}
                 </span>
               </div>
               <div className="flex justify-between text-slate-600 dark:text-slate-400">
                 <span>Tax</span>
-                <span className="font-mono font-semibold text-slate-900 dark:text-white">${selectedOrder.tax.toFixed(2)}</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">{formatMoney(selectedOrder.tax)}</span>
               </div>
               {selectedOrder.orderNotes && (
                 <div className="pt-2 border-t border-slate-200 dark:border-slate-700">

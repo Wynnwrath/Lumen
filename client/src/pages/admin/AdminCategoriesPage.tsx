@@ -16,6 +16,7 @@ import { useToast } from "../../components/common/ToastProvider";
 import { usePagination } from "../../hooks/usePagination";
 import { useCategories } from "../../hooks/useCategories";
 import { useProducts } from "../../hooks/useProducts";
+import { formatMoney } from "../../utils/format";
 
 // Admin category CRUD with product-assignment counts and a delete guard.
 export const AdminCategoriesPage = () => {
@@ -415,9 +416,7 @@ export const AdminCategoriesPage = () => {
         }
       >
         {viewProducts.length === 0 ? (
-          <p className="text-center text-sm text-slate-500 dark:text-slate-400 py-8 font-medium">
-            No products assigned to this category yet.
-          </p>
+          <EmptyState message="No products assigned to this category yet." />
         ) : (
           <div className="max-h-[50vh] overflow-y-auto space-y-2 pr-1">
             {viewProducts.map((p) => (
@@ -430,7 +429,7 @@ export const AdminCategoriesPage = () => {
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{p.name}</p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                    ${p.price.toFixed(2)} &bull; {p.stock} in stock
+                    {formatMoney(p.price)} &bull; {p.stock} in stock
                   </p>
                 </div>
                 <span className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold shrink-0 ${p.stock === 0 ? "bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800" : "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"}`}>

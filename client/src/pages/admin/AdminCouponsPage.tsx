@@ -11,6 +11,7 @@ import { EmptyState } from "../../components/common/EmptyState";
 import { LoadingSpinner } from "../../components/common/skeletons";
 import { AdminPagination } from "../../components/common/AdminPagination";
 import { RowActions } from "../../components/common/RowActions";
+import { ToggleSwitch } from "../../components/common/ToggleSwitch";
 import { useToast } from "../../components/common/ToastProvider";
 import { usePagination } from "../../hooks/usePagination";
 import { formatDate } from "../../utils/format";
@@ -21,28 +22,6 @@ const sortCoupons = (list: Coupon[]) =>
     if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
     return a._id < b._id ? 1 : -1;
   });
-
-// Toggle switch used for a coupon's active state. Shows a spinner while saving.
-const ToggleSwitch = ({ checked, onChange, disabled, loading }: { checked: boolean; onChange: () => void; disabled?: boolean; loading?: boolean }) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={checked}
-    onClick={onChange}
-    disabled={disabled || loading}
-    className={`relative inline-flex items-center h-5 w-10 rounded-full transition-colors shrink-0 ${checked ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"} ${disabled || loading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-  >
-    {loading ? (
-      <span className="mx-auto">
-        <Icon name="loader" className="text-xs animate-spin text-white" />
-      </span>
-    ) : (
-      <span
-        className={`inline-block w-4 h-4 transform rounded-full bg-white shadow transition-transform ${checked ? "translate-x-[22px]" : "translate-x-[2px]"}`}
-      />
-    )}
-  </button>
-);
 
 // Gradient discount badge reused on cards + table rows.
 const DiscountBadge = ({ percent }: { percent: number }) => (

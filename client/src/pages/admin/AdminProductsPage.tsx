@@ -8,12 +8,14 @@ import { EmptyState } from "../../components/common/EmptyState";
 import { LoadingSpinner } from "../../components/common/skeletons";
 import { AdminPagination } from "../../components/common/AdminPagination";
 import { RowActions } from "../../components/common/RowActions";
+import { ToggleSwitch } from "../../components/common/ToggleSwitch";
 import { ProductImage } from "../../components/common/ProductImage";
 import { useToast } from "../../components/common/ToastProvider";
 import { usePagination } from "../../hooks/usePagination";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useProductForm } from "../../hooks/useProductForm";
+import { formatMoney } from "../../utils/format";
 import { ProductFormModal } from "./products/ProductFormModal";
 
 // Admin product CRUD: list, search, toggle status, add/edit via modal (useProductForm).
@@ -150,7 +152,7 @@ export const AdminProductsPage = () => {
           label="Inventory Value"
           chip="Valuation"
           chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
-          value={`$${inventoryValuation.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatMoney(inventoryValuation)}
           valueClassName="font-mono text-blue-600 dark:text-blue-400"
           subtext="Total stock value"
           id="stat-inventory-val"
@@ -238,7 +240,7 @@ export const AdminProductsPage = () => {
 
                     {/* Price Subtitle */}
                     <p className="font-semibold text-xs text-slate-400 dark:text-slate-400 -mt-1 font-mono">
-                      ${product.price.toFixed(2).replace(/\.00$/, "")}
+                      {formatMoney(product.price).replace(/\.00$/, "")}
                     </p>
 
                     {/* Bottom Row: In Stock Toggle Switch */}
@@ -246,20 +248,7 @@ export const AdminProductsPage = () => {
                         <span className="text-xs font-medium text-slate-400 dark:text-slate-400">
                           {isStockActive ? "In Stock" : product.stock === 0 ? "Out of Stock" : "Inactive"}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleStatus(product)}
-                          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                            isStockActive ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"
-                          }`}
-                          title="Toggle Stock/Status"
-                        >
-                          <span
-                            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                              isStockActive ? "translate-x-5" : "translate-x-0"
-                            }`}
-                          />
-                        </button>
+                        <ToggleSwitch checked={isStockActive} onChange={() => handleToggleStatus(product)} />
                     </div>
                   </div>
                 </div>
@@ -309,7 +298,7 @@ export const AdminProductsPage = () => {
                         </span>
                       </td>
                       <td className="px-5 py-4 font-mono font-extrabold text-slate-900 dark:text-white">
-                        ${product.price.toFixed(2)}
+                        {formatMoney(product.price)}
                       </td>
                       <td className="px-5 py-4">
                         {product.stock === 0 ? (

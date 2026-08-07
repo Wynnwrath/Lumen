@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "../../../components/common/Icon";
 import { Modal } from "../../../components/common/Modal";
+import { Button } from "../../../components/common/Button";
 import { ProductImage } from "../../../components/common/ProductImage";
 import type { Product } from "../../../types";
 
@@ -45,20 +46,8 @@ export const RestockModal = ({ product, onClose, onConfirm }: RestockModalProps)
       className="max-w-md"
       footer={
         <>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            disabled={saving}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {saving && <Icon name="loader" className="text-sm animate-spin" />}
-            <span>Update Stock</span>
-          </button>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="blue" onClick={handleConfirm} loading={saving}>Update Stock</Button>
         </>
       }
     >
