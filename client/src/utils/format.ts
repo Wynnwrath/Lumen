@@ -8,3 +8,8 @@ export function formatDate(iso: string | undefined, opts: Intl.DateTimeFormatOpt
     return iso;
   }
 }
+
+// Formats a number as money with thousands separators and 2 decimals: 1234.5 -> "$1,234.50".
+export function formatMoney(n: number): string {
+  return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}

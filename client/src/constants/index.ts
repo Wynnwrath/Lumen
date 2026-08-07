@@ -22,6 +22,13 @@ export const ADMIN_ORDER_STATUSES: OrderStatus[] = [
   "Cancelled",
 ];
 
+// Statuses that count as "in progress / awaiting fulfillment" (used for
+// "pending" counts and filters across the dashboard + orders pages).
+export const PENDING_STATUSES: OrderStatus[] = ["Pending", "Confirmed", "Preparing"];
+
+export const isPendingStatus = (status: string): boolean =>
+  PENDING_STATUSES.includes(status as OrderStatus);
+
 // Neutral placeholder used whenever a product has no image (or the image
 // fails to load). An inline SVG so there's no external network dependency.
 export const FALLBACK_PRODUCT_IMAGE =
