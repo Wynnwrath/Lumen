@@ -9,6 +9,8 @@ export const getStatusColorClass = (status: string) => {
       return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/90 dark:text-purple-200 dark:border-purple-600 font-bold";
     case "cancelled":
       return "bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/90 dark:text-rose-200 dark:border-rose-600 font-bold";
+    case "received":
+      return "bg-teal-100 text-teal-800 border-teal-300 dark:bg-teal-900/90 dark:text-teal-200 dark:border-teal-600 font-bold";
     case "shipped":
       return "bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-900/90 dark:text-indigo-200 dark:border-indigo-600 font-bold";
     default:

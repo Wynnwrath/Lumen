@@ -19,7 +19,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
   const recentOrders = useMemo(() => {
     return orders.filter((o) => {
       if (orderFilter === "pending") return o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing";
-      if (orderFilter === "completed") return o.status === "Completed";
+      if (orderFilter === "completed") return o.status === "Completed" || o.status === "Received";
       return true;
     });
   }, [orders, orderFilter]);

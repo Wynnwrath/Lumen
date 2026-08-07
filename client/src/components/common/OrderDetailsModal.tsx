@@ -1,6 +1,7 @@
 import { Modal } from "./Modal";
 import { StatusBadge } from "./StatusBadge";
 import { OrderSummary } from "./OrderSummary";
+import { Icon } from "./Icon";
 import type { Order } from "../../types";
 import { formatDate } from "../../utils/format";
 import type { ReactNode } from "react";
@@ -11,9 +12,11 @@ interface OrderDetailsModalProps {
   onClose: () => void;
   footer?: ReactNode;
   titlePrefix?: string;
+  onConfirmReceived?: () => void;
+  confirming?: boolean;
 }
 
-export const OrderDetailsModal = ({ order, onClose, footer, titlePrefix = "Order" }: OrderDetailsModalProps) => {
+export const OrderDetailsModal = ({ order, onClose, footer, titlePrefix = "Order", onConfirmReceived, confirming }: OrderDetailsModalProps) => {
   if (!order) return null;
   return (
     <Modal
@@ -35,6 +38,23 @@ export const OrderDetailsModal = ({ order, onClose, footer, titlePrefix = "Order
             <p><span className="text-outline font-semibold">Notes:</span> {order.orderNotes}</p>
           )}
         </div>
+
+        {order.status === "Completed" && onConfirmReceived && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-secondary/5 border border-outline-variant/20 rounded-xl p-3">
+            <div>
+              <p className="font-bold text-on-surface text-xs">Received your order?</p>
+              <p className="text-[11px] text-outline">Confirm to release payment to the seller.</p>
+            </div>
+            <button
+              onClick={onConfirmReceived}
+              disabled={confirming}
+              className="px-3.5 py-2 rounded-lg bg-secondary text-white text-xs font-bold hover:bg-secondary-container transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
+            >
+              {confirming && <Icon name="loader" className="text-xs animate-spin" />}
+              <span>Confirm Received</span>
+            </button>
+          </div>
+        )}
 
         <div>
           <h4 className="font-bold text-on-surface mb-2">Items</h4>

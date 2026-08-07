@@ -37,6 +37,12 @@ export async function getMyOrders() {
   return res.data.data;
 }
 
+// Customer confirms they received a Completed order (releases payment to seller).
+export async function confirmOrderReceived(orderNumber: string) {
+  const res = await api.post<ApiResponse<Order>>(`/orders/${orderNumber}/confirm-received`);
+  return res.data.data;
+}
+
 // The CSV export isn't JSON, so it returns the raw text.
 export async function getOrdersCsv() {
   const res = await api.get("/orders/export", { responseType: "text" });

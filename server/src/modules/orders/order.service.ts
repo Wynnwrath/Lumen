@@ -14,6 +14,10 @@ function generateOrderNumber(): string {
   return `LMN-${ts}${rand}`;
 }
 
+// How long a "Completed" order waits for the customer to confirm receipt
+// before it auto-transitions to "Received" (money release).
+const RECEIVED_AUTO_DAYS = 3;
+
 export const orderService = {
   // Places an order. Everything runs inside a transaction so it's all-or-nothing:
   // if any step fails (stock, coupon, insert) the whole order rolls back.
@@ -107,6 +111,8 @@ export const orderService = {
 
   // Admin list with status filter + pagination.
   async getAll(query: OrderQuery) {
+    await this.autoFinalizeReceived();
+
     const where: Prisma.OrderWhereInput = {};
     if (query.status) where.status = query.status;
 
@@ -131,6 +137,8 @@ export const orderService = {
   },
 
   async getByOrderNumber(orderNumber: string) {
+    await this.autoFinalizeReceived();
+
     const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: { customer: { select: { id: true, name: true, email: true } }, items: true },
@@ -140,6 +148,8 @@ export const orderService = {
 
   // Orders belonging to the logged-in customer.
   async getMine(customerId: string) {
+    await this.autoFinalizeReceived();
+
     return prisma.order.findMany({
       where: { customerId },
       include: { items: true },
@@ -205,7 +215,50 @@ export const orderService = {
   async updateStatus(orderNumber: string, status: OrderStatus) {
     return prisma.order.update({
       where: { orderNumber },
-      data: { status },
+      data: {
+        status,
+        // Stamp when the order becomes Completed (3-day auto-receive anchor);
+        // clear it if the order moves away from Completed so the clock resets.
+        completedAt: status === "Completed" ? new Date() : null,
+      },
     });
+  },
+
+  // Customer confirms they received the order -> money released to the seller.
+  // Owner-only and only allowed from "Completed".
+  async confirmReceived(orderNumber: string, customerId: string) {
+    const order = await prisma.order.findUnique({ where: { orderNumber } });
+    if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
+    if (order.customerId !== customerId) {
+      throw new AppError("You do not own this order", 403, "FORBIDDEN");
+    }
+    if (order.status !== "Completed") {
+      throw new AppError("Order must be Completed before confirming receipt", 400, "INVALID_STATUS");
+    }
+    return prisma.order.update({
+      where: { orderNumber },
+      data: { status: "Received", receivedAt: new Date() },
+    });
+  },
+
+  // Flips stale "Completed" orders to "Received" once the 3-day window has
+  // passed. Uses completedAt when available, otherwise falls back to createdAt
+  // so pre-migration Completed orders still auto-finalize.
+  async autoFinalizeReceived() {
+    const cutoff = new Date(Date.now() - RECEIVED_AUTO_DAYS * 24 * 60 * 60 * 1000);
+    const result = await prisma.order.updateMany({
+      where: {
+        status: "Completed",
+        OR: [
+          { completedAt: { not: null, lte: cutoff } },
+          { completedAt: null, createdAt: { lte: cutoff } },
+        ],
+      },
+      data: { status: "Received", receivedAt: new Date() },
+    });
+    if (result.count > 0) {
+      console.log(`Auto-received ${result.count} completed order(s)`);
+    }
+    return result.count;
   },
 };

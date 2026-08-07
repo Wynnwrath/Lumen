@@ -88,6 +88,8 @@ model Order {
   total        Float
   paymentMethod String
   status       String      @default("Pending")
+  completedAt  DateTime?
+  receivedAt   DateTime?
   address      String      @db.Text
   couponUsed   String?
   orderNotes   String?   @db.Text

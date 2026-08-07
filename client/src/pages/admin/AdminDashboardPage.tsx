@@ -55,7 +55,10 @@ export const AdminDashboardPage = () => {
     () => orders.filter((o) => o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing").length,
     [orders]
   );
-  const completedOrdersCount = useMemo(() => orders.filter((o) => o.status === "Completed").length, [orders]);
+  const completedOrdersCount = useMemo(
+    () => orders.filter((o) => o.status === "Completed" || o.status === "Received").length,
+    [orders]
+  );
   const avgOrderValue = useMemo(() => (totalOrdersCount > 0 ? totalSales / totalOrdersCount : 0), [totalSales, totalOrdersCount]);
 
   // Low stock products (< 5)

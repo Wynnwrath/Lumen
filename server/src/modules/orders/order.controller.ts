@@ -39,4 +39,9 @@ export const orderController = {
     const order = await orderService.updateStatus(req.params.orderNumber, req.body.status);
     res.json({ success: true, data: toApi(order) });
   }),
+
+  confirmReceived: asyncHandler(async (req: RequestWithUser, res: Response) => {
+    const order = await orderService.confirmReceived(req.params.orderNumber, requireUser(req).id);
+    res.json({ success: true, data: toApi(order) });
+  }),
 };

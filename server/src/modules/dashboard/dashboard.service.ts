@@ -9,7 +9,7 @@ export const dashboardService = {
         prisma.order.count(),
         prisma.user.count({ where: { role: "customer" } }),
         prisma.product.count({ where: { stock: { lt: 5 } } }),
-        prisma.order.count({ where: { status: "Completed" } }),
+        prisma.order.count({ where: { status: { in: ["Completed", "Received"] } } }),
         prisma.order.count({ where: { status: "Pending" } }),
         // Total revenue, excluding cancelled orders.
         prisma.order.aggregate({

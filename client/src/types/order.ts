@@ -4,6 +4,7 @@ export type OrderStatus =
   | "Preparing"
   | "Shipped"
   | "Completed"
+  | "Received"
   | "Cancelled";
 
 export interface OrderItem {
@@ -28,5 +29,7 @@ export interface Order {
   address: string;
   couponUsed?: string;
   orderNotes?: string;
+  completedAt?: string;
+  receivedAt?: string;
   createdAt: string;
 }

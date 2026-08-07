@@ -14,12 +14,13 @@ export const createOrderSchema = z.object({
   orderNotes: z.string().optional(),
 });
 
+// Admins select the 6 statuses they control; "Received" is customer-driven.
 export const updateOrderStatusSchema = z.object({
   status: z.enum(["Pending", "Confirmed", "Preparing", "Shipped", "Completed", "Cancelled"]),
 });
 
 export const orderQuerySchema = z.object({
-  status: z.enum(["Pending", "Confirmed", "Preparing", "Shipped", "Completed", "Cancelled"]).optional(),
+  status: z.enum(["Pending", "Confirmed", "Preparing", "Shipped", "Completed", "Received", "Cancelled"]).optional(),
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional(),
 });

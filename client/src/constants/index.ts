@@ -1,7 +1,19 @@
 import type { OrderStatus } from "../types";
 
-// The allowed order lifecycle states (matches the server enum).
+// The full allowed order lifecycle states (matches the server enum).
 export const ORDER_STATUSES: OrderStatus[] = [
+  "Pending",
+  "Confirmed",
+  "Preparing",
+  "Shipped",
+  "Completed",
+  "Received",
+  "Cancelled",
+];
+
+// Statuses an admin can select. "Received" is excluded: only the customer
+// (or the 3-day auto-finalize) can set it.
+export const ADMIN_ORDER_STATUSES: OrderStatus[] = [
   "Pending",
   "Confirmed",
   "Preparing",
