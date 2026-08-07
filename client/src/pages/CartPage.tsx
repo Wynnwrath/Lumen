@@ -72,7 +72,7 @@ export const CartPage = () => {
                 {/* Info */}
                 <div className="flex-1 min-w-0 space-y-0.5 text-left">
                   <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-secondary">
-                    {product.brand || product.category}
+                    {product.category}
                   </span>
                   <h3 className="font-bold text-xs sm:text-sm text-on-surface truncate">
                     <Link to={`/product/${product._id}`} className="hover:text-secondary">

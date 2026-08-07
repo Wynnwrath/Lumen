@@ -41,7 +41,6 @@ class DataService {
       _id: "p" + Date.now(),
       name: productData.name || "Untitled Product",
       category: productData.category || "electronics",
-      brand: productData.brand || "Lumen",
       price: Number(productData.price) || 0,
       originalPrice: Number(productData.originalPrice) || Number(productData.price) || 0,
       stock: Number(productData.stock) || 0,
@@ -54,7 +53,7 @@ class DataService {
         ? productData.images
         : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80"],
       description: productData.description || "Premium product in Lumen marketplace.",
-      specs: productData.specs || { Brand: productData.brand || "Lumen" }
+      specs: productData.specs || {}
     };
     products.unshift(newProduct);
     localStorage.setItem("lumen_products_v2", JSON.stringify(products));

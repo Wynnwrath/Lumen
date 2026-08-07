@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getProducts } from "../api/products";
+import { getCategories } from "../api/categories";
 import { useCartStore } from "../stores/cart.store";
 import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
@@ -17,7 +18,7 @@ const HERO_SLIDES = [
     subtitle: "Starting from $1,099.00",
     description: "Powered by the revolutionary A18 Pro chip with hardware-accelerated ray tracing and titanium architecture.",
     image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1600&q=80",
-    link: "/product/p1",
+    link: "/products?category=electronics",
     cta: "Shop Now",
   },
   {
@@ -58,9 +59,7 @@ const HERO_SLIDES = [
   },
 ];
 
-const BRANDS = ["SONY", "NIKE", "SAMSUNG", "DYSON", "BOSE", "ROLEX", "RAY-BAN", "APPLE"];
-
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   {
     id: "electronics",
     label: "Electronics",
@@ -99,11 +98,34 @@ const CATEGORIES = [
   },
 ];
 
+const CATEGORY_COLORS: Record<string, string> = {
+  devices: "bg-blue-500/10 text-secondary dark:text-blue-400 border-blue-500/20",
+  apparel: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+  checkroom: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+  diamond: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+  chair: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+  spa: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
+  shopping_basket: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
+  nutrition: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
+};
+
+type DisplayCategory = { id: string; label: string; icon: string; bgColor: string };
+
+function mapCategories(cats: { slug: string; name: string; icon: string }[]): DisplayCategory[] {
+  return cats.map((c) => ({
+    id: c.slug,
+    label: c.name,
+    icon: c.icon || "category",
+    bgColor: CATEGORY_COLORS[c.icon] || "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
+  }));
+}
+
 export const HomePage = () => {
   const navigate = useNavigate();
   const { addItem } = useCartStore();
   const { showToast } = useToast();
 
+  const [categories, setCategories] = useState<DisplayCategory[]>(DEFAULT_CATEGORIES);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("featured");
 
@@ -117,6 +139,14 @@ export const HomePage = () => {
     getProducts({ limit: 100 })
       .then((res) => setAllProducts(res.products))
       .catch(() => setAllProducts([]));
+  }, []);
+
+  useEffect(() => {
+    getCategories()
+      .then((cats) => {
+        if (cats.length > 0) setCategories(mapCategories(cats));
+      })
+      .catch(() => {});
   }, []);
 
   // Auto-play interval: 3 seconds per slide, sliding left with ease-in-out
@@ -281,22 +311,22 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* BRAND LOGOTYPE MARQUEE TICKER (EXACT SMOOTH INFINITE SCROLL MATCH) */}
+      {/* CATEGORY MARQUEE TICKER */}
       <section className="py-4 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/60 overflow-hidden shadow-xs">
         <div className="marquee-wrapper flex overflow-hidden">
           <div className="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">
-            {BRANDS.map((brand, i) => (
+            {categories.map((cat, i) => (
               <span key={i} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
-                <Icon name="verified" className="text-secondary text-sm" />
-                <span>{brand}</span>
+                <Icon name={cat.icon} className="text-secondary text-sm" />
+                <span>{cat.label}</span>
               </span>
             ))}
           </div>
           <div className="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200" aria-hidden="true">
-            {BRANDS.map((brand, i) => (
+            {categories.map((cat, i) => (
               <span key={`dup-${i}`} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
-                <Icon name="verified" className="text-secondary text-sm" />
-                <span>{brand}</span>
+                <Icon name={cat.icon} className="text-secondary text-sm" />
+                <span>{cat.label}</span>
               </span>
             ))}
           </div>
@@ -327,7 +357,7 @@ export const HomePage = () => {
 
         {/* 6 Category Box Grid matching original index.html */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          {CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const isActive = selectedCategory === cat.id;
             return (
               <button

@@ -358,69 +358,10 @@ export const CheckoutPage = () => {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: EXPRESS CHECKOUT & CHECKOUT FORM (5 cols desktop) */}
+          {/* RIGHT COLUMN: CHECKOUT FORM (5 cols desktop) */}
           <div className="lg:col-span-5 space-y-5">
             <form onSubmit={handleSubmitOrder} className="space-y-5">
-              {/* EXPRESS CHECKOUT SECTION */}
-              <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/40 space-y-3.5">
-                <div className="relative text-center">
-                  <span className="bg-surface-container-lowest dark:bg-slate-800 px-3 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-outline">
-                    Express Checkout
-                  </span>
-                  <div className="absolute inset-0 flex items-center -z-10">
-                    <div className="w-full border-t border-outline-variant/30"></div>
-                  </div>
-                </div>
-
-                {/* Express Buttons: GCash, Maya, PayPal, ShopeePay */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => showToast("Selected GCash Express Checkout", "info")}
-                    className="bg-[#007dfe] hover:brightness-110 text-white h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition shadow-xs"
-                  >
-                    <span className="tracking-tight font-extrabold">G</span>
-                    <span className="font-extrabold">Cash</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => showToast("Selected Maya Express Checkout", "info")}
-                    className="bg-[#008ecc] hover:brightness-110 text-white h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition shadow-xs"
-                  >
-                    <span className="font-extrabold">Maya</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => showToast("Selected PayPal Express Checkout", "info")}
-                    className="bg-[#003087] hover:bg-[#002568] text-white h-10 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1 transition shadow-xs"
-                  >
-                    <span className="italic font-extrabold text-blue-300">Pay</span>
-                    <span className="italic font-extrabold text-blue-100">Pal</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => showToast("Selected ShopeePay Express Checkout", "info")}
-                    className="bg-[#ee4d2d] hover:brightness-110 text-white h-10 rounded-xl font-black text-[10px] sm:text-xs flex items-center justify-center gap-1 transition shadow-xs"
-                  >
-                    <span className="font-extrabold">Shopee</span>
-                    <span className="font-bold">Pay</span>
-                  </button>
-                </div>
-
-                {/* OR Divider */}
-                <div className="relative text-center my-3">
-                  <span className="bg-surface-container-lowest dark:bg-slate-800 px-3 text-xs font-bold text-outline">
-                    OR
-                  </span>
-                  <div className="absolute inset-0 flex items-center -z-10">
-                    <div className="w-full border-t border-outline-variant/30"></div>
-                  </div>
-                </div>
-
-                {/* CONTACT SECTION */}
+              {/* CONTACT SECTION */}
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs sm:text-sm font-extrabold text-on-surface">Contact Information</h3>
@@ -691,7 +632,6 @@ export const CheckoutPage = () => {
                     </>
                   )}
                 </button>
-              </div>
             </form>
           </div>
         </div>

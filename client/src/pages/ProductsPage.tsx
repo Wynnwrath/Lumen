@@ -20,8 +20,6 @@ export const ProductsPage = () => {
   const urlSale = searchParams.get("sale") === "true";
   const urlWishlist = searchParams.get("wishlist") === "true";
 
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [brandSearchInput, setBrandSearchInput] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState(urlSearch);
   const [selectedCategory, setSelectedCategory] = useState(urlCategory);
   const [onlySale, setOnlySale] = useState(urlSale);
@@ -56,19 +54,6 @@ export const ProductsPage = () => {
     setOnlyWishlist(urlWishlist);
   }, [urlCategory, urlSearch, urlSale, urlWishlist]);
 
-  // Unique Brands with Counts
-  const availableBrands = useMemo(() => {
-    const brandMap: Record<string, number> = {};
-    products.forEach((p) => {
-      if (p.brand) {
-        brandMap[p.brand] = (brandMap[p.brand] || 0) + 1;
-      }
-    });
-    return Object.entries(brandMap)
-      .map(([brand, count]) => ({ brand, count }))
-      .filter(({ brand }) => brand.toLowerCase().includes(brandSearchInput.toLowerCase()));
-  }, [products, brandSearchInput]);
-
   // Categories list with counts and icons
   const categories = useMemo(() => {
     const counts: Record<string, number> = { all: products.length };
@@ -99,18 +84,13 @@ export const ProductsPage = () => {
         ) {
           return false;
         }
-        // Brand filter
-        if (selectedBrands.length > 0 && (!p.brand || !selectedBrands.includes(p.brand))) {
-          return false;
-        }
         // Search query
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase();
           const matchName = p.name.toLowerCase().includes(q);
-          const matchBrand = p.brand?.toLowerCase().includes(q);
           const matchDesc = p.description?.toLowerCase().includes(q);
           const matchCat = p.category.toLowerCase().includes(q);
-          if (!matchName && !matchBrand && !matchDesc && !matchCat) return false;
+          if (!matchName && !matchDesc && !matchCat) return false;
         }
         // Sale filter
         if (onlySale && !p.isSale) return false;
@@ -133,7 +113,6 @@ export const ProductsPage = () => {
   }, [
     products,
     selectedCategory,
-    selectedBrands,
     searchQuery,
     onlySale,
     onlyWishlist,
@@ -145,7 +124,6 @@ export const ProductsPage = () => {
 
   const hasActiveFilters =
     selectedCategory !== "all" ||
-    selectedBrands.length > 0 ||
     searchQuery.trim() !== "" ||
     onlySale ||
     onlyWishlist ||
@@ -154,8 +132,6 @@ export const ProductsPage = () => {
 
   const handleResetFilters = () => {
     setSelectedCategory("all");
-    setSelectedBrands([]);
-    setBrandSearchInput("");
     setSearchQuery("");
     setOnlySale(false);
     setOnlyWishlist(false);
@@ -330,65 +306,6 @@ export const ProductsPage = () => {
                       {cat.count}
                     </span>
                   </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <hr className="border-outline-variant/20" />
-
-          {/* Brand Filter Section */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h4 className="text-[11px] font-bold uppercase tracking-wider text-outline">Brand</h4>
-              {selectedBrands.length > 0 && (
-                <button
-                  onClick={() => setSelectedBrands([])}
-                  className="text-[10px] font-bold text-secondary hover:underline"
-                >
-                  Clear ({selectedBrands.length})
-                </button>
-              )}
-            </div>
-
-            {/* Brand Search Input */}
-            <div className="relative">
-              <Icon name="search" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-outline" />
-              <input
-                type="text"
-                placeholder="Search brands..."
-                value={brandSearchInput}
-                onChange={(e) => setBrandSearchInput(e.target.value)}
-                className="w-full bg-surface dark:bg-slate-700/50 text-on-surface border border-outline-variant/60 rounded-lg py-1 pl-8 pr-2 text-xs outline-none focus:border-secondary"
-              />
-            </div>
-
-            {/* Checkbox List */}
-            <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-              {availableBrands.map(({ brand, count }) => {
-                const isChecked = selectedBrands.includes(brand);
-                return (
-                  <label
-                    key={brand}
-                    className="flex items-center justify-between text-xs text-on-surface font-semibold cursor-pointer hover:text-secondary transition"
-                  >
-                    <span className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => {
-                          if (isChecked) {
-                            setSelectedBrands(selectedBrands.filter((b) => b !== brand));
-                          } else {
-                            setSelectedBrands([...selectedBrands, brand]);
-                          }
-                        }}
-                        className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
-                      />
-                      <span>{brand}</span>
-                    </span>
-                    <span className="text-[10px] text-outline font-normal">({count})</span>
-                  </label>
                 );
               })}
             </div>

@@ -2,7 +2,6 @@ export interface Product {
   _id: string;
   name: string;
   category: string;
-  brand: string;
   price: number;
   originalPrice: number;
   stock: number;

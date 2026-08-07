@@ -9,7 +9,6 @@ export const productService = {
     const where: Prisma.ProductWhereInput = { status: { not: "inactive" } };
 
     if (query.category) where.category = query.category;
-    if (query.brand) where.brand = query.brand;
     if (query.inStock === "true") where.stock = { gt: 0 };
     if (query.onSale === "true") where.isSale = true;
     if (query.minPrice || query.maxPrice) {
@@ -21,7 +20,6 @@ export const productService = {
     if (query.search) {
       where.OR = [
         { name: { contains: query.search } },
-        { brand: { contains: query.search } },
         { description: { contains: query.search } },
       ];
     }

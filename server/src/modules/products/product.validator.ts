@@ -5,7 +5,6 @@ const specsSchema = z.record(z.string(), z.string()).optional();
 export const createProductSchema = z.object({
   name: z.string().min(1),
   category: z.string().min(1),
-  brand: z.string().optional(),
   price: z.number().min(0),
   originalPrice: z.number().min(0).optional(),
   stock: z.number().int().min(0).optional(),
@@ -21,7 +20,6 @@ export const updateProductSchema = createProductSchema.partial();
 
 export const productQuerySchema = z.object({
   category: z.string().optional(),
-  brand: z.string().optional(),
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
   inStock: z.enum(["true", "false"]).optional(),

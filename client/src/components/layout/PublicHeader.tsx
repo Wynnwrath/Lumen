@@ -48,8 +48,7 @@ export const PublicHeader = () => {
       .filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          (p.brand && p.brand.toLowerCase().includes(q))
+          p.category.toLowerCase().includes(q)
       );
   }, [searchQuery, catalogProducts]);
 
@@ -184,7 +183,7 @@ export const PublicHeader = () => {
               onChange={handleSearchChange}
               onKeyDown={handleSearchKeyDown}
               onFocus={() => searchQuery.trim() && setShowSearchDropdown(true)}
-              placeholder="Search products, brands..."
+              placeholder="Search products..."
               className="w-full bg-surface text-on-surface border border-outline-variant/60 focus:border-secondary rounded-full py-2 pl-10 pr-9 text-xs font-medium shadow-xs focus:shadow-md transition-all outline-none"
             />
             {searchQuery && (
@@ -221,7 +220,7 @@ export const PublicHeader = () => {
                               {product.name}
                             </p>
                             <p className="text-[10px] text-outline uppercase tracking-wider">
-                              {product.brand || product.category} &bull; ${product.price.toFixed(2)}
+                              {product.category} &bull; ${product.price.toFixed(2)}
                             </p>
                           </div>
                         </button>

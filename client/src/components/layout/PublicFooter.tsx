@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Icon } from "../common/Icon";
 import { useToast } from "../../components/common/ToastProvider";
 
@@ -34,9 +33,9 @@ export const PublicFooter = () => {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 sm:mb-3">Company</h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400">
-              <li><Link to="/products" className="hover:text-white transition">About Us</Link></li>
-              <li><Link to="/products" className="hover:text-white transition">Careers</Link></li>
-              <li><Link to="/products" className="hover:text-white transition">Press Release</Link></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">About Us</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Careers</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Press Release</a></li>
             </ul>
           </div>
 
@@ -45,8 +44,8 @@ export const PublicFooter = () => {
               Customer Support
             </h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400">
-              <li><Link to="/cart" className="hover:text-white transition">Returns &amp; Refunds</Link></li>
-              <li><Link to="/checkout" className="hover:text-white transition">Shipping Policy</Link></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Returns &amp; Refunds</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Shipping Policy</a></li>
               <li><a href="mailto:support@lumen.com" className="hover:text-white transition">Contact Support</a></li>
             </ul>
           </div>

@@ -173,7 +173,7 @@ export const ProductDetailPage = () => {
               <span className="bg-secondary/10 text-secondary text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 {product.category}
               </span>
-              <span className="text-xs text-outline font-semibold">By {product.brand || "Lumen"}</span>
+              <span className="text-xs text-outline font-semibold">Lumen Store</span>
             </div>
 
             <h1 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-on-surface leading-tight tracking-tight">

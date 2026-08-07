@@ -1,10 +1,9 @@
-import { prisma } from "../lib/prisma.js";
+﻿import { prisma } from "../lib/prisma.js";
 
 const SEED_PRODUCTS = [
   {
     name: "iPhone 16 Pro Max 256GB Titanium",
     category: "electronics",
-    brand: "Apple",
     price: 1099.0,
     originalPrice: 1199.0,
     stock: 15,
@@ -23,7 +22,6 @@ const SEED_PRODUCTS = [
   {
     name: "Samsung Galaxy S24 Ultra 12GB Titanium Gray",
     category: "electronics",
-    brand: "Samsung",
     price: 999.99,
     originalPrice: 1299.99,
     stock: 8,
@@ -39,7 +37,6 @@ const SEED_PRODUCTS = [
   {
     name: "Nike Jordan Brooklyn Fleece Men's Hoodie",
     category: "fashion",
-    brand: "Nike",
     price: 45.0,
     originalPrice: 65.0,
     stock: 24,
@@ -55,7 +52,6 @@ const SEED_PRODUCTS = [
   {
     name: "Diamond Stud Earrings in 14K White Gold",
     category: "luxury",
-    brand: "Lumen Fine Jewelry",
     price: 299.0,
     originalPrice: 399.0,
     stock: 6,
@@ -71,7 +67,6 @@ const SEED_PRODUCTS = [
   {
     name: "Premium ANC Wireless Headphones (Rose Pink)",
     category: "electronics",
-    brand: "Sony",
     price: 189.99,
     originalPrice: 249.99,
     stock: 12,
@@ -87,7 +82,6 @@ const SEED_PRODUCTS = [
   {
     name: "Designer Italian Leather Crossbody Bag",
     category: "luxury",
-    brand: "Milano Leather",
     price: 420.0,
     originalPrice: 550.0,
     stock: 3,
@@ -103,7 +97,6 @@ const SEED_PRODUCTS = [
   {
     name: "Botanical Ceramic Vase & Dried Flower Set",
     category: "home",
-    brand: "Kinto",
     price: 38.5,
     originalPrice: 50.0,
     stock: 0,
@@ -119,7 +112,6 @@ const SEED_PRODUCTS = [
   {
     name: "Luminous Hydrating Glow Skincare Trio",
     category: "beauty",
-    brand: "Lumen Beauty",
     price: 64.0,
     originalPrice: 85.0,
     stock: 18,
@@ -135,7 +127,6 @@ const SEED_PRODUCTS = [
   {
     name: "Fresh Organic Farm-to-Table Produce Basket",
     category: "groceries",
-    brand: "Green Harvest",
     price: 29.99,
     originalPrice: 35.0,
     stock: 10,
@@ -151,7 +142,6 @@ const SEED_PRODUCTS = [
   {
     name: "Beanless Bag Inflatable Velvet Lounge Chair",
     category: "home",
-    brand: "Intex",
     price: 32.0,
     originalPrice: 48.0,
     stock: 4,

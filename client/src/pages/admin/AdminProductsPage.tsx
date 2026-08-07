@@ -26,7 +26,6 @@ export const AdminProductsPage = () => {
   // Form State
   const [formName, setFormName] = useState("");
   const [formCategory, setFormCategory] = useState("electronics");
-  const [formBrand, setFormBrand] = useState("");
   const [formPrice, setFormPrice] = useState("");
   const [formOriginalPrice, setFormOriginalPrice] = useState("");
   const [formStock, setFormStock] = useState("");
@@ -44,7 +43,6 @@ export const AdminProductsPage = () => {
     setEditingProduct(null);
     setFormName("");
     setFormCategory(categories[0]?.slug || "electronics");
-    setFormBrand("");
     setFormPrice("");
     setFormOriginalPrice("");
     setFormStock("");
@@ -58,7 +56,6 @@ export const AdminProductsPage = () => {
     setEditingProduct(p);
     setFormName(p.name);
     setFormCategory(p.category);
-    setFormBrand(p.brand || "");
     setFormPrice(p.price.toString());
     setFormOriginalPrice((p.originalPrice || p.price).toString());
     setFormStock(p.stock.toString());
@@ -75,7 +72,6 @@ export const AdminProductsPage = () => {
     const payload = {
       name: formName,
       category: formCategory,
-      brand: formBrand || "Lumen",
       price: priceNum,
       originalPrice: Number(formOriginalPrice) || priceNum,
       stock: stockNum,
@@ -137,7 +133,7 @@ export const AdminProductsPage = () => {
     // Search Query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      if (!p.name.toLowerCase().includes(q) && !(p.brand || "").toLowerCase().includes(q)) {
+      if (!p.name.toLowerCase().includes(q)) {
         return false;
       }
     }
@@ -195,7 +191,7 @@ export const AdminProductsPage = () => {
       {/* Filter Controls Bar */}
       <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 rounded-none">
         {/* Search Input */}
-        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search product name or brand..." id="catalog-search" />
+        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search product name..." id="catalog-search" />
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
           {/* Category Filter */}
@@ -342,7 +338,6 @@ export const AdminProductsPage = () => {
                           />
                           <div className="min-w-0">
                             <p className="font-extrabold text-slate-900 dark:text-slate-100 truncate">{product.name}</p>
-                            <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 truncate">{product.brand || "Lumen Store"}</p>
                           </div>
                         </div>
                       </td>
@@ -581,10 +576,10 @@ export const AdminProductsPage = () => {
                     </div>
                   </div>
 
-                  {/* Card 4: Category & Brand */}
+                  {/* Card 4: Category */}
                   <div className="bg-white dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60 shadow-xs space-y-4">
                     <h4 className="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                      Category & Brand
+                      Category
                     </h4>
 
                     <div>
@@ -601,17 +596,6 @@ export const AdminProductsPage = () => {
                           </option>
                         ))}
                       </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Brand / Manufacturer</label>
-                      <input
-                        type="text"
-                        value={formBrand}
-                        onChange={(e) => setFormBrand(e.target.value)}
-                        placeholder="e.g. Nike, Sony, Apple"
-                        className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
-                      />
                     </div>
                   </div>
                 </div>

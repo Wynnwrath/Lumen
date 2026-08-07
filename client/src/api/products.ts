@@ -12,7 +12,6 @@ export interface ProductsResponse {
 export interface ProductPayload {
   name: string;
   category: string;
-  brand: string;
   price: number;
   originalPrice: number;
   stock: number;

@@ -44,7 +44,6 @@ model Product {
   id           String   @id @default(cuid()) @map("_id")
   name         String
   category     String
-  brand        String   @default("Lumen")
   price        Float
   originalPrice Float   @default(0)
   stock        Int      @default(0)
@@ -62,7 +61,6 @@ model Product {
 
   @@index([price, status])
   @@index([category])
-  @@index([brand])
   @@map("products")
 }
 
