@@ -15,7 +15,7 @@ interface CartItemRowProps {
 export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = true }: CartItemRowProps) => {
   const { product, quantity } = item;
   return (
-    <div className="p-3 sm:p-4 flex flex-row items-center gap-3 sm:gap-4">
+    <div className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
       <ProductImage
         src={product.images[0]}
         alt={product.name}
@@ -26,12 +26,14 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
         <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-secondary">
           {product.category}
         </span>
-        <h3 className="font-bold text-xs sm:text-sm text-on-surface truncate">
+        <h3 className="text-xs sm:text-sm font-bold text-on-surface truncate">
           <Link to={`/product/${product._id}`} className="hover:text-secondary">
             {product.name}
           </Link>
         </h3>
-        <p className="text-[11px] sm:text-xs text-outline font-semibold">${product.price.toFixed(2)}</p>
+        <p className="text-xs font-extrabold text-primary dark:text-white">
+          ${product.price.toFixed(2)}
+        </p>
       </div>
 
       {onUpdateQuantity ? (

@@ -19,6 +19,7 @@ import { AdminProductsPage } from "./pages/admin/AdminProductsPage";
 import { AdminCategoriesPage } from "./pages/admin/AdminCategoriesPage";
 import { AdminOrdersPage } from "./pages/admin/AdminOrdersPage";
 import { AdminCustomersPage } from "./pages/admin/AdminCustomersPage";
+import { AdminCouponsPage } from "./pages/admin/AdminCouponsPage";
 
 import { useAuthStore } from "./stores/auth.store";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -65,6 +66,7 @@ export const App = () => {
           <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
           <Route path="customers" element={<AdminCustomersPage />} />
+          <Route path="coupons" element={<AdminCouponsPage />} />
         </Route>
 
         {/* Catch-all redirect to Home */}

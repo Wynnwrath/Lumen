@@ -15,6 +15,7 @@ import { OrdersByStatusList } from "./dashboard/OrdersByStatusList";
 import { TopProductsChart } from "./dashboard/TopProductsChart";
 import { RecentOrdersSection } from "./dashboard/RecentOrdersSection";
 import { LowStockPanel } from "./dashboard/LowStockPanel";
+import { AwaitingConfirmationPanel } from "./dashboard/AwaitingConfirmationPanel";
 import { RestockModal } from "./dashboard/RestockModal";
 
 // Admin overview: KPI cards, revenue/status charts, recent orders, low-stock alerts.
@@ -208,6 +209,11 @@ export const AdminDashboardPage = () => {
         <div className="lg:col-span-12">
           <TopProductsChart data={topProducts} />
         </div>
+      </section>
+
+      {/* Awaiting Confirmation: Completed orders not yet confirmed by customers */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full">
+        <AwaitingConfirmationPanel orders={orders} />
       </section>
 
       {/* Bottom Row: Recent Transactions Table & Inventory Warnings */}

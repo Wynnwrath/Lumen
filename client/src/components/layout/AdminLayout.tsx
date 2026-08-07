@@ -50,6 +50,12 @@ export const AdminLayout = () => {
         showTimeFilter: false,
       };
     }
+    if (location.pathname === "/admin/coupons") {
+      return {
+        title: "Coupons & Promotions",
+        showTimeFilter: false,
+      };
+    }
     return {
       title: "Admin Portal",
       showTimeFilter: false,
@@ -64,6 +70,7 @@ export const AdminLayout = () => {
     { path: "/admin/categories", label: "Categories", icon: "category" },
     { path: "/admin/orders", label: "Orders List", icon: "shopping_cart" },
     { path: "/admin/customers", label: "Customers", icon: "group" },
+    { path: "/admin/coupons", label: "Coupons", icon: "loyalty" },
   ];
 
   return (

@@ -37,7 +37,7 @@ export async function getMyOrders() {
   return res.data.data;
 }
 
-// Customer confirms they received a Completed order (releases payment to seller).
+// Customer confirms they received a Completed order for delivery settlement.
 export async function confirmOrderReceived(orderNumber: string) {
   const res = await api.post<ApiResponse<Order>>(`/orders/${orderNumber}/confirm-received`);
   return res.data.data;

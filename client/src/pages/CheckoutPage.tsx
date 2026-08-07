@@ -18,8 +18,6 @@ export const CheckoutPage = () => {
     setEmail,
     emailOffers,
     setEmailOffers,
-    deliveryType,
-    setDeliveryType,
     country,
     setCountry,
     firstName,
@@ -197,16 +195,7 @@ export const CheckoutPage = () => {
             <form onSubmit={handleSubmitOrder} className="space-y-5">
               {/* CONTACT SECTION */}
                 <div className="space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xs sm:text-sm font-extrabold text-on-surface">Contact Information</h3>
-                    <span className="text-[10px] text-outline flex items-center gap-1.5">
-                      <span className="font-semibold text-on-surface-variant">Checkout as Guest</span>
-                      <span className="text-outline-variant">|</span>
-                      <Link to="/login" className="text-secondary font-bold hover:underline">
-                        Log in
-                      </Link>
-                    </span>
-                  </div>
+                  <h3 className="text-xs sm:text-sm font-extrabold text-on-surface">Contact Information</h3>
 
                   <div>
                     <input
@@ -215,7 +204,7 @@ export const CheckoutPage = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Dezzlab.agency@gmail.com"
-                      className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
+                      className="w-full bg-white dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
                     />
                   </div>
 
@@ -230,43 +219,6 @@ export const CheckoutPage = () => {
                   </label>
                 </div>
 
-                {/* DELIVERY LOCATION SECTION */}
-                <div className="mt-4 pt-3 border-t border-outline-variant/20 space-y-2.5">
-                  <div className="relative text-center mb-2">
-                    <span className="bg-surface-container-lowest dark:bg-slate-800 px-3 text-[10px] font-extrabold uppercase tracking-wider text-outline">
-                      Delivery Method
-                    </span>
-                    <div className="absolute inset-0 flex items-center -z-10">
-                      <div className="w-full border-t border-outline-variant/30"></div>
-                    </div>
-                  </div>
-
-                  {/* Segmented Pill Toggle */}
-                  <div className="bg-surface dark:bg-slate-700/60 p-1 rounded-xl grid grid-cols-2 gap-1 border border-outline-variant/30">
-                    <button
-                      type="button"
-                      onClick={() => setDeliveryType("home")}
-                      className={`py-1.5 text-center rounded-lg text-xs font-bold transition ${
-                        deliveryType === "home"
-                          ? "bg-black dark:bg-white text-white dark:text-slate-900 shadow-xs"
-                          : "text-outline hover:text-on-surface"
-                      }`}
-                    >
-                      HOME DELIVERY
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDeliveryType("pickup")}
-                      className={`py-1.5 text-center rounded-lg text-xs font-bold transition ${
-                        deliveryType === "pickup"
-                          ? "bg-black dark:bg-white text-white dark:text-slate-900 shadow-xs"
-                          : "text-outline hover:text-on-surface"
-                      }`}
-                    >
-                      STORE PICKUP
-                    </button>
-                  </div>                </div>
-
                 {/* CUSTOMER INFORMATION SECTION */}
                 <div className="mt-4 pt-3 border-t border-outline-variant/20 space-y-2.5">
                   <h3 className="text-xs sm:text-sm font-extrabold text-on-surface">Shipping Address</h3>
@@ -278,7 +230,7 @@ export const CheckoutPage = () => {
                     <select
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
-                      className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-semibold cursor-pointer"
+                      className="w-full bg-white dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-semibold cursor-pointer"
                     >
                       <option value="PH">Manila (Philippines)</option>
                       <option value="US">New York (United States)</option>
@@ -309,7 +261,7 @@ export const CheckoutPage = () => {
                         value={apt}
                         onChange={(e) => setApt(e.target.value)}
                         placeholder="Apartment, suite, unit (optional)"
-                        className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
+                        className="w-full bg-white dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
                       />
                     </div>
                   )}
@@ -337,7 +289,7 @@ export const CheckoutPage = () => {
                     value={orderNotes}
                     onChange={(e) => setOrderNotes(e.target.value)}
                     placeholder="Special delivery instructions..."
-                    className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl p-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"
+                    className="w-full bg-white dark:bg-slate-700/60 text-on-surface text-xs rounded-xl p-2.5 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none"
                   ></textarea>
                 </div>
 

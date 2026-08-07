@@ -21,7 +21,6 @@ export const useCheckoutForm = () => {
   // Form States (pre-filled from the logged-in user when available).
   const [email, setEmail] = useState(user ? user.email : "");
   const [emailOffers, setEmailOffers] = useState(true);
-  const [deliveryType, setDeliveryType] = useState<"home" | "pickup">("home");
   const [country, setCountry] = useState("PH");
   const [firstName, setFirstName] = useState(user ? user.name.split(" ")[0] || "Juan" : "Juan");
   const [lastName, setLastName] = useState(user ? user.name.split(" ").slice(1).join(" ") || "Dela Cruz" : "Dela Cruz");
@@ -98,8 +97,6 @@ export const useCheckoutForm = () => {
     setEmail,
     emailOffers,
     setEmailOffers,
-    deliveryType,
-    setDeliveryType,
     country,
     setCountry,
     firstName,

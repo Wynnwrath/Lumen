@@ -27,8 +27,8 @@ export const OrderDetailsModal = ({ order, onClose, footer, titlePrefix = "Order
       className="max-w-lg"
       footer={footer}
     >
-      <div className="space-y-3 text-xs">
-        <div className="space-y-1.5 bg-surface dark:bg-slate-800/60 p-3 rounded-2xl border border-outline-variant/30">
+      <div className="space-y-3 text-sm">
+        <div className="space-y-1.5 bg-surface dark:bg-slate-800/60 p-3.5 rounded-2xl border border-outline-variant/30">
           <p>
             <span className="text-outline font-semibold">Status:</span> <StatusBadge status={order.status} />
           </p>
@@ -40,17 +40,21 @@ export const OrderDetailsModal = ({ order, onClose, footer, titlePrefix = "Order
         </div>
 
         {order.status === "Completed" && onConfirmReceived && (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-secondary/5 border border-outline-variant/20 rounded-xl p-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-secondary/5 border border-outline-variant/20 rounded-xl p-3.5">
             <div>
-              <p className="font-bold text-on-surface text-xs">Received your order?</p>
-              <p className="text-[11px] text-outline">Confirm to release payment to the seller.</p>
+              <p className="font-bold text-on-surface text-sm">Received your order?</p>
+              <p className="text-xs text-outline">
+                {order.paymentMethod === "Cash on Delivery"
+                  ? "Confirm you received it to settle your Cash on Delivery."
+                  : "Confirm delivery so we can close your order."}
+              </p>
             </div>
             <button
               onClick={onConfirmReceived}
               disabled={confirming}
-              className="px-3.5 py-2 rounded-lg bg-secondary text-white text-xs font-bold hover:bg-secondary-container transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
+              className="px-4 py-2 rounded-lg bg-secondary text-white text-sm font-bold hover:bg-secondary-container transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
             >
-              {confirming && <Icon name="loader" className="text-xs animate-spin" />}
+              {confirming && <Icon name="loader" className="text-sm animate-spin" />}
               <span>Confirm Received</span>
             </button>
           </div>
@@ -60,7 +64,7 @@ export const OrderDetailsModal = ({ order, onClose, footer, titlePrefix = "Order
           <h4 className="font-bold text-on-surface mb-2">Items</h4>
           <div className="space-y-2">
             {order.items.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2 bg-surface dark:bg-slate-800/60 rounded-xl border border-outline-variant/20">
+              <div key={idx} className="flex items-center justify-between p-2.5 bg-surface dark:bg-slate-800/60 rounded-xl border border-outline-variant/20">
                 <span className="font-semibold text-on-surface">{item.name} &times; {item.quantity}</span>
                 <span className="font-mono font-bold">${(item.price * item.quantity).toFixed(2)}</span>
               </div>

@@ -111,7 +111,6 @@ export const PublicFooter = () => {
         </div>
 
         <div className="max-w-container-max mx-auto px-4 sm:px-6 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-3 text-center sm:text-left">
-          <p>&copy; 2026 Lumen Tech Marketplace. All rights reserved.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-white transition">Privacy Policy</a>
             <a href="#" className="hover:text-white transition">Terms of Service</a>
