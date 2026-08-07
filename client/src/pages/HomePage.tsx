@@ -1,114 +1,14 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getProducts } from "../api/products";
 import { getCategories } from "../api/categories";
 import { useCartStore } from "../stores/cart.store";
-import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
 import { ProductCard, trackSpotlight } from "../components/common/ProductCard";
-import { ProductGridSkeleton } from "../components/common/ProductCardSkeleton";
+import { ProductGridSkeleton } from "../components/common/skeletons";
 import { useToast } from "../components/common/ToastProvider";
-
-const HERO_SLIDES = [
-  {
-    id: "p1",
-    badge: "Flagship Launch",
-    badgeColor: "bg-secondary/90 text-white",
-    icon: "auto_awesome",
-    title: "iPhone 16 Pro Max",
-    subtitle: "Starting from $1,099.00",
-    description: "Powered by the revolutionary A18 Pro chip with hardware-accelerated ray tracing and titanium architecture.",
-    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1600&q=80",
-    link: "/products?category=electronics",
-    cta: "Shop Now",
-  },
-  {
-    id: "p-footwear",
-    badge: "Flash Sale",
-    badgeColor: "bg-red-600 text-white",
-    icon: "local_fire_department",
-    title: "Summer Footwear",
-    subtitle: "Up to 40% OFF Top Athletic Brands",
-    description: "Lightweight, breathable performance sneakers designed for modern comfort and active outdoor lifestyles.",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1600&q=80",
-    link: "/products?category=fashion",
-    cta: "Shop Collection",
-  },
-  {
-    id: "p-watches",
-    badge: "Luxury Series",
-    badgeColor: "bg-amber-500 text-black",
-    icon: "diamond",
-    title: "Precision Chronographs",
-    subtitle: "Crafted with Sapphire Crystal Glass",
-    description: "Swiss-inspired automatic movement with scratch-resistant titanium casing and luminescent hands.",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1600&q=80",
-    link: "/products?category=luxury",
-    cta: "Explore Watches",
-  },
-  {
-    id: "p-audio",
-    badge: "New Arrival",
-    badgeColor: "bg-emerald-600 text-white",
-    icon: "headphones",
-    title: "Studio Headphones",
-    subtitle: "Lossless Acoustic Performance",
-    description: "Active noise cancellation with 40-hour battery life and spatial audio support for audiophiles.",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1600&q=80",
-    link: "/products?category=electronics",
-    cta: "Discover Audio",
-  },
-];
-
-const DEFAULT_CATEGORIES = [
-  {
-    id: "electronics",
-    label: "Electronics",
-    icon: "devices",
-    bgColor: "bg-blue-500/10 text-secondary dark:text-blue-400 border-blue-500/20",
-  },
-  {
-    id: "fashion",
-    label: "Fashion",
-    icon: "apparel",
-    bgColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
-  },
-  {
-    id: "luxury",
-    label: "Luxury",
-    icon: "diamond",
-    bgColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
-  },
-  {
-    id: "home",
-    label: "Home Decor",
-    icon: "chair",
-    bgColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-  },
-  {
-    id: "beauty",
-    label: "Beauty",
-    icon: "spa",
-    bgColor: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
-  },
-  {
-    id: "groceries",
-    label: "Groceries",
-    icon: "nutrition",
-    bgColor: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
-  },
-];
-
-const CATEGORY_COLORS: Record<string, string> = {
-  devices: "bg-blue-500/10 text-secondary dark:text-blue-400 border-blue-500/20",
-  apparel: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
-  checkroom: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
-  diamond: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
-  chair: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
-  spa: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
-  shopping_basket: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
-  nutrition: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
-};
+import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_COLORS } from "../constants/home";
+import { useAddToCart } from "../hooks/useAddToCart";
+import { useCatalogProducts } from "../hooks/useCatalogProducts";
 
 type DisplayCategory = { id: string; label: string; icon: string; bgColor: string };
 
@@ -123,6 +23,7 @@ function mapCategories(cats: { slug: string; name: string; icon: string }[]): Di
 
 export const HomePage = () => {
   const navigate = useNavigate();
+  const handleAddToCart = useAddToCart();
   const { addItem } = useCartStore();
   const { showToast } = useToast();
 
@@ -134,15 +35,7 @@ export const HomePage = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-
-  useEffect(() => {
-    getProducts({ limit: 100 })
-      .then((res) => setAllProducts(res.products))
-      .catch(() => setAllProducts([]))
-      .finally(() => setProductsLoading(false));
-  }, []);
+  const { products: allProducts, loading: productsLoading } = useCatalogProducts();
 
   useEffect(() => {
     getCategories()
@@ -182,21 +75,25 @@ export const HomePage = () => {
     return result.slice(0, 4);
   }, [allProducts, selectedCategory, sortBy]);
 
-  const handleAddToCart = (product: Product, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (product.stock <= 0) return;
-    addItem(product, 1);
-    showToast(`Added "${product.name}" to cart!`, "success");
-  };
-
   const handleQuickBuyHero = (e: React.MouseEvent, productId: string) => {
     e.preventDefault();
-    const prod = allProducts.find((p) => p._id === productId) || allProducts[0];
-    if (prod) {
-      addItem(prod, 1);
-      showToast(`Added "${prod.name}" to cart!`, "success");
+    const slide = HERO_SLIDES.find((s) => s.id === productId);
+    if (!slide?.match) return;
+
+    const { match } = slide;
+    const prod = allProducts.find(
+      (p) =>
+        (match.name != null && p.name.toLowerCase().includes(match.name.toLowerCase())) ||
+        (match.category != null && p.category.toLowerCase() === match.category.toLowerCase())
+    );
+
+    if (!prod) {
+      showToast(`Product not found for "${slide.title}"`, "error");
+      return;
     }
+
+    addItem(prod, 1);
+    showToast(`Added "${prod.name}" to cart!`, "success");
   };
 
   const handleCategoryClick = (catId: string) => {
@@ -302,9 +199,9 @@ export const HomePage = () => {
 
         {/* Carousel Indicator Dots */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-slate-900/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-          {HERO_SLIDES.map((_, idx) => (
+          {HERO_SLIDES.map((slide, idx) => (
             <button
-              key={idx}
+              key={slide.id}
               onClick={() => setCurrentSlideIndex(idx)}
               className={`h-2 rounded-full transition-all duration-300 ${currentSlideIndex === idx ? "w-6 bg-secondary" : "w-2 bg-white/40 hover:bg-white/70"
                 }`}
@@ -319,7 +216,7 @@ export const HomePage = () => {
         <div className="marquee-wrapper flex overflow-hidden">
           <div className="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">
             {categories.map((cat, i) => (
-              <span key={i} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
+              <span key={`${cat.id}-${i}`} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
                 <Icon name={cat.icon} className="text-secondary text-sm" />
                 <span>{cat.label}</span>
               </span>
@@ -327,7 +224,7 @@ export const HomePage = () => {
           </div>
           <div className="marquee-content font-bold text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200" aria-hidden="true">
             {categories.map((cat, i) => (
-              <span key={`dup-${i}`} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
+              <span key={`dup-${cat.id}-${i}`} className="flex items-center gap-2 hover:text-secondary transition cursor-pointer">
                 <Icon name={cat.icon} className="text-secondary text-sm" />
                 <span>{cat.label}</span>
               </span>

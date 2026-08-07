@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useFetch } from "./useFetch";
 import { getCustomers } from "../api/customers";
 import type { CustomerData } from "../types";
 
@@ -29,37 +29,22 @@ function avatarFor(name: string): string {
   return "data:image/svg+xml," + encodeURIComponent(svg);
 }
 
+const toCustomerData = (r: { _id: string; name: string; email: string; phone: string; registeredAt: string; totalOrders: number; totalSpent: number; address: string }): CustomerData => ({
+  _id: r._id,
+  name: r.name,
+  email: r.email,
+  phone: r.phone || "",
+  avatar: avatarFor(r.name),
+  tier: deriveTier(r.totalSpent),
+  totalOrders: r.totalOrders,
+  totalSpent: r.totalSpent,
+  address: r.address || "",
+  registeredAt: formatDate(r.registeredAt),
+});
+
 export function useCustomers() {
-  const [customers, setCustomers] = useState<CustomerData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const refresh = useCallback(async () => {
-    try {
-      const records = await getCustomers();
-      setCustomers(
-        records.map((r) => ({
-          _id: r._id,
-          name: r.name,
-          email: r.email,
-          phone: r.phone || "",
-          avatar: avatarFor(r.name),
-          tier: deriveTier(r.totalSpent),
-          totalOrders: r.totalOrders,
-          totalSpent: r.totalSpent,
-          address: r.address || "",
-          registeredAt: formatDate(r.registeredAt),
-        }))
-      );
-    } catch (error) {
-      console.error("Failed to load customers", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
-
-  return { customers, refresh, loading };
+  const { data, refresh, loading } = useFetch(
+    () => getCustomers().then((records) => records.map(toCustomerData))
+  );
+  return { customers: data ?? [], refresh, loading };
 }

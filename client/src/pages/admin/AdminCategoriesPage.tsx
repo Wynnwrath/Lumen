@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { createCategory, updateCategory, deleteCategory } from "../../api/categories";
+import { getErrorMessage } from "../../api/client";
 import type { Category } from "../../types";
 import { Icon } from "../../components/common/Icon";
 import { Button } from "../../components/common/Button";
@@ -7,7 +8,7 @@ import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListRowsSkeleton } from "../../components/common/ProductCardSkeleton";
+import { ListRowsSkeleton } from "../../components/common/skeletons";
 import { useToast } from "../../components/common/ToastProvider";
 import { useCategories } from "../../hooks/useCategories";
 import { useProducts } from "../../hooks/useProducts";
@@ -27,28 +28,41 @@ export const AdminCategoriesPage = () => {
 
   const [pdfWarningMessage, setPdfWarningMessage] = useState<string | null>(null);
 
-  // Calculate Product Counts per Category
-  const getAssignedCount = (cat: Category) => {
-    return products.filter(
-      (p) =>
-        p.category === cat.slug ||
-        p.category === cat._id ||
-        (p.category && p.category.toLowerCase() === cat.name.toLowerCase()) ||
-        (p.category && p.category.toLowerCase() === cat.slug.toLowerCase())
-    ).length;
-  };
-
-  const totalCategorizedProducts = categories.reduce((sum, cat) => sum + getAssignedCount(cat), 0);
-
-  let topCategoryName = "None";
-  let maxCount = -1;
-  categories.forEach((cat) => {
-    const count = getAssignedCount(cat);
-    if (count > maxCount) {
-      maxCount = count;
-      topCategoryName = cat.name;
+  // Memoized Product Counts per Category (single pass, equivalent to the old O(N·M) getAssignedCount)
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const cat of categories) {
+      let count = 0;
+      for (const p of products) {
+        if (
+          p.category === cat.slug ||
+          p.category === cat._id ||
+          (p.category && p.category.toLowerCase() === cat.name.toLowerCase()) ||
+          (p.category && p.category.toLowerCase() === cat.slug.toLowerCase())
+        ) {
+          count += 1;
+        }
+      }
+      counts.set(cat._id, count);
     }
-  });
+    return counts;
+  }, [categories, products]);
+
+  const totalCategorizedProducts = categories.reduce(
+    (sum, cat) => sum + (categoryCounts.get(cat._id) ?? 0),
+    0
+  );
+
+  const { topCategoryName } = categories.reduce(
+    (acc, cat) => {
+      const count = categoryCounts.get(cat._id) ?? 0;
+      if (count > acc.maxCount) {
+        return { topCategoryName: cat.name, maxCount: count };
+      }
+      return acc;
+    },
+    { topCategoryName: "None", maxCount: -1 }
+  );
 
   // Filter categories by search
   const filteredCategories = categories.filter(
@@ -105,10 +119,12 @@ export const AdminCategoriesPage = () => {
       await deleteCategory(cat.slug);
       showToast("Category deleted successfully", "info");
       await refreshCategories();
-    } catch (error: any) {
-      const message = error?.response?.data?.error?.message;
+    } catch (error) {
+      const message = getErrorMessage(error);
       setPdfWarningMessage(
-        message || `Cannot delete category "${cat.name}" because active products are assigned to it.`
+        message === "Something went wrong. Please try again."
+          ? `Cannot delete category "${cat.name}" because active products are assigned to it.`
+          : message
       );
     }
   };
@@ -172,7 +188,7 @@ export const AdminCategoriesPage = () => {
             <EmptyState text="No categories found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
             filteredCategories.map((cat) => {
-              const count = getAssignedCount(cat);
+              const count = categoryCounts.get(cat._id) ?? 0;
               return (
                 <div
                   key={cat._id}
@@ -248,7 +264,7 @@ export const AdminCategoriesPage = () => {
                   <EmptyState text="No categories found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={5} />
                 ) : (
                   filteredCategories.map((cat) => {
-                    const count = getAssignedCount(cat);
+                    const count = categoryCounts.get(cat._id) ?? 0;
 
                     return (
                       <tr

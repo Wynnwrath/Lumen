@@ -1,21 +1,20 @@
 import { Skeleton } from "./Skeleton";
 
-export const ProductCardSkeleton = () => (
-  <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-outline-variant/30 overflow-hidden">
-    <Skeleton className="w-full aspect-square" />
-    <div className="p-3 sm:p-4 space-y-2">
-      <Skeleton className="h-3 w-1/3" />
-      <Skeleton className="h-4 w-3/4" />
-      <Skeleton className="h-3 w-1/2" />
-      <Skeleton className="h-5 w-full" />
-    </div>
-  </div>
-);
-
 export const ProductGridSkeleton = ({ count = 8 }: { count?: number }) => (
   <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
     {Array.from({ length: count }).map((_, i) => (
-      <ProductCardSkeleton key={i} />
+      <div
+        key={i}
+        className="bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-outline-variant/30 overflow-hidden"
+      >
+        <Skeleton className="w-full aspect-square" />
+        <div className="p-3 sm:p-4 space-y-2">
+          <Skeleton className="h-3 w-1/3" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-3 w-1/2" />
+          <Skeleton className="h-5 w-full" />
+        </div>
+      </div>
     ))}
   </div>
 );

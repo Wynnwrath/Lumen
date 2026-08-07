@@ -1,4 +1,5 @@
 import api from "./client";
+import type { ApiResponse } from "../types";
 
 export interface CouponValidation {
   code: string;
@@ -7,6 +8,6 @@ export interface CouponValidation {
 }
 
 export async function validateCoupon(code: string, subtotal: number) {
-  const res = await api.post<{ success: true; data: CouponValidation }>("/coupons/validate", { code, subtotal });
+  const res = await api.post<ApiResponse<CouponValidation>>("/coupons/validate", { code, subtotal });
   return res.data.data;
 }

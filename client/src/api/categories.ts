@@ -1,8 +1,8 @@
 import api from "./client";
-import type { Category } from "../types";
+import type { ApiResponse, Category } from "../types";
 
 export async function getCategories() {
-  const res = await api.get<{ success: true; data: Category[] }>("/categories");
+  const res = await api.get<ApiResponse<Category[]>>("/categories");
   return res.data.data;
 }
 
@@ -14,15 +14,15 @@ export interface CategoryPayload {
 }
 
 export async function createCategory(data: CategoryPayload) {
-  const res = await api.post<{ success: true; data: Category }>("/categories", data);
+  const res = await api.post<ApiResponse<Category>>("/categories", data);
   return res.data.data;
 }
 
 export async function updateCategory(slug: string, data: CategoryPayload) {
-  const res = await api.patch<{ success: true; data: Category }>(`/categories/${slug}`, data);
+  const res = await api.patch<ApiResponse<Category>>(`/categories/${slug}`, data);
   return res.data.data;
 }
 
 export async function deleteCategory(slug: string) {
-  await api.delete<{ success: true; data: null }>(`/categories/${slug}`);
+  await api.delete<ApiResponse<null>>(`/categories/${slug}`);
 }

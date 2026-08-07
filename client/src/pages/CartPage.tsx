@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/common/Icon";
 import { Button } from "../components/common/Button";
-import { QuantityStepper } from "../components/common/QuantityStepper";
+import { CartItemRow } from "../components/common/CartItemRow";
 import { EmptyState } from "../components/common/EmptyState";
 import { calculateOrderTotals } from "../services/pricing";
 
@@ -60,47 +60,13 @@ export const CartPage = () => {
         {/* Left Column: Cart Items List */}
         <div className="lg:col-span-8 space-y-3">
           <div className="bg-surface-container-lowest dark:bg-slate-900 rounded-2xl border border-outline-variant/30 divide-y divide-outline-variant/10 overflow-hidden shadow-xs">
-            {items.map(({ product, quantity }) => (
-              <div key={product._id} className="p-3 sm:p-4 flex flex-row items-center gap-3 sm:gap-4">
-                {/* Compact 1:1 Square Thumbnail */}
-                <img
-                  src={product.images[0]}
-                  alt={product.name}
-                  className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0 border border-outline-variant/30"
-                />
-
-                {/* Info */}
-                <div className="flex-1 min-w-0 space-y-0.5 text-left">
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-secondary">
-                    {product.category}
-                  </span>
-                  <h3 className="font-bold text-xs sm:text-sm text-on-surface truncate">
-                    <Link to={`/product/${product._id}`} className="hover:text-secondary">
-                      {product.name}
-                    </Link>
-                  </h3>
-                  <p className="text-[11px] sm:text-xs text-outline font-semibold">
-                    ${product.price.toFixed(2)}
-                  </p>
-                </div>
-
-                {/* Quantity Controls */}
-                <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product._id, q)} min={1} max={product.stock} />
-
-                {/* Subtotal & Delete */}
-                <div className="flex items-center gap-2 sm:gap-3 text-right shrink-0">
-                  <span className="text-xs sm:text-sm font-black text-on-surface w-14 sm:w-16 text-right">
-                    ${(product.price * quantity).toFixed(2)}
-                  </span>
-                  <button
-                    onClick={() => removeItem(product._id)}
-                    className="text-outline hover:text-red-500 p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition"
-                    title="Remove item"
-                  >
-                    <Icon name="delete" className="text-base" />
-                  </button>
-                </div>
-              </div>
+            {items.map((item) => (
+              <CartItemRow
+                key={item.product._id}
+                item={item}
+                onUpdateQuantity={updateQuantity}
+                onRemove={removeItem}
+              />
             ))}
           </div>
 

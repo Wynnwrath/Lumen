@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import { getOrders, updateOrderStatus, getOrdersCsv } from "../../api/orders";
 import { Icon } from "../../components/common/Icon";
-import type { Order } from "../../types";
+import type { Order, OrderStatus } from "../../types";
 import { getStatusColorClass } from "../../components/common/StatusBadge";
 import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListRowsSkeleton } from "../../components/common/ProductCardSkeleton";
+import { ListRowsSkeleton } from "../../components/common/skeletons";
+import { useToast } from "../../components/common/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
+import { formatDate } from "../../utils/format";
+import { OrderStatusSelect } from "../../components/common/OrderStatusSelect";
 
 export const AdminOrdersPage = () => {
   const { orders: allOrders, refresh: refreshOrders } = useOrders();
+  const { showToast } = useToast();
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -24,7 +28,7 @@ export const AdminOrdersPage = () => {
 
   useEffect(() => {
     setTableLoading(true);
-    getOrders({ page, limit: LIMIT, status: statusFilter === "all" ? undefined : statusFilter })
+    getOrders({ page, limit: LIMIT, status: statusFilter === "all" ? undefined : (statusFilter as OrderStatus) })
       .then((res) => {
         setPagedOrders(res.orders);
         setTotalPages(res.totalPages || 1);
@@ -33,16 +37,16 @@ export const AdminOrdersPage = () => {
       .finally(() => setTableLoading(false));
   }, [page, statusFilter, refreshToken]);
 
-  const handleUpdateStatus = async (orderNumber: string, newStatus: string) => {
+  const handleUpdateStatus = async (orderNumber: string, newStatus: OrderStatus) => {
     try {
       await updateOrderStatus(orderNumber, newStatus);
       await refreshOrders();
       setRefreshToken((t) => t + 1);
       if (selectedOrder && selectedOrder.orderNumber === orderNumber) {
-        setSelectedOrder({ ...selectedOrder, status: newStatus as any });
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
     } catch (error) {
-      console.error("Failed to update order status", error);
+      showToast("Failed to update order status", "error");
     }
   };
 
@@ -57,7 +61,7 @@ export const AdminOrdersPage = () => {
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Failed to export orders", error);
+      showToast("Failed to export orders", "error");
     }
   };
 
@@ -82,7 +86,14 @@ export const AdminOrdersPage = () => {
     <div className="space-y-6">
       {/* Search & Filter Bar */}
       <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
-        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by order # or customer name..." />
+        <SearchInput
+          value={searchQuery}
+          onChange={(q) => {
+            setSearchQuery(q);
+            setPage(1);
+          }}
+          placeholder="Search by order # or customer name..."
+        />
 
         <div className="flex items-center gap-3">
           <button
@@ -153,7 +164,7 @@ export const AdminOrdersPage = () => {
                       {ord.items.length} items • {ord.paymentMethod}
                     </p>
                     <p className="text-[10px] text-slate-500 font-medium">
-                      {new Date(ord.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      {formatDate(ord.createdAt)}
                     </p>
                   </div>
                   <span className="font-mono font-extrabold text-base text-blue-600 dark:text-blue-400">
@@ -167,18 +178,11 @@ export const AdminOrdersPage = () => {
                     <p className="text-[10px] text-slate-500">{ord.customer.email}</p>
                   </div>
 
-                  <select
+                  <OrderStatusSelect
                     value={ord.status}
-                    onChange={(e) => handleUpdateStatus(ord.orderNumber, e.target.value)}
+                    onChange={(st) => handleUpdateStatus(ord.orderNumber, st)}
                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Preparing">Preparing</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
+                  />
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
@@ -211,7 +215,14 @@ export const AdminOrdersPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
-                {filteredOrders.map((ord) => (
+                {filteredOrders.length === 0 ? (
+                  <EmptyState
+                    text="No orders found matching your criteria."
+                    className="py-12 text-center text-sm text-slate-500 dark:text-slate-400"
+                    colSpan={8}
+                  />
+                ) : (
+                  filteredOrders.map((ord) => (
                   <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">#{ord.orderNumber}</td>
                     <td className="p-4">
@@ -221,7 +232,7 @@ export const AdminOrdersPage = () => {
                       </div>
                     </td>
                     <td className="p-4 font-medium text-slate-600 dark:text-slate-400">
-                      {new Date(ord.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      {formatDate(ord.createdAt)}
                     </td>
                     <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
                       {ord.items.length} items
@@ -231,18 +242,11 @@ export const AdminOrdersPage = () => {
                       ${ord.total.toFixed(2)}
                     </td>
                     <td className="p-4">
-                      <select
+                      <OrderStatusSelect
                         value={ord.status}
-                        onChange={(e) => handleUpdateStatus(ord.orderNumber, e.target.value)}
+                        onChange={(st) => handleUpdateStatus(ord.orderNumber, st)}
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusColorClass(ord.status)}`}
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Preparing">Preparing</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
+                      />
                     </td>
                     <td className="p-4 text-right">
                       <button
@@ -253,7 +257,8 @@ export const AdminOrdersPage = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -289,7 +294,7 @@ export const AdminOrdersPage = () => {
         open={!!selectedOrder}
         onClose={() => setSelectedOrder(null)}
         title={selectedOrder ? `Order Invoice #${selectedOrder.orderNumber}` : ""}
-        subtitle={selectedOrder ? `Date: ${new Date(selectedOrder.createdAt).toLocaleDateString()}` : undefined}
+        subtitle={selectedOrder ? `Date: ${formatDate(selectedOrder.createdAt, {})}` : undefined}
         className="max-w-lg"
         footer={
           <div className="flex justify-between items-center w-full">
@@ -320,8 +325,8 @@ export const AdminOrdersPage = () => {
             <div className="space-y-2">
               <h4 className="font-bold text-slate-700 dark:text-slate-300 text-xs">Items:</h4>
               <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
-                {selectedOrder.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-xs p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                {selectedOrder.items.map((item) => (
+                  <div key={`${item.name}-${item.quantity}`} className="flex items-center justify-between text-xs p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                     <span className="font-semibold text-slate-900 dark:text-white">{item.name} &times; {item.quantity}</span>
                     <span className="font-mono font-bold">${(item.price * item.quantity).toFixed(2)}</span>
                   </div>

@@ -3,37 +3,26 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { getMyOrders } from "../api/orders";
 import type { Order } from "../types";
+import { useFetch } from "../hooks/useFetch";
 import { Icon } from "../components/common/Icon";
 import { StatusBadge, getStatusColorClass } from "../components/common/StatusBadge";
 import { EmptyState } from "../components/common/EmptyState";
-import { Modal } from "../components/common/Modal";
-import { ListRowsSkeleton } from "../components/common/ProductCardSkeleton";
+import { OrderDetailsModal } from "../components/common/OrderDetailsModal";
+import { ListRowsSkeleton } from "../components/common/skeletons";
+import { formatDate } from "../utils/format";
 
 export const MyOrdersPage = () => {
-  const { isAuthenticated } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading } = useFetch(getMyOrders, { enabled: !!user });
+  const orders = data ?? [];
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!user) {
       navigate("/login");
-      return;
     }
-    getMyOrders()
-      .then(setOrders)
-      .catch(() => setOrders([]))
-      .finally(() => setLoading(false));
-  }, [isAuthenticated, navigate]);
-
-  const formatDate = (iso: string) => {
-    try {
-      return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-    } catch {
-      return iso;
-    }
-  };
+  }, [user, navigate]);
 
   return (
     <main className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-24 md:pb-8 flex-grow w-full">
@@ -79,8 +68,8 @@ export const MyOrdersPage = () => {
               </div>
 
               <div className="py-3 space-y-2">
-                {order.items.slice(0, 3).map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-xs">
+                {order.items.slice(0, 3).map((item) => (
+                  <div key={`${item.name}-${item.quantity}`} className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-on-surface truncate max-w-[200px]">
                       {item.name} <span className="text-outline">&times; {item.quantity}</span>
                     </span>
@@ -110,12 +99,9 @@ export const MyOrdersPage = () => {
         </div>
       )}
 
-      <Modal
-        open={!!selectedOrder}
+      <OrderDetailsModal
+        order={selectedOrder}
         onClose={() => setSelectedOrder(null)}
-        title={selectedOrder ? `Order #${selectedOrder.orderNumber}` : ""}
-        subtitle={selectedOrder ? formatDate(selectedOrder.createdAt) : undefined}
-        className="max-w-lg"
         footer={
           <button
             onClick={() => setSelectedOrder(null)}
@@ -124,45 +110,7 @@ export const MyOrdersPage = () => {
             Close
           </button>
         }
-      >
-        {selectedOrder && (
-          <div className="space-y-3 text-xs">
-            <div className="space-y-1.5 bg-surface dark:bg-slate-800/60 p-3 rounded-2xl border border-outline-variant/30">
-              <p>
-                <span className="text-outline font-semibold">Status:</span>{" "}
-                <StatusBadge status={selectedOrder.status} />
-              </p>
-              <p><span className="text-outline font-semibold">Payment:</span> {selectedOrder.paymentMethod}</p>
-              <p><span className="text-outline font-semibold">Address:</span> {selectedOrder.address}</p>
-              {selectedOrder.orderNotes && (
-                <p><span className="text-outline font-semibold">Notes:</span> {selectedOrder.orderNotes}</p>
-              )}
-            </div>
-
-            <div>
-              <h4 className="font-bold text-on-surface mb-2">Items</h4>
-              <div className="space-y-2">
-                {selectedOrder.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-2 bg-surface dark:bg-slate-800/60 rounded-xl border border-outline-variant/20">
-                    <span className="font-semibold text-on-surface">{item.name} &times; {item.quantity}</span>
-                    <span className="font-mono font-bold">${(item.price * item.quantity).toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-1 border-t border-outline-variant/20 pt-2">
-              <div className="flex justify-between text-on-surface-variant"><span>Subtotal</span><span>${selectedOrder.subtotal.toFixed(2)}</span></div>
-              {selectedOrder.discount > 0 && (
-                <div className="flex justify-between text-emerald-600"><span>Discount</span><span>-${selectedOrder.discount.toFixed(2)}</span></div>
-              )}
-              <div className="flex justify-between text-on-surface-variant"><span>Shipping</span><span>{selectedOrder.shipping === 0 ? "FREE" : `$${selectedOrder.shipping.toFixed(2)}`}</span></div>
-              <div className="flex justify-between text-on-surface-variant"><span>Tax</span><span>${selectedOrder.tax.toFixed(2)}</span></div>
-              <div className="flex justify-between font-black text-on-surface text-sm"><span>Total</span><span>${selectedOrder.total.toFixed(2)}</span></div>
-            </div>
-          </div>
-        )}
-      </Modal>
+      />
     </main>
   );
 };

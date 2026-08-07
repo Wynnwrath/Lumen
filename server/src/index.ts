@@ -1,18 +1,14 @@
 import { config } from "./config/env.js";
 import { connectDB } from "./config/db.js";
-import { seedDefaultUsers } from "./seed/auth.seed.js";
-import { seedProducts } from "./seed/product.seed.js";
-import { seedCategories } from "./seed/category.seed.js";
-import { seedCoupons } from "./seed/coupon.seed.js";
+import { runAllSeeds } from "./seed/run.js";
 import app from "./app.js";
 
 async function start() {
   await connectDB();
 
-  await seedCategories();
-  await seedProducts();
-  await seedCoupons();
-  await seedDefaultUsers();
+  if (process.env.NODE_ENV !== "production") {
+    await runAllSeeds();
+  }
 
   app.listen(config.port, () => {
     console.log(`Lumen API running on http://localhost:${config.port}`);

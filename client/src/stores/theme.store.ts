@@ -28,6 +28,7 @@ export const useThemeStore = create<ThemeState>()(
     }),
     {
       name: "lumen-theme",
+      version: 1,
       onRehydrateStorage: () => (state) => {
         if (state) applyTheme(state.mode);
       },

@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { productService } from "./product.service.js";
 import type { RequestWithUser } from "../../types/request.js";
@@ -7,8 +7,10 @@ import { toApi } from "../../utils/toApi.js";
 
 export const productController = {
   getAll: asyncHandler(async (req, res: Response) => {
-    // Query is validated + coerced by validate(productQuerySchema, "query") in the route.
-    const result = await productService.findAll(req.query as unknown as ProductQuery);
+    // Query is validated + coerced by validate(productQuerySchema, "query") in the route,
+    // which stores the parsed result on req.validatedQuery.
+    const query = (req as Request & { validatedQuery?: ProductQuery }).validatedQuery ?? {};
+    const result = await productService.findAll(query);
     res.json({ success: true, data: toApi(result) });
   }),
 

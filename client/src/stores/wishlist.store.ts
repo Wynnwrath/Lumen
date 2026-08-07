@@ -6,6 +6,7 @@ interface WishlistState {
   toggle: (productId: string) => void;
   has: (productId: string) => boolean;
   prune: (validIds: string[]) => void;
+  clear: () => void;
 }
 
 export const useWishlistStore = create<WishlistState>()(
@@ -25,7 +26,8 @@ export const useWishlistStore = create<WishlistState>()(
           const pruned = state.ids.filter((id) => valid.has(id));
           return pruned.length === state.ids.length ? state : { ids: pruned };
         }),
+      clear: () => set({ ids: [] }),
     }),
-    { name: "lumen-wishlist" }
+    { name: "lumen-wishlist", version: 1 }
   )
 );

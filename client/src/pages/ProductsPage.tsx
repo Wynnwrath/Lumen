@@ -1,20 +1,18 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { getProducts } from "../api/products";
-import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
-import type { Product } from "../types";
 import { Icon } from "../components/common/Icon";
 import { ProductCard } from "../components/common/ProductCard";
-import { ProductGridSkeleton } from "../components/common/ProductCardSkeleton";
+import { ProductGridSkeleton } from "../components/common/skeletons";
 import { EmptyState } from "../components/common/EmptyState";
-import { useToast } from "../components/common/ToastProvider";
+import { Pagination } from "../components/common/Pagination";
+import { useAddToCart } from "../hooks/useAddToCart";
+import { useCatalogProducts } from "../hooks/useCatalogProducts";
 
 export const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { addItem } = useCartStore();
+  const handleAddToCart = useAddToCart();
   const { ids: wishlistIds, prune } = useWishlistStore();
-  const { showToast } = useToast();
 
   const urlCategory = searchParams.get("category") || "all";
   const urlSearch = searchParams.get("search") || "";
@@ -33,15 +31,7 @@ export const ProductsPage = () => {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-
-  useEffect(() => {
-    getProducts({ limit: 100 })
-      .then((res) => setProducts(res.products))
-      .catch(() => setProducts([]))
-      .finally(() => setProductsLoading(false));
-  }, []);
+  const { products, loading: productsLoading } = useCatalogProducts();
 
   // Prune stale wishlist ids that no longer match any product in the catalog
   useEffect(() => {
@@ -51,12 +41,17 @@ export const ProductsPage = () => {
     }
   }, [products, wishlistIds, prune]);
 
-  // Sync state if URL changes
+  // URL params initialize the filter state on mount and mirror external URL
+  // changes (browser back/forward, header search) back into local state.
+  // Local state stays the source of truth for rendering; this effect only
+  // writes when the URL-driven value actually differs, and it resets
+  // pagination whenever the URL-driven filter set changes.
   useEffect(() => {
-    setSearchQuery(urlSearch);
-    setSelectedCategory(urlCategory);
-    setOnlySale(urlSale);
-    setOnlyWishlist(urlWishlist);
+    setSearchQuery((cur) => (cur === urlSearch ? cur : urlSearch));
+    setSelectedCategory((cur) => (cur === urlCategory ? cur : urlCategory));
+    setOnlySale((cur) => (cur === urlSale ? cur : urlSale));
+    setOnlyWishlist((cur) => (cur === urlWishlist ? cur : urlWishlist));
+    setPage(1);
   }, [urlCategory, urlSearch, urlSale, urlWishlist]);
 
   // Categories list with counts and icons
@@ -130,11 +125,6 @@ export const ProductsPage = () => {
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
   const pagedProducts = filteredProducts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  // Reset to page 1 whenever the filter set changes
-  useEffect(() => {
-    setPage(1);
-  }, [selectedCategory, searchQuery, onlySale, onlyWishlist, onlyInStock, maxPrice, sortBy]);
-
   const hasActiveFilters =
     selectedCategory !== "all" ||
     searchQuery.trim() !== "" ||
@@ -144,6 +134,7 @@ export const ProductsPage = () => {
     maxPrice < 1500;
 
   const handleResetFilters = () => {
+    setPage(1);
     setSelectedCategory("all");
     setSearchQuery("");
     setOnlySale(false);
@@ -153,15 +144,8 @@ export const ProductsPage = () => {
     setSearchParams({});
   };
 
-  const handleAddToCart = (product: Product, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (product.stock <= 0) return;
-    addItem(product, 1);
-    showToast(`Added "${product.name}" to cart!`, "success");
-  };
-
   const handleCategorySelect = (catSlug: string) => {
+    setPage(1);
     setSelectedCategory(catSlug);
     setSearchParams((prev) => {
       if (catSlug === "all") prev.delete("category");
@@ -213,7 +197,10 @@ export const ProductsPage = () => {
           <div className="flex items-center gap-2 ml-auto md:ml-0">
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => {
+                setPage(1);
+                setSortBy(e.target.value as "rating" | "featured" | "price-asc" | "price-desc" | "newest");
+              }}
               className="bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold rounded-xl border border-outline-variant/60 py-2 px-3 focus:border-secondary outline-none cursor-pointer shadow-xs"
             >
               <option value="featured">Featured</option>
@@ -339,7 +326,10 @@ export const ProductsPage = () => {
                 max="1500"
                 step="25"
                 value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                onChange={(e) => {
+                  setPage(1);
+                  setMaxPrice(Number(e.target.value));
+                }}
                 className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-secondary"
               />
               <div className="flex justify-between text-[10px] font-bold text-outline">
@@ -359,7 +349,10 @@ export const ProductsPage = () => {
                 <input
                   type="checkbox"
                   checked={onlyInStock}
-                  onChange={(e) => setOnlyInStock(e.target.checked)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setOnlyInStock(e.target.checked);
+                  }}
                   className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
                 />
                 <span>In Stock Only</span>
@@ -368,7 +361,10 @@ export const ProductsPage = () => {
                 <input
                   type="checkbox"
                   checked={onlySale}
-                  onChange={(e) => setOnlySale(e.target.checked)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setOnlySale(e.target.checked);
+                  }}
                   className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
                 />
                 <span>On Sale Only</span>
@@ -377,7 +373,10 @@ export const ProductsPage = () => {
                 <input
                   type="checkbox"
                   checked={onlyWishlist}
-                  onChange={(e) => setOnlyWishlist(e.target.checked)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setOnlyWishlist(e.target.checked);
+                  }}
                   className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
                 />
                 <span>Saved Wishlist Items</span>
@@ -401,7 +400,7 @@ export const ProductsPage = () => {
             <span className="font-semibold">{filteredProducts.length} products found</span>
             {searchQuery && (
               <span className="text-secondary font-bold truncate max-w-[180px]">
-                Search: "{searchQuery}"
+                Search: {`"${searchQuery}"`}
               </span>
             )}
           </div>
@@ -454,25 +453,7 @@ export const ProductsPage = () => {
 
           {/* Pagination Controls */}
           {!productsLoading && filteredProducts.length > 0 && totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 pt-4">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="px-3.5 py-2 rounded-xl bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold border border-outline-variant/40 hover:border-secondary transition disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Prev
-              </button>
-              <span className="text-xs font-bold text-on-surface">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="px-3.5 py-2 rounded-xl bg-surface-container-lowest dark:bg-slate-800 text-on-surface text-xs font-bold border border-outline-variant/40 hover:border-secondary transition disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           )}
         </section>
       </div>

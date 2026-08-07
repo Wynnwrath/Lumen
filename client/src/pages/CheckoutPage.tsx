@@ -1,175 +1,64 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
-import { useAuthStore } from "../stores/auth.store";
-import { createOrder } from "../api/orders";
-import type { Order } from "../types";
 import { Icon } from "../components/common/Icon";
 import { QuantityStepper } from "../components/common/QuantityStepper";
 import { EmptyState } from "../components/common/EmptyState";
-import { useToast } from "../components/common/ToastProvider";
-import { checkCoupon, calculateOrderTotals } from "../services/pricing";
+import { useCheckoutForm } from "../hooks/useCheckoutForm";
+import { CheckoutSteps } from "./checkout/CheckoutSteps";
+import { PromoCodeBox } from "./checkout/PromoCodeBox";
+import { PaymentMethodSelector } from "./checkout/PaymentMethodSelector";
+import { OrderConfirmationReceipt } from "./checkout/OrderConfirmationReceipt";
+import { FormField } from "./checkout/FormField";
 
 export const CheckoutPage = () => {
-  const { items, getItemCount, updateQuantity, removeItem, clearCart } = useCartStore();
-  const { user, isAuthenticated } = useAuthStore();
-  const { showToast } = useToast();
-  const navigate = useNavigate();
-
-  // Form States
-  const [email, setEmail] = useState(user ? user.email : "");
-  const [emailOffers, setEmailOffers] = useState(true);
-  const [deliveryType, setDeliveryType] = useState<"home" | "pickup">("home");
-  const [country, setCountry] = useState("PH");
-  const [firstName, setFirstName] = useState(user ? user.name.split(" ")[0] || "Juan" : "Juan");
-  const [lastName, setLastName] = useState(user ? user.name.split(" ").slice(1).join(" ") || "Dela Cruz" : "Dela Cruz");
-  const [address, setAddress] = useState("123 Mabini St.");
-  const [showAptField, setShowAptField] = useState(false);
-  const [apt, setApt] = useState("");
-  const [city, setCity] = useState("Manila");
-  const [stateZip, setStateZip] = useState("1000");
-  const [phone, setPhone] = useState("+63 917 555 0123");
-  const [paymentMethod, setPaymentMethod] = useState<"Cash on Delivery" | "E-Wallet" | "Bank Transfer">("Cash on Delivery");
-  const [orderNotes, setOrderNotes] = useState("");
-
-  // Promo Coupon Engine State
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedDiscountRate, setAppliedDiscountRate] = useState(0);
-  const [couponMessage, setCouponMessage] = useState<{ text: string; isError: boolean } | null>(null);
-
-  // Order Submission State
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
-
-  const totals = calculateOrderTotals(items, appliedDiscountRate);
-  const { subtotal: rawSubtotal, discountAmount, shippingFee, estimatedTax, grandTotal } = totals;
-
-  const handleApplyCoupon = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!couponCode.trim()) return;
-
-    const result = await checkCoupon(couponCode, rawSubtotal);
-    if (result) {
-      setAppliedDiscountRate(result.rate);
-      setCouponMessage({ text: result.label, isError: false });
-    } else {
-      setCouponMessage({ text: "Invalid Coupon Code. Try 'LUMEN10'", isError: true });
-    }
-  };
-
-  const handleSubmitOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (items.length === 0) return;
-
-    if (!isAuthenticated) {
-      showToast("Please sign in to place an order", "info");
-      navigate("/login");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const newOrder = await createOrder({
-        items: items.map((i) => ({ product: i.product._id, quantity: i.quantity })),
-        address: `${address}${apt ? `, ${apt}` : ""}, ${city}, ${stateZip} (${country})`,
-        paymentMethod,
-        couponCode: appliedDiscountRate > 0 ? couponCode.trim().toUpperCase() : undefined,
-        orderNotes: orderNotes || undefined,
-      });
-
-      const placed: Order = {
-        ...newOrder,
-        customer: {
-          _id: user?._id || user?.id || "",
-          name: `${firstName} ${lastName}`.trim() || "Customer",
-          email: email || "customer@lumen.com",
-        },
-      };
-
-      clearCart();
-      setIsSubmitting(false);
-      setPlacedOrder(placed);
-    } catch (error: any) {
-      setIsSubmitting(false);
-      const msg = error?.response?.data?.error?.message || "Failed to place your order. Please try again.";
-      showToast(msg, "error");
-    }
-  };
+  const { items, getItemCount, updateQuantity, removeItem } = useCartStore();
+  const {
+    email,
+    setEmail,
+    emailOffers,
+    setEmailOffers,
+    deliveryType,
+    setDeliveryType,
+    country,
+    setCountry,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
+    address,
+    setAddress,
+    showAptField,
+    setShowAptField,
+    apt,
+    setApt,
+    city,
+    setCity,
+    stateZip,
+    setStateZip,
+    phone,
+    setPhone,
+    paymentMethod,
+    setPaymentMethod,
+    orderNotes,
+    setOrderNotes,
+    couponCode,
+    setCouponCode,
+    appliedDiscountRate,
+    couponMessage,
+    isSubmitting,
+    placedOrder,
+    handleApplyCoupon,
+    handleSubmitOrder,
+    rawSubtotal,
+    discountAmount,
+    shippingFee,
+    estimatedTax,
+    grandTotal,
+  } = useCheckoutForm();
 
   // If Order Placed: Render Confirmation Receipt
   if (placedOrder) {
-    return (
-      <main className="flex-grow max-w-2xl w-full mx-auto px-3 sm:px-6 py-6 md:py-10">
-        <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-3xl p-5 md:p-8 shadow-2xl border border-outline-variant/30 text-center space-y-5 animate-fade-up">
-          <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
-            <Icon name="check_circle" className="text-2xl" />
-          </div>
-
-          <h2 className="text-xl md:text-3xl font-black text-on-surface">Thank You For Your Order!</h2>
-          <p className="text-xs text-outline">
-            Order Reference:{" "}
-            <strong className="text-secondary dark:text-secondary-fixed font-mono text-xs sm:text-sm">
-              #{placedOrder.orderNumber}
-            </strong>
-          </p>
-
-          <div className="bg-surface dark:bg-slate-700/50 rounded-2xl p-3.5 text-left text-xs space-y-1.5 border border-outline-variant/20">
-            <div className="flex justify-between">
-              <span className="text-outline">Customer:</span>
-              <span className="font-bold text-on-surface">{placedOrder.customer.name}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-outline">Email:</span>
-              <span className="font-bold text-on-surface truncate max-w-[180px]">{placedOrder.customer.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-outline">Phone:</span>
-              <span className="font-bold text-on-surface">{phone}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-outline">Address:</span>
-              <span className="font-bold text-on-surface truncate max-w-[180px]">{placedOrder.address}</span>
-            </div>
-            <div className="flex justify-between pt-1 border-t border-outline-variant/10">
-              <span className="text-outline">Payment Method:</span>
-              <span className="font-bold text-secondary">{placedOrder.paymentMethod}</span>
-            </div>
-          </div>
-
-          <div className="text-left space-y-2">
-            <h4 className="text-xs font-extrabold text-on-surface uppercase tracking-wider">Order Summary Items</h4>
-            <div className="space-y-2 text-xs divide-y divide-outline-variant/10">
-              {placedOrder.items.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between pt-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded-lg bg-surface shrink-0 border border-outline-variant/30" />
-                    <span className="font-bold text-on-surface truncate max-w-[140px] sm:max-w-[220px]">{item.name}</span>
-                  </div>
-                  <span className="font-extrabold text-on-surface shrink-0">
-                    {item.quantity} &times; ${item.price.toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-outline-variant/20 flex justify-between items-center">
-            <span className="text-xs sm:text-sm font-extrabold text-on-surface">Total Amount Paid:</span>
-            <span className="text-lg sm:text-xl font-black text-secondary dark:text-secondary-fixed">
-              ${placedOrder.total.toFixed(2)}
-            </span>
-          </div>
-
-          <Link
-            to="/products"
-            className="inline-block w-full bg-secondary hover:bg-secondary-container text-white py-3 rounded-2xl font-extrabold text-xs transition shadow-md"
-          >
-            Continue Shopping
-          </Link>
-        </div>
-      </main>
-    );
+    return <OrderConfirmationReceipt order={placedOrder} phone={phone} />;
   }
 
   return (
@@ -183,45 +72,17 @@ export const CheckoutPage = () => {
             Home
           </Link>
           <Icon name="chevron_right" className="text-xs text-outline" />
-          <span className="text-on-surface font-semibold">Your Cart</span>
+          <span className="text-on-surface font-semibold">Checkout</span>
         </nav>
       </div>
 
       {/* Centered Page Title */}
       <h1 className="text-2xl sm:text-4xl font-extrabold text-on-surface text-center tracking-tight mb-4 sm:mb-8">
-        Your Cart
+        Checkout
       </h1>
 
       {/* 3-Step Checkout Progress Indicator */}
-      <div className="flex items-center justify-center max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
-        {/* Step 1: Information */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-extrabold text-xs sm:text-sm flex items-center justify-center shadow-md">
-            1
-          </div>
-          <span className="text-xs sm:text-sm font-extrabold text-on-surface">Information</span>
-        </div>
-
-        <div className="flex-grow h-0.5 bg-outline-variant/40 mx-2 sm:mx-8"></div>
-
-        {/* Step 2: Delivery */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 opacity-40">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container dark:bg-slate-700 text-outline font-extrabold text-xs sm:text-sm flex items-center justify-center">
-            2
-          </div>
-          <span className="text-xs sm:text-sm font-semibold text-outline">Delivery</span>
-        </div>
-
-        <div className="flex-grow h-0.5 bg-outline-variant/40 mx-2 sm:mx-8"></div>
-
-        {/* Step 3: Payment */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 opacity-40">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-surface-container dark:bg-slate-700 text-outline font-extrabold text-xs sm:text-sm flex items-center justify-center">
-            3
-          </div>
-          <span className="text-xs sm:text-sm font-semibold text-outline">Payment</span>
-        </div>
-      </div>
+      <CheckoutSteps />
 
       {/* MAIN CHECKOUT FLOW VIEW */}
       {items.length === 0 ? (
@@ -238,8 +99,6 @@ export const CheckoutPage = () => {
           />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-
 
           {/* LEFT COLUMN: CART ITEM CARDS LIST & PRICE BREAKDOWN (7 cols on desktop) */}
           <div className="lg:col-span-7 space-y-5">
@@ -296,33 +155,12 @@ export const CheckoutPage = () => {
             </div>
 
             {/* Promo Code Box */}
-            <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-xs border border-outline-variant/30 space-y-2">
-              <label className="block text-xs font-bold text-on-surface">Have a Discount Code?</label>
-              <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                <input
-                  type="text"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Try 'LUMEN10'"
-                  className="flex-grow bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none uppercase font-mono"
-                />
-                <button
-                  type="submit"
-                  className="bg-primary dark:bg-slate-700 hover:bg-slate-800 text-white text-xs font-extrabold px-4 py-2 rounded-xl transition"
-                >
-                  Apply
-                </button>
-              </form>
-              {couponMessage && (
-                <p
-                  className={`text-[11px] font-bold mt-1 ${
-                    couponMessage.isError ? "text-red-500" : "text-emerald-600"
-                  }`}
-                >
-                  {couponMessage.text}
-                </p>
-              )}
-            </div>
+            <PromoCodeBox
+              couponCode={couponCode}
+              onCouponChange={setCouponCode}
+              onApply={handleApplyCoupon}
+              message={couponMessage}
+            />
 
             {/* Order Summary Breakdown Card */}
             <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/30 space-y-3">
@@ -454,44 +292,11 @@ export const CheckoutPage = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-0.5">
-                        First Name*
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-0.5">
-                        Last Name*
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
-                      />
-                    </div>
+                    <FormField label="First Name*" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                    <FormField label="Last Name*" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-0.5">
-                      Address*
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
-                    />
-                  </div>
+                  <FormField label="Address*" value={address} onChange={(e) => setAddress(e.target.value)} required />
 
                   <button
                     type="button"
@@ -514,90 +319,18 @@ export const CheckoutPage = () => {
                   )}
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-0.5">
-                        City*
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-0.5">
-                        State / Zip*
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={stateZip}
-                        onChange={(e) => setStateZip(e.target.value)}
-                        className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
-                      />
-                    </div>
+                    <FormField label="City*" value={city} onChange={(e) => setCity(e.target.value)} required />
+                    <FormField label="State / Zip*" value={stateZip} onChange={(e) => setStateZip(e.target.value)} required />
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-0.5">
-                      Phone Number*
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-surface dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
-                    />
-                  </div>
+                  <FormField label="Phone Number*" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                 </div>
 
                 {/* PAYMENT METHOD OPTIONS */}
                 <div className="mt-4 pt-3 border-t border-outline-variant/20 space-y-2.5">
                   <h3 className="text-xs sm:text-sm font-extrabold text-on-surface">Payment Method</h3>
 
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("Cash on Delivery")}
-                      className={`flex flex-col justify-between p-2.5 rounded-xl border-2 cursor-pointer transition text-left ${
-                        paymentMethod === "Cash on Delivery"
-                          ? "border-secondary bg-secondary/5 dark:bg-slate-700/60"
-                          : "border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800"
-                      }`}
-                    >
-                      <Icon name="local_atm" className="text-secondary text-lg" />
-                      <span className="text-[10px] font-bold text-on-surface mt-1 block">COD</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("E-Wallet")}
-                      className={`flex flex-col justify-between p-2.5 rounded-xl border-2 cursor-pointer transition text-left ${
-                        paymentMethod === "E-Wallet"
-                          ? "border-secondary bg-secondary/5 dark:bg-slate-700/60"
-                          : "border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800"
-                      }`}
-                    >
-                      <Icon name="account_balance_wallet" className="text-blue-600 text-lg" />
-                      <span className="text-[10px] font-bold text-on-surface mt-1 block">E-Wallet</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("Bank Transfer")}
-                      className={`flex flex-col justify-between p-2.5 rounded-xl border-2 cursor-pointer transition text-left ${
-                        paymentMethod === "Bank Transfer"
-                          ? "border-secondary bg-secondary/5 dark:bg-slate-700/60"
-                          : "border-outline-variant/30 hover:border-secondary/50 bg-surface dark:bg-slate-800"
-                      }`}
-                    >
-                      <Icon name="account_balance" className="text-emerald-600 text-lg" />
-                      <span className="text-[10px] font-bold text-on-surface mt-1 block">Bank</span>
-                    </button>
-                  </div>
+                  <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
                 </div>
 
                 {/* Notes */}

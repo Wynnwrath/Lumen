@@ -24,4 +24,24 @@ api.interceptors.response.use(
   }
 );
 
+export interface ApiErrorEnvelope {
+  error?: { message?: string; code?: string; details?: unknown };
+}
+
+// unwraps the server error envelope from any axios/unknown error
+export function getApiError(err: unknown): { message: string; code?: string; details?: unknown } {
+  if (typeof err === "object" && err !== null && "response" in err) {
+    const data = (err as { response?: { data?: ApiErrorEnvelope } }).response?.data;
+    if (data?.error?.message) {
+      return { message: data.error.message, code: data.error.code, details: data.error.details };
+    }
+  }
+  if (err instanceof Error && err.message) return { message: err.message };
+  return { message: "Something went wrong. Please try again." };
+}
+
+export function getErrorMessage(err: unknown): string {
+  return getApiError(err).message;
+}
+
 export default api;

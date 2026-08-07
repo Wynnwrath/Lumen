@@ -5,7 +5,7 @@ import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListRowsSkeleton } from "../../components/common/ProductCardSkeleton";
+import { ListRowsSkeleton } from "../../components/common/skeletons";
 import { useCustomers } from "../../hooks/useCustomers";
 
 export const AdminCustomersPage = () => {

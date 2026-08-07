@@ -8,6 +8,7 @@ import { ProductCard } from "../components/common/ProductCard";
 import { QuantityStepper } from "../components/common/QuantityStepper";
 import { Skeleton } from "../components/common/Skeleton";
 import { useToast } from "../components/common/ToastProvider";
+import { FALLBACK_PRODUCT_IMAGE } from "../constants";
 import type { Product } from "../types";
 
 export const ProductDetailPage = () => {
@@ -51,7 +52,7 @@ export const ProductDetailPage = () => {
   // Normalize images array
   const images = product?.images && product.images.length > 0 
     ? product.images 
-    : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80"];
+    : [FALLBACK_PRODUCT_IMAGE];
 
   useEffect(() => {
     setSelectedImageIndex(0);
@@ -100,6 +101,9 @@ export const ProductDetailPage = () => {
   const discountPct = (product.originalPrice && product.originalPrice > product.price)
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
+
+  // Rounded star rating (0-5 scale)
+  const rating = Math.round(product.rating);
 
   const handleAddToCart = () => {
     if (isOutOfStock) return;
@@ -163,7 +167,7 @@ export const ProductDetailPage = () => {
             <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1 hide-scroll">
               {images.map((imgUrl, idx) => (
                 <button
-                  key={idx}
+                  key={imgUrl}
                   onClick={() => setSelectedImageIndex(idx)}
                   className={`w-16 h-16 sm:w-20 sm:h-20 rounded-none overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
                     selectedImageIndex === idx
@@ -196,11 +200,12 @@ export const ProductDetailPage = () => {
             {/* Ratings & Reviews summary */}
             <div className="flex items-center gap-2 mt-2">
               <div className="flex text-amber-400 text-xs sm:text-sm">
-                <Icon name="star" className="text-sm sm:text-base" filled />
-                <Icon name="star" className="text-sm sm:text-base" filled />
-                <Icon name="star" className="text-sm sm:text-base" filled />
-                <Icon name="star" className="text-sm sm:text-base" filled />
-                <Icon name="star_half" className="text-sm sm:text-base" filled />
+                {Array.from({ length: rating }).map((_, i) => (
+                  <Icon key={i} name="star" className="text-sm sm:text-base" filled />
+                ))}
+                {Array.from({ length: 5 - rating }).map((_, i) => (
+                  <Icon key={i} name="star" className="text-sm sm:text-base" />
+                ))}
               </div>
               <span className="text-xs sm:text-sm font-bold text-on-surface">{product.rating || 4.9}</span>
               <a href="#reviews" className="text-[11px] sm:text-xs font-semibold text-secondary hover:underline">

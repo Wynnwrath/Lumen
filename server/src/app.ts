@@ -13,9 +13,10 @@ import customerRoutes from "./modules/customers/customer.routes.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
 app.use(helmet());
 app.use(cors({ origin: config.clientUrl, credentials: true }));
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 app.get("/api", (_req, res) => {
   res.json({ success: true, data: { name: "Lumen API", version: "1.0.0" } });

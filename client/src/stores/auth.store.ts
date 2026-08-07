@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { AuthUser, AuthResult } from "../types";
+import type { ApiResponse, AuthResult } from "../types";
 import api from "../api/client";
 import { useCartStore } from "./cart.store";
+import { useWishlistStore } from "./wishlist.store";
 
 interface AuthState {
-  user: AuthUser | null;
+  user: AuthResult["user"] | null;
   token: string | null;
-  isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginAdmin: (email: string, password: string) => Promise<void>;
   register: (data: { name: string; email: string; password: string; phone?: string }) => Promise<void>;
@@ -19,27 +19,38 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       token: null,
-      isAuthenticated: false,
       login: async (email, password) => {
-        const res = await api.post<{ success: true; data: AuthResult }>("/auth/login", { email, password });
+        const res = await api.post<ApiResponse<AuthResult>>("/auth/login", { email, password });
         const { user, token } = res.data.data;
-        set({ user, token, isAuthenticated: true });
+        set({ user, token });
       },
       loginAdmin: async (email, password) => {
-        const res = await api.post<{ success: true; data: AuthResult }>("/auth/admin/login", { email, password });
+        const res = await api.post<ApiResponse<AuthResult>>("/auth/admin/login", { email, password });
         const { user, token } = res.data.data;
-        set({ user, token, isAuthenticated: true });
+        set({ user, token });
       },
       register: async (data) => {
-        const res = await api.post<{ success: true; data: AuthResult }>("/auth/register", data);
+        const res = await api.post<ApiResponse<AuthResult>>("/auth/register", data);
         const { user, token } = res.data.data;
-        set({ user, token, isAuthenticated: true });
+        set({ user, token });
       },
       logout: () => {
         useCartStore.getState().clearCart();
-        set({ user: null, token: null, isAuthenticated: false });
+        useWishlistStore.getState().clear();
+        set({ user: null, token: null });
       },
     }),
-    { name: "lumen-auth" }
+    {
+      name: "lumen-auth",
+      version: 1,
+      partialize: (s) => ({ user: s.user, token: s.token }),
+      migrate: (persisted) => {
+        const state = persisted as { user?: { _id?: string } | null; token?: string | null };
+        return { user: state.user ?? null, token: state.token ?? null };
+      },
+    }
   )
 );
+
+// derived selector — reactivity is guaranteed because it subscribes to `user`
+export const useIsAuthenticated = () => useAuthStore((s) => !!s.user);

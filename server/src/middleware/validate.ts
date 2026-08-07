@@ -1,8 +1,12 @@
-import type { Request, Response, NextFunction, RequestHandler } from "express";
-import type { ZodSchema } from "zod";
+import type { Request, Response, NextFunction } from "express";
+import type { ZodType } from "zod";
 import { AppError } from "../utils/AppError.js";
 
-export function validate(schema: ZodSchema, source: "body" | "query" = "body"): RequestHandler {
+type ValidatedRequest = Request & {
+  validatedQuery: unknown;
+};
+
+export function validate<S extends ZodType>(schema: S, source: "body" | "query" = "body") {
   return (req: Request, _res: Response, next: NextFunction) => {
     const data = source === "body" ? req.body : req.query;
     const result = schema.safeParse(data);
@@ -13,7 +17,7 @@ export function validate(schema: ZodSchema, source: "body" | "query" = "body"): 
     if (source === "body") {
       req.body = result.data;
     } else {
-      (req as Request & { query: typeof result.data }).query = result.data as Record<string, string>;
+      (req as ValidatedRequest).validatedQuery = result.data;
     }
     next();
   };

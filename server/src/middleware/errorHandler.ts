@@ -25,6 +25,12 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
           error: { message: "Record not found", code: "NOT_FOUND" },
         });
         return;
+      case "P2003":
+        res.status(409).json({
+          success: false,
+          error: { message: "Operation failed due to a related record constraint", code: "CONFLICT" },
+        });
+        return;
       case "P2023":
         res.status(400).json({
           success: false,

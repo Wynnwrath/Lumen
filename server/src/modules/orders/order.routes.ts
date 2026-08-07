@@ -8,7 +8,9 @@ const router = Router();
 
 router.post("/", protect, validate(createOrderSchema), orderController.create);
 router.get("/", protect, authorize("admin"), validate(orderQuerySchema, "query"), orderController.getAll);
-router.get("/:orderNumber", orderController.getByOrderNumber);
+router.get("/mine", protect, orderController.getMine);
+router.get("/export", protect, authorize("admin"), orderController.exportCsv);
+router.get("/:orderNumber", protect, authorize("admin"), orderController.getByOrderNumber);
 router.patch("/:orderNumber/status", protect, authorize("admin"), validate(updateOrderStatusSchema), orderController.updateStatus);
 
 export default router;

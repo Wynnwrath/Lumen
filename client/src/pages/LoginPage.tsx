@@ -2,13 +2,23 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useThemeStore } from "../stores/theme.store";
+import { getApiError } from "../api/client";
 import { Icon } from "../components/common/Icon";
 import { Button } from "../components/common/Button";
 import { useToast } from "../components/common/ToastProvider";
+import { AuthShell } from "../components/common/auth/AuthShell";
+
+const PASSWORD_CHECKS = (password: string) => [
+  { ok: password.length >= 8, msg: "at least 8 characters" },
+  { ok: /[A-Z]/.test(password), msg: "an uppercase letter" },
+  { ok: /[a-z]/.test(password), msg: "a lowercase letter" },
+  { ok: /[0-9]/.test(password), msg: "a number" },
+  { ok: /[^A-Za-z0-9]/.test(password), msg: "a special character" },
+];
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, login, register, logout } = useAuthStore();
+  const { user, login, register, logout } = useAuthStore();
   const { toggle } = useThemeStore();
   const { showToast } = useToast();
 
@@ -27,6 +37,8 @@ export const LoginPage = () => {
 
   // UI state
   const [alert, setAlert] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [subscribePromo, setSubscribePromo] = useState(false);
 
   const handleDemoAutofill = () => {
     setLoginEmail("alex.morgan@lumen.com");
@@ -63,14 +75,7 @@ export const LoginPage = () => {
       setAlert({ message: "Please fill in all required fields.", type: "error" });
       return;
     }
-    const pwdChecks = [
-      { ok: regPassword.length >= 8, msg: "at least 8 characters" },
-      { ok: /[A-Z]/.test(regPassword), msg: "an uppercase letter" },
-      { ok: /[a-z]/.test(regPassword), msg: "a lowercase letter" },
-      { ok: /[0-9]/.test(regPassword), msg: "a number" },
-      { ok: /[^A-Za-z0-9]/.test(regPassword), msg: "a special character" },
-    ];
-    const failed = pwdChecks.find((c) => !c.ok);
+    const failed = PASSWORD_CHECKS(regPassword).find((c) => !c.ok);
     if (failed) {
       setAlert({ message: `Password must include ${failed.msg}.`, type: "error" });
       return;
@@ -82,11 +87,11 @@ export const LoginPage = () => {
       setTimeout(() => {
         navigate("/");
       }, 1000);
-    } catch (error: any) {
-      const details = error?.response?.data?.error?.details;
-      const serverMsg = error?.response?.data?.error?.message;
-      if (details?.password?.length) {
-        setAlert({ message: details.password[0], type: "error" });
+    } catch (error) {
+      const { message: serverMsg, details } = getApiError(error);
+      const passwordDetails = (details as { password?: string[] } | undefined)?.password;
+      if (passwordDetails?.length) {
+        setAlert({ message: passwordDetails[0] ?? "Registration failed. Please try again.", type: "error" });
       } else {
         setAlert({ message: serverMsg || "Registration failed. Please try again.", type: "error" });
       }
@@ -94,7 +99,63 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="bg-surface dark:bg-slate-900 text-on-surface dark:text-slate-100 font-['Hanken_Grotesk',sans-serif] antialiased min-h-screen flex flex-col justify-between selection:bg-secondary selection:text-white transition-colors duration-200">
+    <AuthShell
+      left={
+        <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-blue-900 via-primary to-slate-950 text-white p-8 lg:p-10 flex-col justify-between relative overflow-hidden">
+          {/* Background Glow Overlays */}
+          <div className="absolute -top-20 -left-20 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+          {/* Top Content */}
+          <div className="relative z-10 space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-blue-200">
+              <Icon name="verified" className="text-sm text-amber-300" />
+              <span>Lumen Member Rewards</span>
+            </div>
+
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-snug">
+                Elevate Your Everyday Tech Shopping
+              </h1>
+              <p className="mt-3 text-xs md:text-sm text-slate-300 leading-relaxed font-medium">
+                Sign in to unlock personalized product recommendations, express checkout, live order tracking, and exclusive member discounts.
+              </p>
+            </div>
+          </div>
+
+          {/* Member Perks Feature List */}
+          <div className="relative z-10 space-y-3.5 my-8">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+              <div className="w-9 h-9 rounded-lg bg-secondary/30 flex items-center justify-center shrink-0">
+                <Icon name="local_shipping" className="text-blue-300 text-lg" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Free Express Shipping</div>
+                <div className="text-[11px] text-slate-300">On all eligible member orders above $100</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+              <div className="w-9 h-9 rounded-lg bg-emerald-500/30 flex items-center justify-center shrink-0">
+                <Icon name="loyalty" className="text-emerald-300 text-lg" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Earn Member Points</div>
+                <div className="text-[11px] text-slate-300">Get 5% back in reward credits on every order</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Footer */}
+          <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>Join over 50,000+ Happy Shoppers</span>
+            <span className="flex items-center gap-1 text-emerald-400 font-bold">
+              <Icon name="shield" className="text-xs" /> 100% Secure
+            </span>
+          </div>
+        </div>
+      }
+    >
       {/* Top Header Navigation */}
       <header className="border-b border-outline-variant/30 bg-surface-container-lowest/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -134,64 +195,8 @@ export const LoginPage = () => {
 
       {/* Main Customer Auth Section */}
       <main className="flex-grow flex items-center justify-center p-3 sm:p-6 md:p-8 my-2 sm:my-6">
-        <div className="w-full max-w-5xl bg-surface-container-lowest dark:bg-slate-800 border border-outline-variant/30 rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-0 lg:min-h-[650px]">
-          {/* Left Hero Banner Column (Lifestyle Showcase) - Shown on desktop */}
-          <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-blue-900 via-primary to-slate-950 text-white p-8 lg:p-10 flex-col justify-between relative overflow-hidden">
-            {/* Background Glow Overlays */}
-            <div className="absolute -top-20 -left-20 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            {/* Top Content */}
-            <div className="relative z-10 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-blue-200">
-                <Icon name="verified" className="text-sm text-amber-300" />
-                <span>Lumen Member Rewards</span>
-              </div>
-
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-snug">
-                  Elevate Your Everyday Tech Shopping
-                </h1>
-                <p className="mt-3 text-xs md:text-sm text-slate-300 leading-relaxed font-medium">
-                  Sign in to unlock personalized product recommendations, express checkout, live order tracking, and exclusive member discounts.
-                </p>
-              </div>
-            </div>
-
-            {/* Member Perks Feature List */}
-            <div className="relative z-10 space-y-3.5 my-8">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-                <div className="w-9 h-9 rounded-lg bg-secondary/30 flex items-center justify-center shrink-0">
-                  <Icon name="local_shipping" className="text-blue-300 text-lg" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-white">Free Express Shipping</div>
-                  <div className="text-[11px] text-slate-300">On all eligible member orders above $100</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/30 flex items-center justify-center shrink-0">
-                  <Icon name="loyalty" className="text-emerald-300 text-lg" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-white">Earn Member Points</div>
-                  <div className="text-[11px] text-slate-300">Get 5% back in reward credits on every order</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Footer */}
-            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
-              <span>Join over 50,000+ Happy Shoppers</span>
-              <span className="flex items-center gap-1 text-emerald-400 font-bold">
-                <Icon name="shield" className="text-xs" /> 100% Secure
-              </span>
-            </div>
-          </div>
-
-          {/* Right Auth Form Column */}
-          <div className="lg:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[580px] lg:min-h-[650px]">
+        <div className="w-full max-w-5xl bg-surface-container-lowest dark:bg-slate-800 border border-outline-variant/30 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="p-5 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[580px] lg:min-h-[650px]">
             <div>
               {/* Mobile Compact Header Greeting */}
               <div className="lg:hidden mb-5 text-center space-y-1">
@@ -258,7 +263,7 @@ export const LoginPage = () => {
               )}
 
               {/* Active Session Notice */}
-              {isAuthenticated && user && (
+              {user && (
                 <div className="mb-6 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-blue-900 dark:text-blue-200 flex items-center gap-1.5">
@@ -393,7 +398,8 @@ export const LoginPage = () => {
                       <label className="flex items-center gap-2 cursor-pointer text-xs text-outline font-medium">
                         <input
                           type="checkbox"
-                          defaultChecked
+                          checked={rememberMe}
+                          onChange={(e) => setRememberMe(e.target.checked)}
                           className="rounded border-outline-variant text-secondary focus:ring-secondary accent-secondary"
                         />
                         <span>Remember me on this device</span>
@@ -532,7 +538,8 @@ export const LoginPage = () => {
                       <label className="flex items-center gap-2 cursor-pointer text-xs text-outline font-medium">
                         <input
                           type="checkbox"
-                          defaultChecked
+                          checked={subscribePromo}
+                          onChange={(e) => setSubscribePromo(e.target.checked)}
                           className="rounded border-outline-variant text-secondary focus:ring-secondary accent-secondary"
                         />
                         <span>Subscribe to exclusive member promotions and new drops.</span>
@@ -578,6 +585,6 @@ export const LoginPage = () => {
           </div>
         </div>
       </footer>
-    </div>
+    </AuthShell>
   );
 };

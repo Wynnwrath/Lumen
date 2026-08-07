@@ -1,19 +1,19 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../stores/theme.store";
 import { useCartStore } from "../../stores/cart.store";
 import { useWishlistStore } from "../../stores/wishlist.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { getProducts } from "../../api/products";
-import type { Product } from "../../types";
 import { Icon } from "../common/Icon";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import { useFetch } from "../../hooks/useFetch";
 
 export const PublicHeader = () => {
   const { mode, toggle } = useThemeStore();
   const { items, getSubtotal, getItemCount, removeItem } = useCartStore();
   const { ids: wishlistIds } = useWishlistStore();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,12 +29,7 @@ export const PublicHeader = () => {
   const itemCount = getItemCount();
   const subtotal = getSubtotal();
 
-  const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
-  useEffect(() => {
-    getProducts({ limit: 100 })
-      .then((res) => setCatalogProducts(res.products))
-      .catch(() => setCatalogProducts([]));
-  }, []);
+  const { data: searchProducts } = useFetch(() => getProducts({ limit: 100 }).then((r) => r.products));
 
   // close each dropdown when clicking outside its container
   useClickOutside(searchRef, () => setShowSearchDropdown(false));
@@ -44,13 +39,13 @@ export const PublicHeader = () => {
   const liveSearchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
-    return catalogProducts
+    return (searchProducts ?? [])
       .filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
           p.category.toLowerCase().includes(q)
       );
-  }, [searchQuery, catalogProducts]);
+  }, [searchQuery, searchProducts]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -238,7 +233,7 @@ export const PublicHeader = () => {
                   </>
                 ) : (
                   <div className="p-4 text-center text-xs text-outline font-medium">
-                    No matching products found for "{searchQuery}"
+                    No matching products found for {`"${searchQuery}"`}
                   </div>
                 )}
               </div>
@@ -300,7 +295,7 @@ export const PublicHeader = () => {
                       </div>
                       <div className="space-y-1">
                         <p className="text-sm font-bold text-on-surface">Your cart is empty</p>
-                        <p className="text-xs text-outline">Looks like you haven't added anything yet.</p>
+                        <p className="text-xs text-outline">Looks like you haven{`'`}t added anything yet.</p>
                       </div>
                       <button
                         onClick={() => {
@@ -387,20 +382,20 @@ export const PublicHeader = () => {
                   <div className="px-3 py-2.5 bg-surface dark:bg-slate-700/60 rounded-xl border border-outline-variant/20 mb-1">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">
-                        {isAuthenticated && user ? user.name.slice(0, 2).toUpperCase() : "G"}
+                        {user && user ? user.name.slice(0, 2).toUpperCase() : "G"}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-extrabold text-on-surface truncate">
-                          {isAuthenticated && user ? user.name : "Guest User"}
+                          {user && user ? user.name : "Guest User"}
                         </p>
                         <p className="text-[10px] text-outline truncate">
-                          {isAuthenticated && user ? user.email : "Sign in to access your portal"}
+                          {user && user ? user.email : "Sign in to access your portal"}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {isAuthenticated ? (
+                  {user ? (
                     <>
                       <Link
                         to="/checkout"

@@ -7,7 +7,7 @@ import { useClickOutside } from "../../hooks/useClickOutside";
 
 export const MobileNav = () => {
   const { getItemCount } = useCartStore();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -94,14 +94,14 @@ export const MobileNav = () => {
             <div className="flex items-center justify-between border-b border-outline-variant/20 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-sm shrink-0">
-                  {isAuthenticated && user ? user.name.slice(0, 2).toUpperCase() : "G"}
+                  {user && user ? user.name.slice(0, 2).toUpperCase() : "G"}
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-extrabold text-on-surface truncate">
-                    {isAuthenticated && user ? user.name : "Guest User"}
+                    {user && user ? user.name : "Guest User"}
                   </p>
                   <p className="text-xs text-outline truncate">
-                    {isAuthenticated && user ? user.email : "Sign in to access your portal"}
+                    {user && user ? user.email : "Sign in to access your portal"}
                   </p>
                 </div>
               </div>
@@ -113,7 +113,7 @@ export const MobileNav = () => {
               </button>
             </div>
 
-            {isAuthenticated ? (
+            {user ? (
               <div className="space-y-2">
                 <button
                   onClick={() => handleMobileNavigate("/checkout")}
