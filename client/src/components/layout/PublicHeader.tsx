@@ -9,6 +9,7 @@ import type { Product } from "../../types";
 import { Icon } from "../common/Icon";
 import { ProductImage } from "../common/ProductImage";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import { formatMoney } from "../../utils/format";
 
 export const PublicHeader = () => {
   const { mode, toggle } = useThemeStore();
@@ -220,7 +221,7 @@ export const PublicHeader = () => {
                               {product.name}
                             </p>
                             <p className="text-[10px] text-outline uppercase tracking-wider">
-                              {product.category} &bull; ${product.price.toFixed(2)}
+                              {product.category} &bull; {formatMoney(product.price)}
                             </p>
                           </div>
                         </button>
@@ -329,7 +330,7 @@ export const PublicHeader = () => {
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-bold text-on-surface truncate">{product.name}</p>
                               <p className="text-[10px] text-outline">
-                                Qty: {quantity} &times; ${product.price.toFixed(2)}
+                                Qty: {quantity} &times; {formatMoney(product.price)}
                               </p>
                             </div>
                             <button
@@ -345,12 +346,12 @@ export const PublicHeader = () => {
                       <div className="border-t border-outline-variant/20 pt-3 space-y-1.5">
                         <div className="flex justify-between text-xs font-bold text-on-surface-variant">
                           <span>Subtotal:</span>
-                          <span className="font-bold text-on-surface">${subtotal.toFixed(2)}</span>
+                          <span className="font-bold text-on-surface">{formatMoney(subtotal)}</span>
                         </div>
                         <div className="flex justify-between text-xs font-black text-on-surface">
                           <span>Total Amount:</span>
                           <span className="text-secondary dark:text-secondary-fixed">
-                            ${subtotal.toFixed(2)}
+                            {formatMoney(subtotal)}
                           </span>
                         </div>
                         <button

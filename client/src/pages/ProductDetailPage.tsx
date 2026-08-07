@@ -10,6 +10,7 @@ import { QuantityStepper } from "../components/common/QuantityStepper";
 import { Skeleton } from "../components/common/Skeleton";
 import { useToast } from "../components/common/ToastProvider";
 import { FALLBACK_PRODUCT_IMAGE } from "../constants";
+import { formatMoney } from "../utils/format";
 import type { Product } from "../types";
 
 // Single product view: gallery, add to cart, specs, related products.
@@ -219,11 +220,11 @@ export const ProductDetailPage = () => {
             <div>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl sm:text-3xl font-black text-primary dark:text-white">
-                  ${product.price.toFixed(2)}
+                  {formatMoney(product.price)}
                 </span>
                 {product.originalPrice && product.originalPrice > product.price && (
                   <span className="text-xs sm:text-sm text-outline line-through">
-                    ${product.originalPrice.toFixed(2)}
+                    {formatMoney(product.originalPrice)}
                   </span>
                 )}
               </div>
@@ -386,7 +387,7 @@ export const ProductDetailPage = () => {
         <div className="shrink-0 pr-2 border-r border-outline-variant/30">
           <span className="text-xs text-outline block leading-none">Total</span>
           <span className="text-base font-black text-primary dark:text-white">
-            ${(product.price * quantity).toFixed(2)}
+            {formatMoney(product.price * quantity)}
           </span>
         </div>
         <button

@@ -3,7 +3,7 @@ import { StatusBadge } from "./StatusBadge";
 import { OrderSummary } from "./OrderSummary";
 import { Icon } from "./Icon";
 import type { Order } from "../../types";
-import { formatDate } from "../../utils/format";
+import { formatDate, formatMoney } from "../../utils/format";
 import type { ReactNode } from "react";
 
 // Shared "view order" modal: status/payment/address, items, and totals.
@@ -66,7 +66,7 @@ export const OrderDetailsModal = ({ order, onClose, footer, titlePrefix = "Order
             {order.items.map((item, idx) => (
               <div key={idx} className="flex items-center justify-between p-2.5 bg-surface dark:bg-slate-800/60 rounded-xl border border-outline-variant/20">
                 <span className="font-semibold text-on-surface">{item.name} &times; {item.quantity}</span>
-                <span className="font-mono font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                <span className="font-mono font-bold">{formatMoney(item.price * item.quantity)}</span>
               </div>
             ))}
           </div>

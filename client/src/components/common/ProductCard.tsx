@@ -4,6 +4,7 @@ import type { Product } from "../../types";
 import { useWishlistStore } from "../../stores/wishlist.store";
 import { Icon } from "./Icon";
 import { ProductImage } from "./ProductImage";
+import { formatMoney } from "../../utils/format";
 
 // tracks the mouse so the spotlight glow follows the cursor
 export const trackSpotlight = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -58,9 +59,9 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
   const priceRow = (
     <div className="pt-1.5 flex items-center justify-between border-t border-outline-variant/20">
       <div>
-        <span className="text-xs sm:text-base font-extrabold text-primary dark:text-white">${product.price.toFixed(2)}</span>
+        <span className="text-xs sm:text-base font-extrabold text-primary dark:text-white">{formatMoney(product.price)}</span>
         {product.originalPrice && product.originalPrice > product.price && (
-          <span className="text-[10px] sm:text-xs text-outline line-through ml-1 hidden sm:inline">${product.originalPrice.toFixed(2)}</span>
+          <span className="text-[10px] sm:text-xs text-outline line-through ml-1 hidden sm:inline">{formatMoney(product.originalPrice)}</span>
         )}
       </div>
       {onAddToCart && (
@@ -107,7 +108,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
           {ratingRow}
         </div>
         <div className="flex flex-col items-end justify-between shrink-0 gap-2">
-          <span className="text-sm sm:text-xl font-extrabold text-on-surface block">${product.price.toFixed(2)}</span>
+          <span className="text-sm sm:text-xl font-extrabold text-on-surface block">{formatMoney(product.price)}</span>
           {onAddToCart && (
             <button
               onClick={(e) => onAddToCart(product, e)}
@@ -142,7 +143,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
             <Link to={`/product/${product._id}`} className="text-xs sm:text-sm font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5">{product.name}</Link>
           </div>
           <div className="pt-1.5 flex items-center justify-between border-t border-outline-variant/20">
-            <span className="text-xs sm:text-sm font-extrabold text-primary dark:text-white">${product.price.toFixed(2)}</span>
+            <span className="text-xs sm:text-sm font-extrabold text-primary dark:text-white">{formatMoney(product.price)}</span>
             <Link to={`/product/${product._id}`} className="bg-secondary/10 hover:bg-secondary text-secondary hover:text-white px-2 py-1 rounded-lg text-xs font-bold transition">View</Link>
           </div>
         </div>

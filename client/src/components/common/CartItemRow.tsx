@@ -3,6 +3,7 @@ import { Icon } from "./Icon";
 import { QuantityStepper } from "./QuantityStepper";
 import { ProductImage } from "./ProductImage";
 import type { CartItem } from "../../types";
+import { formatMoney } from "../../utils/format";
 
 // One line in the cart: image, name, quantity stepper (or read-only count), line total.
 interface CartItemRowProps {
@@ -32,7 +33,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
           </Link>
         </h3>
         <p className="text-xs font-extrabold text-primary dark:text-white">
-          ${product.price.toFixed(2)}
+          {formatMoney(product.price)}
         </p>
       </div>
 
@@ -50,7 +51,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
       <div className="flex items-center gap-2 sm:gap-3 text-right shrink-0">
         {showLineTotal && (
           <span className="text-xs sm:text-sm font-black text-on-surface w-14 sm:w-16 text-right">
-            ${(product.price * quantity).toFixed(2)}
+            {formatMoney(product.price * quantity)}
           </span>
         )}
         {onRemove && (

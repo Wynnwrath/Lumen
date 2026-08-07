@@ -12,7 +12,8 @@ import { EmptyState } from "../components/common/EmptyState";
 import { OrderDetailsModal } from "../components/common/OrderDetailsModal";
 import { OrderStatusTimeline, ORDER_TRACK_STEPS } from "../components/common/OrderStatusTimeline";
 import { ListRowsSkeleton } from "../components/common/skeletons";
-import { formatDate } from "../utils/format";
+import { Button } from "../components/common/Button";
+import { formatDate, formatMoney } from "../utils/format";
 
 const AUTO_RECEIVE_DAYS = 3;
 
@@ -97,9 +98,9 @@ export const MyOrdersPage = () => {
           title="No orders yet"
           subtitle="When you place an order, it will show up here so you can track its status."
           action={
-            <Link to="/products" className="inline-block px-5 py-2.5 rounded-xl bg-secondary text-white text-xs font-bold shadow-sm hover:bg-secondary-container transition">
+            <Button to="/products" variant="secondary">
               Browse Products
-            </Link>
+            </Button>
           }
         />
       ) : (
@@ -135,7 +136,7 @@ export const MyOrdersPage = () => {
                     </span>
                     <span className="text-outline text-sm shrink-0">&times; {item.quantity}</span>
                     <span className="font-mono font-bold text-base text-on-surface shrink-0 w-24 text-right">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {formatMoney(item.price * item.quantity)}
                     </span>
                   </div>
                 ))}
@@ -199,14 +200,13 @@ export const MyOrdersPage = () => {
                       {getAutoReceiveLabel(order) ? ` ${getAutoReceiveLabel(order)}.` : " Auto-marking now."}
                     </p>
                   </div>
-                  <button
+                  <Button
+                    variant="secondary"
+                    loading={confirmingId === order._id}
                     onClick={() => handleConfirmReceived(order)}
-                    disabled={confirmingId === order._id}
-                    className="px-5 py-2.5 rounded-xl bg-secondary text-white text-sm font-bold shadow-sm hover:bg-secondary-container transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-1.5 shrink-0"
                   >
-                    {confirmingId === order._id && <Icon name="loader" className="text-sm animate-spin" />}
-                    <span>Confirm Received</span>
-                  </button>
+                    Confirm Received
+                  </Button>
                 </div>
               )}
 
@@ -214,7 +214,7 @@ export const MyOrdersPage = () => {
                 <div className="flex items-center gap-3">
                   <div className="text-sm">
                     <span className="text-outline text-sm">Total: </span>
-                    <span className="font-black text-on-surface text-lg">${order.total.toFixed(2)}</span>
+                    <span className="font-black text-on-surface text-lg">{formatMoney(order.total)}</span>
                     <span className="text-outline text-sm"> &bull; {order.paymentMethod}</span>
                   </div>
                   {order.status === "Received" && (
@@ -226,12 +226,9 @@ export const MyOrdersPage = () => {
                     </Link>
                   )}
                 </div>
-                <button
-                  onClick={() => setSelectedOrder(order)}
-                  className="px-5 py-2.5 rounded-xl bg-secondary text-white text-sm font-bold shadow-sm hover:bg-secondary-container transition"
-                >
+                <Button variant="secondary" onClick={() => setSelectedOrder(order)}>
                   View Details
-                </button>
+                </Button>
               </div>
             </div>
           ))}
