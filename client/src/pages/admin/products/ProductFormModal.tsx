@@ -3,7 +3,7 @@ import { Icon } from "../../../components/common/Icon";
 import { Button } from "../../../components/common/Button";
 import { Modal } from "../../../components/common/Modal";
 import { AdminField } from "./AdminField";
-import { FALLBACK_PRODUCT_IMAGE } from "../../../constants";
+import { ProductImage } from "../../../components/common/ProductImage";
 import type { Category, Product, ToastMessage } from "../../../types";
 import type { ProductStatus } from "../../../hooks/useProductForm";
 
@@ -182,13 +182,10 @@ export const ProductFormModal = ({
 
               {/* Primary Canvas Image Box */}
               <div className="relative w-full h-48 sm:h-52 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden flex items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 group">
-                <img
-                  src={formImage || FALLBACK_PRODUCT_IMAGE}
+                <ProductImage
+                  src={formImage}
                   alt="Product Preview"
                   className="w-full h-full object-cover rounded-xl transition duration-300"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = FALLBACK_PRODUCT_IMAGE;
-                  }}
                 />
                 <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 backdrop-blur-xs">
                   <span className="px-3 py-1.5 bg-white/90 text-slate-900 text-xs font-extrabold rounded-lg shadow-sm">
@@ -200,16 +197,10 @@ export const ProductFormModal = ({
               {/* Interactive Thumbnail Strip */}
               <div className="flex items-center gap-2">
                 <div className="w-12 h-12 rounded-lg bg-blue-600/10 border-2 border-blue-600 overflow-hidden shrink-0">
-                  <img
-                    src={formImage || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=200&q=80"}
-                    className="w-full h-full object-cover"
-                  />
+                  <ProductImage src={formImage} className="w-full h-full object-cover" />
                 </div>
                 <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=200&q=80"
-                    className="w-full h-full object-cover"
-                  />
+                  <ProductImage className="w-full h-full object-cover" />
                 </div>
                 <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                   <Icon name="add" className="text-lg" />
@@ -235,7 +226,7 @@ export const ProductFormModal = ({
                   type="url"
                   value={formImage}
                   onChange={(e) => setFormImage(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
+                  placeholder="Paste an image URL (e.g. https://...)"
                   className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
               </AdminField>

@@ -7,6 +7,7 @@ import { useAuthStore } from "../../stores/auth.store";
 import { getProducts } from "../../api/products";
 import type { Product } from "../../types";
 import { Icon } from "../common/Icon";
+import { ProductImage } from "../common/ProductImage";
 import { useClickOutside } from "../../hooks/useClickOutside";
 
 export const PublicHeader = () => {
@@ -209,7 +210,7 @@ export const PublicHeader = () => {
                           }}
                           className="w-full flex items-center gap-3 p-2 hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition text-left group"
                         >
-                          <img
+                          <ProductImage
                             src={product.images[0]}
                             alt={product.name}
                             className="w-10 h-10 object-cover rounded-lg bg-surface shrink-0"
@@ -320,7 +321,7 @@ export const PublicHeader = () => {
                             key={product._id}
                             className="flex items-center justify-between gap-2 p-2 bg-surface dark:bg-slate-800/60 rounded-xl"
                           >
-                            <img
+                            <ProductImage
                               src={product.images[0]}
                               alt={product.name}
                               className="w-10 h-10 object-cover rounded-lg"

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Icon } from "../../components/common/Icon";
+import { ProductImage } from "../../components/common/ProductImage";
 import type { Order } from "../../types";
 
 interface OrderConfirmationReceiptProps {
@@ -52,7 +53,7 @@ export const OrderConfirmationReceipt = ({ order, phone }: OrderConfirmationRece
             {order.items.map((item, idx) => (
               <div key={idx} className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded-lg bg-surface shrink-0 border border-outline-variant/30" />
+                  <ProductImage src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded-lg bg-surface shrink-0 border border-outline-variant/30" />
                   <span className="font-bold text-on-surface truncate max-w-[140px] sm:max-w-[220px]">{item.name}</span>
                 </div>
                 <span className="font-extrabold text-on-surface shrink-0">

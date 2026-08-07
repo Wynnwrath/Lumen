@@ -7,12 +7,12 @@ import { KpiCard } from "../../components/common/KpiCard";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { ListLoading } from "../../components/common/skeletons";
+import { ProductImage } from "../../components/common/ProductImage";
 import { useToast } from "../../components/common/ToastProvider";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useProductForm } from "../../hooks/useProductForm";
 import { ProductFormModal } from "./products/ProductFormModal";
-import { FALLBACK_PRODUCT_IMAGE } from "../../constants";
 
 // Admin product CRUD: list, search, toggle status, add/edit via modal (useProductForm).
 export const AdminProductsPage = () => {
@@ -207,8 +207,8 @@ export const AdminProductsPage = () => {
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 shadow-xs flex items-center gap-3.5 transition-colors rounded-none"
                 >
                   {/* Square Product Image */}
-                  <img
-                    src={product.images[0] || FALLBACK_PRODUCT_IMAGE}
+                  <ProductImage
+                    src={product.images[0]}
                     alt={product.name}
                     className="w-20 h-20 rounded-md object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-100 dark:border-slate-800/80"
                   />
@@ -295,8 +295,8 @@ export const AdminProductsPage = () => {
                     >
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <img
-                            src={product.images[0] || FALLBACK_PRODUCT_IMAGE}
+                          <ProductImage
+                            src={product.images[0]}
                             alt={product.name}
                             className="w-12 h-12 rounded-xl object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700"
                           />

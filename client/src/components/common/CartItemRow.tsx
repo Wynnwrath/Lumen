@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Icon } from "./Icon";
 import { QuantityStepper } from "./QuantityStepper";
+import { ProductImage } from "./ProductImage";
 import type { CartItem } from "../../types";
 
 // One line in the cart: image, name, quantity stepper (or read-only count), line total.
@@ -15,7 +16,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
   const { product, quantity } = item;
   return (
     <div className="p-3 sm:p-4 flex flex-row items-center gap-3 sm:gap-4">
-      <img
+      <ProductImage
         src={product.images[0]}
         alt={product.name}
         className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0 border border-outline-variant/30"

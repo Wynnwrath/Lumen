@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/common/Icon";
+import { ProductImage } from "../components/common/ProductImage";
 import { QuantityStepper } from "../components/common/QuantityStepper";
 import { EmptyState } from "../components/common/EmptyState";
 import { useCheckoutForm } from "../hooks/useCheckoutForm";
@@ -119,7 +120,7 @@ export const CheckoutPage = () => {
                   className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs border border-outline-variant/30 flex flex-row items-center gap-3 sm:gap-4 group"
                 >
                   {/* Perfect Fixed Thumbnail Box */}
-                  <img
+                  <ProductImage
                     src={product.images[0]}
                     alt={product.name}
                     className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"

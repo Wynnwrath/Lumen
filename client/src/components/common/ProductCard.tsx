@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import type { Product } from "../../types";
 import { useWishlistStore } from "../../stores/wishlist.store";
 import { Icon } from "./Icon";
+import { ProductImage } from "./ProductImage";
 
 // tracks the mouse so the spotlight glow follows the cursor
 export const trackSpotlight = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -84,7 +85,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
         onClick={() => navigate(`/product/${product._id}`)}
         className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-outline-variant/30 p-3 sm:p-4 shadow-xs hover:shadow-lg transition-all flex flex-row items-center gap-3 sm:gap-4 group cursor-pointer"
       >
-        <img
+        <ProductImage
           src={product.images[0]}
           alt={product.name}
           className="w-20 h-20 sm:w-32 sm:h-32 object-cover rounded-xl bg-slate-100 dark:bg-slate-700/50 shrink-0"
@@ -132,7 +133,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
       <div className="product-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-none shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group border border-outline-variant/30 overflow-hidden">
         <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
           <Link to={`/product/${product._id}`} className="w-full h-full block">
-            <img src={product.images[0]} alt={product.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
+            <ProductImage src={product.images[0]} alt={product.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
           </Link>
         </div>
         <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between space-y-1.5 sm:space-y-2">
@@ -157,7 +158,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
     >
       <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
         <Link to={`/product/${product._id}`} className="w-full h-full block">
-          <img src={product.images[0]} alt={product.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
+          <ProductImage src={product.images[0]} alt={product.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
         </Link>
         <div className="absolute top-2 left-2 z-10">{stockBadge}</div>
         {wishlistButton}

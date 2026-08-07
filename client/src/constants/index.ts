@@ -10,6 +10,7 @@ export const ORDER_STATUSES: OrderStatus[] = [
   "Cancelled",
 ];
 
-// Used everywhere a product has no image (or the image fails to load).
+// Neutral placeholder used whenever a product has no image (or the image
+// fails to load). An inline SVG so there's no external network dependency.
 export const FALLBACK_PRODUCT_IMAGE =
-  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80";
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><rect width='400' height='400' fill='%23e2e8f0'/><g fill='none' stroke='%2394a3b8' stroke-width='18' stroke-linecap='round' stroke-linejoin='round'><rect x='140' y='115' width='120' height='95' rx='12'/><circle cx='187' cy='152' r='14'/><path d='M140 208 L188 172 L233 197 L253 180 L274 197'/></g></svg>";

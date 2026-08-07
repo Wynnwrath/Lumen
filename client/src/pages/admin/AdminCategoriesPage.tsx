@@ -27,7 +27,7 @@ export const AdminCategoriesPage = () => {
   const [formIcon, setFormIcon] = useState("devices");
   const [formDescription, setFormDescription] = useState("");
 
-  const [pdfWarningMessage, setPdfWarningMessage] = useState<string | null>(null);
+  const [deleteBlockedMessage, setDeleteBlockedMessage] = useState<string | null>(null);
 
   // Memoized Product Counts per Category (single pass, equivalent to the old O(N·M) getAssignedCount)
   const categoryCounts = useMemo(() => {
@@ -114,14 +114,14 @@ export const AdminCategoriesPage = () => {
   };
 
   const handleDeleteCategory = async (cat: Category) => {
-    setPdfWarningMessage(null);
+    setDeleteBlockedMessage(null);
     try {
       await deleteCategory(cat.slug);
       showToast("Category deleted successfully", "info");
       await refreshCategories();
     } catch (error) {
       const message = getErrorMessage(error);
-      setPdfWarningMessage(
+      setDeleteBlockedMessage(
         message === "Something went wrong. Please try again."
           ? `Cannot delete category "${cat.name}" because active products are assigned to it.`
           : message
@@ -390,16 +390,16 @@ export const AdminCategoriesPage = () => {
         </form>
       </Modal>
 
-      {/* Deletion Blocked Warning Modal (PDF Guardrail Spec) */}
+      {/* Deletion Blocked Warning Modal */}
       <Modal
-        open={!!pdfWarningMessage}
-        onClose={() => setPdfWarningMessage(null)}
-        title="Deletion Blocked (PDF Requirement)"
+        open={!!deleteBlockedMessage}
+        onClose={() => setDeleteBlockedMessage(null)}
+        title="Deletion Blocked"
         icon={<Icon name="warning" className="text-3xl text-amber-600" />}
         headerIconClassName="bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 rounded-full w-14 h-14"
-        footer={<Button fullWidth onClick={() => setPdfWarningMessage(null)}>Understood</Button>}
+        footer={<Button fullWidth onClick={() => setDeleteBlockedMessage(null)}>Understood</Button>}
       >
-        <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">{pdfWarningMessage}</p>
+        <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">{deleteBlockedMessage}</p>
       </Modal>
     </div>
   );

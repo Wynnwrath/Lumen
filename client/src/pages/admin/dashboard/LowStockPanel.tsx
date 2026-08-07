@@ -1,4 +1,5 @@
 import { Icon } from "../../../components/common/Icon";
+import { ProductImage } from "../../../components/common/ProductImage";
 import type { Product } from "../../../types";
 
 interface LowStockPanelProps {
@@ -28,21 +29,15 @@ export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
             </div>
           ) : (
             products.map((item) => {
-              const fallbackImg = "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=400&q=80";
-              const imgSrc = item.images && item.images.length > 0 && item.images[0] ? item.images[0] : fallbackImg;
-
               return (
                 <div
                   key={item._id}
                   className="py-3 px-1 flex items-center justify-between gap-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <img
-                      src={imgSrc}
+                    <ProductImage
+                      src={item.images && item.images.length > 0 ? item.images[0] : undefined}
                       alt={item.name}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = fallbackImg;
-                      }}
                       className="w-10 h-10 rounded-md object-cover border border-slate-200 dark:border-slate-700/80 shrink-0 bg-slate-100 dark:bg-slate-800"
                     />
                     <div className="min-w-0 flex-1">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "../../../components/common/Icon";
 import { Modal } from "../../../components/common/Modal";
+import { ProductImage } from "../../../components/common/ProductImage";
 import type { Product } from "../../../types";
 
 interface RestockModalProps {
@@ -10,8 +11,6 @@ interface RestockModalProps {
 }
 
 const PRESETS = [10, 25, 50, 100];
-
-const FALLBACK_IMG = "https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=400&q=80";
 
 export const RestockModal = ({ product, onClose, onConfirm }: RestockModalProps) => {
   const [stock, setStock] = useState(0);
@@ -24,7 +23,6 @@ export const RestockModal = ({ product, onClose, onConfirm }: RestockModalProps)
   if (!product) return null;
 
   const currentStock = product.stock || 0;
-  const imgSrc = product.images && product.images.length > 0 ? product.images[0] : FALLBACK_IMG;
 
   const handleConfirm = async () => {
     if (saving) return;
@@ -65,12 +63,9 @@ export const RestockModal = ({ product, onClose, onConfirm }: RestockModalProps)
       }
     >
       <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
-        <img
-          src={imgSrc}
+        <ProductImage
+          src={product.images && product.images.length > 0 ? product.images[0] : undefined}
           alt={product.name}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = FALLBACK_IMG;
-          }}
           className="w-12 h-12 rounded-lg object-cover border border-slate-200 dark:border-slate-700/80 shrink-0 bg-slate-100 dark:bg-slate-800"
         />
         <div className="min-w-0">

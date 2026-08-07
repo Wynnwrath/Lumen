@@ -4,12 +4,12 @@ import { useAuthStore } from "../stores/auth.store";
 import { getMyOrders } from "../api/orders";
 import type { Order } from "../types";
 import { Icon } from "../components/common/Icon";
+import { ProductImage } from "../components/common/ProductImage";
 import { StatusBadge } from "../components/common/StatusBadge";
 import { EmptyState } from "../components/common/EmptyState";
 import { OrderDetailsModal } from "../components/common/OrderDetailsModal";
 import { ListRowsSkeleton } from "../components/common/skeletons";
 import { formatDate } from "../utils/format";
-import { FALLBACK_PRODUCT_IMAGE } from "../constants";
 
 // "My Orders" for a logged-in customer: list + order details modal.
 export const MyOrdersPage = () => {
@@ -81,8 +81,8 @@ export const MyOrdersPage = () => {
               <div className="py-3 space-y-2.5">
                 {order.items.slice(0, 3).map((item) => (
                   <div key={`${item.name}-${item.quantity}`} className="flex items-center gap-3">
-                    <img
-                      src={item.image || FALLBACK_PRODUCT_IMAGE}
+                    <ProductImage
+                      src={item.image}
                       alt={item.name}
                       className="w-12 h-12 sm:w-14 sm:h-14 aspect-square object-cover rounded-xl bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"
                     />

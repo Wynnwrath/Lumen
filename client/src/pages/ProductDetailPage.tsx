@@ -4,6 +4,7 @@ import { getProduct, getProducts } from "../api/products";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import { Icon } from "../components/common/Icon";
+import { ProductImage } from "../components/common/ProductImage";
 import { ProductCard } from "../components/common/ProductCard";
 import { QuantityStepper } from "../components/common/QuantityStepper";
 import { Skeleton } from "../components/common/Skeleton";
@@ -148,7 +149,7 @@ export const ProductDetailPage = () => {
         <div className="lg:col-span-6 space-y-3">
           {/* Main Display Image Frame */}
           <div className="aspect-square max-h-[320px] sm:max-h-none mx-auto w-full rounded-none bg-surface-container dark:bg-slate-800 overflow-hidden border border-outline-variant/30 shadow-md relative group">
-            <img
+            <ProductImage
               src={currentImage}
               alt={product.name}
               onClick={() => setIsZoomOpen(true)}
@@ -176,7 +177,7 @@ export const ProductDetailPage = () => {
                       : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                  <ProductImage src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -436,7 +437,7 @@ export const ProductDetailPage = () => {
             </button>
           )}
 
-          <img
+          <ProductImage
             src={currentImage}
             alt={product.name}
             className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
