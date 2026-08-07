@@ -6,7 +6,7 @@ import { Button } from "../../components/common/Button";
 import { KpiCard } from "../../components/common/KpiCard";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListRowsSkeleton } from "../../components/common/skeletons";
+import { ListLoading } from "../../components/common/skeletons";
 import { useToast } from "../../components/common/ToastProvider";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
@@ -191,7 +191,7 @@ export const AdminProductsPage = () => {
 
       {/* Products Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {productsLoading ? (
-        <ListRowsSkeleton rows={6} />
+        <ListLoading label="Loading products..." />
       ) : (
       <section className="space-y-4">
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}

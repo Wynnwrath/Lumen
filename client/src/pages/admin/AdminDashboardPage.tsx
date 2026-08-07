@@ -12,8 +12,10 @@ import { useCustomers } from "../../hooks/useCustomers";
 import { formatDate } from "../../utils/format";
 import { RevenueBarChart } from "./dashboard/RevenueBarChart";
 import { OrdersByStatusList } from "./dashboard/OrdersByStatusList";
+import { TopProductsChart } from "./dashboard/TopProductsChart";
 import { RecentOrdersSection } from "./dashboard/RecentOrdersSection";
 import { LowStockPanel } from "./dashboard/LowStockPanel";
+import { RestockModal } from "./dashboard/RestockModal";
 
 // Admin overview: KPI cards, revenue/status charts, recent orders, low-stock alerts.
 export const AdminDashboardPage = () => {
@@ -21,6 +23,7 @@ export const AdminDashboardPage = () => {
   const { products, refresh: refreshProducts } = useProducts();
   const { customers } = useCustomers();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [restockProduct, setRestockProduct] = useState<Product | null>(null);
   const { showToast } = useToast();
   const [charts, setCharts] = useState<{ revenueByDay: { date: string; label: string; total: number }[]; ordersByStatus: { status: string; count: number }[] }>({
     revenueByDay: [],
@@ -58,6 +61,20 @@ export const AdminDashboardPage = () => {
   // Low stock products (< 5)
   const lowStockProducts = useMemo(() => products.filter((p) => p.stock < 5), [products]);
 
+  // Top selling products: aggregate units sold per product name, excluding cancelled orders.
+  const topProducts = useMemo(() => {
+    const counts = new Map<string, number>();
+    orders
+      .filter((o) => o.status !== "Cancelled")
+      .forEach((o) =>
+        o.items.forEach((item) => counts.set(item.name, (counts.get(item.name) || 0) + item.quantity))
+      );
+    return [...counts.entries()]
+      .map(([name, units]) => ({ name, units }))
+      .sort((a, b) => b.units - a.units)
+      .slice(0, 5);
+  }, [orders]);
+
   const handleUpdateStatus = async (orderNumber: string, newStatus: OrderStatus) => {
     try {
       await updateOrderStatus(orderNumber, newStatus);
@@ -71,14 +88,13 @@ export const AdminDashboardPage = () => {
     }
   };
 
-  const handleRestock = async (product: Product) => {
-    const newStock = (product.stock || 0) + 10;
+  const handleRestock = async (product: Product, newStock: number) => {
     try {
-      await updateProduct(product._id, { stock: newStock, status: "active" });
+      await updateProduct(product._id, { stock: newStock, status: newStock > 0 ? "active" : "out_of_stock" });
       await refreshData();
-      showToast(`Restocked +10 units for ${product.name}`, "success");
+      showToast(`Stock updated to ${newStock} for ${product.name}`, "success");
     } catch (error) {
-      showToast("Failed to restock product", "error");
+      showToast("Failed to update stock", "error");
     }
   };
 
@@ -184,14 +200,27 @@ export const AdminDashboardPage = () => {
         <OrdersByStatusList data={charts.ordersByStatus} />
       </section>
 
+      {/* Top Selling Products */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full">
+        <div className="lg:col-span-12">
+          <TopProductsChart data={topProducts} />
+        </div>
+      </section>
+
       {/* Bottom Row: Recent Transactions Table & Inventory Warnings */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 w-full">
         {/* Recent Transactions Data Table */}
         <RecentOrdersSection orders={orders} onOpenDetails={setSelectedOrder} onUpdateStatus={handleUpdateStatus} />
 
         {/* Inventory Alerts Panel */}
-        <LowStockPanel products={lowStockProducts} onRestock={handleRestock} />
+        <LowStockPanel products={lowStockProducts} onRestock={setRestockProduct} />
       </section>
+
+      <RestockModal
+        product={restockProduct}
+        onClose={() => setRestockProduct(null)}
+        onConfirm={handleRestock}
+      />
 
       {/* Order Detail Modal */}
       <Modal

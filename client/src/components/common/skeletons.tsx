@@ -1,6 +1,15 @@
 import { Skeleton } from "./Skeleton";
+import { Icon } from "./Icon";
 
 // Loading placeholders: product grid and list rows.
+
+// Centered spinner used on admin pages instead of skeleton rows.
+export const ListLoading = ({ label = "Loading..." }: { label?: string }) => (
+  <div className="flex flex-col items-center justify-center gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 text-center shadow-xs rounded-none">
+    <Icon name="loader" className="text-2xl animate-spin text-blue-600 dark:text-blue-400" />
+    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{label}</span>
+  </div>
+);
 export const ProductGridSkeleton = ({ count = 8 }: { count?: number }) => (
   <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
     {Array.from({ length: count }).map((_, i) => (

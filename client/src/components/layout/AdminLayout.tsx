@@ -23,46 +23,40 @@ export const AdminLayout = () => {
     if (location.pathname === "/admin" || location.pathname === "/admin/dashboard") {
       return {
         title: "General Metrics",
-        subtitle: "Overview of store sales, revenue trends, and inventory status",
         showTimeFilter: true,
       };
     }
     if (location.pathname === "/admin/products") {
       return {
         title: "Products Catalog",
-        subtitle: "Manage product inventory, pricing, stock levels, and active status",
         showTimeFilter: false,
       };
     }
     if (location.pathname === "/admin/categories") {
       return {
         title: "Categories Taxonomy",
-        subtitle: "Organize catalog categories and deletion safety guardrails",
         showTimeFilter: false,
       };
     }
     if (location.pathname === "/admin/orders") {
       return {
         title: "Orders & Fulfillment",
-        subtitle: "Track customer purchases, billing status, and order processing",
         showTimeFilter: true,
       };
     }
     if (location.pathname === "/admin/customers") {
       return {
         title: "Customer Directory",
-        subtitle: "Manage customer profiles, lifetime spend, and tier status",
         showTimeFilter: false,
       };
     }
     return {
       title: "Admin Portal",
-      subtitle: "Lumen Intelligence E-Commerce Dashboard",
       showTimeFilter: false,
     };
   };
 
-  const { title, subtitle, showTimeFilter } = getPageInfo();
+  const { title, showTimeFilter } = getPageInfo();
 
   const navItems = [
     { path: "/admin", label: "General metrics", icon: "grid_view" },
@@ -76,9 +70,8 @@ export const AdminLayout = () => {
     <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex">
       {/* Left Sidebar Navigation */}
       <aside
-        className={`w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between fixed top-0 bottom-0 left-0 z-30 transition-transform duration-200 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        } shadow-sm dark:shadow-xl`}
+        className={`w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between fixed top-0 bottom-0 left-0 z-30 transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          } shadow-sm dark:shadow-xl`}
       >
         <div>
           {/* Brand Header */}
@@ -130,11 +123,10 @@ export const AdminLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${
-                    isActive
-                      ? "bg-blue-600 text-white shadow-sm hover:bg-blue-500"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                  }`}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition ${isActive
+                    ? "bg-blue-600 text-white shadow-sm hover:bg-blue-500"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                 >
                   <Icon name={item.icon} className="text-lg" />
                   <span>{item.label}</span>
@@ -187,9 +179,6 @@ export const AdminLayout = () => {
               <h1 className="text-base sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight truncate">
                 {title}
               </h1>
-              <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400 font-medium">
-                {subtitle}
-              </p>
             </div>
           </div>
 

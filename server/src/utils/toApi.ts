@@ -1,6 +1,5 @@
-// Renames every `id` key to `_id` recursively before sending data to the client.
-// The app used MongoDB where the key was `_id`; after moving to Postgres/Prisma
-// the field is `id`, and this keeps the frontend (which still expects `_id`) working.
+// The Postgres column is literally `_id` (mapped in schema.prisma), but Prisma exposes
+// it as `id`, so this renames it back to `_id` to match the client's API contract.
 export function toApi<T>(value: T): T {
   // Primitives and Dates pass through untouched.
   if (value === null || typeof value !== "object") return value;

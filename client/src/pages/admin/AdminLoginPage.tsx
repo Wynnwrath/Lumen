@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Icon } from "../../components/common/Icon";
 import { Button } from "../../components/common/Button";
 import { useToast } from "../../components/common/ToastProvider";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
 import { useThemeStore } from "../../stores/theme.store";
-import { AuthShell } from "../../components/common/auth/AuthShell";
 
-// Admin login page (uses the auth store's loginAdmin + AuthShell layout).
 export const AdminLoginPage = () => {
   const navigate = useNavigate();
   const { user, loginAdmin, logout } = useAuthStore();
@@ -47,107 +45,7 @@ export const AdminLoginPage = () => {
   };
 
   return (
-    <AuthShell
-      left={
-        <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-slate-900 via-primary to-slate-950 text-white p-8 lg:p-10 flex-col justify-between relative overflow-hidden">
-          {/* Background Glow Overlays */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-          {/* Top Content Header */}
-          <div className="relative z-10 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-blue-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Live Admin Control Center</span>
-            </div>
-
-            <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-snug">
-                Empower Store Operations with Lumen Admin
-              </h1>
-              <p className="mt-2 text-xs md:text-sm text-slate-300 leading-relaxed font-medium">
-                Real-time sales tracking, order processing, inventory control, and customer management.
-              </p>
-            </div>
-          </div>
-
-          {/* Live Dashboard Snapshot Cards */}
-          <div className="relative z-10 space-y-3 my-6">
-            <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Icon name="equalizer" className="text-sm text-blue-400" />
-              <span>Live Store Metrics Snapshot</span>
-            </div>
-
-            {/* Monthly Volume */}
-            <div className="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-emerald-500/30 flex items-center justify-center shrink-0">
-                <Icon name="payments" className="text-emerald-300 text-lg" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[11px] text-slate-300 font-medium">Monthly Gross Volume</div>
-                <div className="text-sm font-extrabold text-white flex items-center justify-between">
-                  <span>$142,850.00</span>
-                  <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded">+18.4%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Active Orders */}
-            <div className="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-500/30 flex items-center justify-center shrink-0">
-                <Icon name="inventory_2" className="text-blue-300 text-lg" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[11px] text-slate-300 font-medium">Active Store Orders</div>
-                <div className="text-sm font-extrabold text-white flex items-center justify-between">
-                  <span>14,290 Orders</span>
-                  <span className="text-[11px] font-bold text-blue-300 bg-blue-950/60 px-1.5 py-0.5 rounded">99.8% On-Time</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Live Real-time Activity Stream */}
-            <div className="p-3 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 space-y-2">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                <span>Recent Activity Feed</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-              </div>
-              <div className="space-y-1.5 text-[11px]">
-                <div className="flex items-center justify-between text-slate-200">
-                  <span className="flex items-center gap-1.5 truncate">
-                    <Icon name="check_circle" className="text-xs text-emerald-400" />
-                    <span>Order #8492 Processed ($249.00)</span>
-                  </span>
-                  <span className="text-[10px] text-slate-400 shrink-0">2m ago</span>
-                </div>
-                <div className="flex items-center justify-between text-slate-200">
-                  <span className="flex items-center gap-1.5 truncate">
-                    <Icon name="person_add" className="text-xs text-blue-400" />
-                    <span>New Customer Registered</span>
-                  </span>
-                  <span className="text-[10px] text-slate-400 shrink-0">12m ago</span>
-                </div>
-                <div className="flex items-center justify-between text-slate-200">
-                  <span className="flex items-center gap-1.5 truncate">
-                    <Icon name="inventory" className="text-xs text-amber-400" />
-                    <span>Inventory Restocked (+50)</span>
-                  </span>
-                  <span className="text-[10px] text-slate-400 shrink-0">45m ago</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Footer Note */}
-          <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
-            <span>Lumen Store Management</span>
-            <span className="flex items-center gap-1 text-emerald-400 font-bold">
-              <Icon name="shield" className="text-xs" /> Restricted Portal
-            </span>
-          </div>
-        </div>
-      }
-    >
+    <div className="bg-surface dark:bg-slate-900 text-on-surface dark:text-slate-100 font-['Hanken_Grotesk',sans-serif] antialiased min-h-screen flex flex-col justify-between selection:bg-secondary selection:text-white transition-colors duration-200">
       {/* Top Header Navigation */}
       <header className="border-b border-outline-variant/30 bg-surface-container-lowest/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -192,8 +90,108 @@ export const AdminLoginPage = () => {
 
       {/* Main Auth Section */}
       <main className="flex-grow flex items-center justify-center p-3 sm:p-6 md:p-8 my-2 sm:my-6">
-        <div className="w-full max-w-5xl bg-surface-container-lowest dark:bg-slate-800 border border-outline-variant/30 rounded-2xl shadow-2xl overflow-hidden">
-          <div className="p-5 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[580px]">
+        <div className="w-full max-w-5xl bg-surface-container-lowest dark:bg-slate-800 border border-outline-variant/30 rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-0 lg:min-h-[640px]">
+          {/* Left Hero Banner Column (Dashboard Live Showcase) */}
+          <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-slate-900 via-primary to-slate-950 text-white p-8 lg:p-10 flex-col justify-between relative overflow-hidden">
+            {/* Background Glow Overlays */}
+            <div className="absolute -top-24 -left-24 w-72 h-72 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            {/* Top Content Header */}
+            <div className="relative z-10 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-blue-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Live Admin Control Center</span>
+              </div>
+
+              <div>
+                <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight leading-snug">
+                  Empower Store Operations with Lumen Admin
+                </h1>
+                <p className="mt-2 text-xs md:text-sm text-slate-300 leading-relaxed font-medium">
+                  Real-time sales tracking, order processing, inventory control, and customer management.
+                </p>
+              </div>
+            </div>
+
+            {/* Live Dashboard Snapshot Cards */}
+            <div className="relative z-10 space-y-3 my-6">
+              <div className="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Icon name="equalizer" className="text-sm text-blue-400" />
+                <span>Live Store Metrics Snapshot</span>
+              </div>
+
+              {/* Monthly Volume */}
+              <div className="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/30 flex items-center justify-center shrink-0">
+                  <Icon name="payments" className="text-emerald-300 text-lg" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] text-slate-300 font-medium">Monthly Gross Volume</div>
+                  <div className="text-sm font-extrabold text-white flex items-center justify-between">
+                    <span>$142,850.00</span>
+                    <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded">+18.4%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Orders */}
+              <div className="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-blue-500/30 flex items-center justify-center shrink-0">
+                  <Icon name="inventory_2" className="text-blue-300 text-lg" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11px] text-slate-300 font-medium">Active Store Orders</div>
+                  <div className="text-sm font-extrabold text-white flex items-center justify-between">
+                    <span>14,290 Orders</span>
+                    <span className="text-[11px] font-bold text-blue-300 bg-blue-950/60 px-1.5 py-0.5 rounded">99.8% On-Time</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Real-time Activity Stream */}
+              <div className="p-3 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 space-y-2">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                  <span>Recent Activity Feed</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                </div>
+                <div className="space-y-1.5 text-[11px]">
+                  <div className="flex items-center justify-between text-slate-200">
+                    <span className="flex items-center gap-1.5 truncate">
+                      <Icon name="check_circle" className="text-xs text-emerald-400" />
+                      <span>Order #8492 Processed ($249.00)</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 shrink-0">2m ago</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <span className="flex items-center gap-1.5 truncate">
+                      <Icon name="person_add" className="text-xs text-blue-400" />
+                      <span>New Customer Registered</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 shrink-0">12m ago</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <span className="flex items-center gap-1.5 truncate">
+                      <Icon name="inventory" className="text-xs text-amber-400" />
+                      <span>Inventory Restocked (+50)</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 shrink-0">45m ago</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Footer Note */}
+            <div className="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-medium">
+              <span>Lumen Store Management</span>
+              <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                <Icon name="shield" className="text-xs" /> Restricted Portal
+              </span>
+            </div>
+          </div>
+
+          {/* Right Auth Form Column */}
+          <div className="lg:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-between min-h-[580px]">
             <div>
               {/* Mobile Compact Header Greeting */}
               <div className="lg:hidden mb-5 text-center space-y-1">
@@ -212,10 +210,11 @@ export const AdminLoginPage = () => {
               {/* Alert Box Container */}
               {alert && (
                 <div
-                  className={`mb-6 p-4 rounded-xl border text-xs font-semibold flex items-center justify-between gap-3 ${alert.type === "success"
+                  className={`mb-6 p-4 rounded-xl border text-xs font-semibold flex items-center justify-between gap-3 ${
+                    alert.type === "success"
                       ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
                       : "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300"
-                    }`}
+                  }`}
                 >
                   <div className="flex items-center gap-2">
                     <Icon name={alert.type === "success" ? "check_circle" : "error"} className="text-lg" />
@@ -307,7 +306,7 @@ export const AdminLoginPage = () => {
                         required
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
-                        placeholder="Enter your password"
+                        placeholder="••••••••"
                         className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                       />
                     </div>
@@ -389,6 +388,6 @@ export const AdminLoginPage = () => {
           </div>
         </div>
       </footer>
-    </AuthShell>
+    </div>
   );
 };

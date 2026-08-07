@@ -5,7 +5,7 @@ import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListRowsSkeleton } from "../../components/common/skeletons";
+import { ListLoading } from "../../components/common/skeletons";
 import { useCustomers } from "../../hooks/useCustomers";
 
 // Admin customer directory: search, tier badges, order stats, profile modal.
@@ -31,7 +31,7 @@ export const AdminCustomersPage = () => {
 
       {/* Customers Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {customersLoading ? (
-        <ListRowsSkeleton rows={5} />
+        <ListLoading label="Loading customers..." />
       ) : (
       <div className="space-y-4">
         {/* Mobile View: High-Density Customer Cards */}

@@ -4,11 +4,12 @@ import { useAuthStore } from "../stores/auth.store";
 import { getMyOrders } from "../api/orders";
 import type { Order } from "../types";
 import { Icon } from "../components/common/Icon";
-import { StatusBadge, getStatusColorClass } from "../components/common/StatusBadge";
+import { StatusBadge } from "../components/common/StatusBadge";
 import { EmptyState } from "../components/common/EmptyState";
 import { OrderDetailsModal } from "../components/common/OrderDetailsModal";
 import { ListRowsSkeleton } from "../components/common/skeletons";
 import { formatDate } from "../utils/format";
+import { FALLBACK_PRODUCT_IMAGE } from "../constants";
 
 // "My Orders" for a logged-in customer: list + order details modal.
 export const MyOrdersPage = () => {
@@ -62,39 +63,52 @@ export const MyOrdersPage = () => {
           {orders.map((order) => (
             <div
               key={order._id}
-              className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 p-4 shadow-xs"
+              className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 p-4 sm:p-5 shadow-xs hover:border-secondary/40 hover:shadow-sm transition"
             >
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
-                <div>
-                  <span className="font-mono font-black text-sm text-on-surface">#{order.orderNumber}</span>
-                  <p className="text-[11px] text-outline">{formatDate(order.createdAt)}</p>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+                    <Icon name="shopping_bag" className="text-base" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="font-mono font-black text-sm text-on-surface">#{order.orderNumber}</span>
+                    <p className="text-xs text-outline">{formatDate(order.createdAt)}</p>
+                  </div>
                 </div>
                 <StatusBadge status={order.status} />
               </div>
 
-              <div className="py-3 space-y-2">
+              <div className="py-3 space-y-2.5">
                 {order.items.slice(0, 3).map((item) => (
-                  <div key={`${item.name}-${item.quantity}`} className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-on-surface truncate max-w-[200px]">
-                      {item.name} <span className="text-outline">&times; {item.quantity}</span>
+                  <div key={`${item.name}-${item.quantity}`} className="flex items-center gap-3">
+                    <img
+                      src={item.image || FALLBACK_PRODUCT_IMAGE}
+                      alt={item.name}
+                      className="w-12 h-12 sm:w-14 sm:h-14 aspect-square object-cover rounded-xl bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"
+                    />
+                    <span className="font-semibold text-on-surface text-sm truncate flex-1 min-w-0">
+                      {item.name}
                     </span>
-                    <span className="font-mono font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="text-outline text-xs shrink-0">&times; {item.quantity}</span>
+                    <span className="font-mono font-bold text-sm text-on-surface shrink-0 w-20 text-right">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </span>
                   </div>
                 ))}
                 {order.items.length > 3 && (
-                  <p className="text-[11px] text-outline">+{order.items.length - 3} more item(s)</p>
+                  <p className="text-xs text-outline">+{order.items.length - 3} more item(s)</p>
                 )}
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-outline-variant/20">
-                <div className="text-xs">
-                  <span className="text-outline">Total: </span>
-                  <span className="font-black text-on-surface text-sm">${order.total.toFixed(2)}</span>
-                  <span className="text-outline"> &bull; {order.paymentMethod}</span>
+                <div className="text-sm">
+                  <span className="text-outline text-xs">Total: </span>
+                  <span className="font-black text-on-surface text-base">${order.total.toFixed(2)}</span>
+                  <span className="text-outline text-xs"> &bull; {order.paymentMethod}</span>
                 </div>
                 <button
                   onClick={() => setSelectedOrder(order)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${getStatusColorClass(order.status)}`}
+                  className="px-4 py-2 rounded-xl bg-secondary text-white text-xs font-bold shadow-sm hover:bg-secondary-container transition"
                 >
                   View Details
                 </button>

@@ -8,7 +8,7 @@ import { KpiCard } from "../../components/common/KpiCard";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListRowsSkeleton } from "../../components/common/skeletons";
+import { ListLoading } from "../../components/common/skeletons";
 import { useToast } from "../../components/common/ToastProvider";
 import { useCategories } from "../../hooks/useCategories";
 import { useProducts } from "../../hooks/useProducts";
@@ -179,7 +179,7 @@ export const AdminCategoriesPage = () => {
 
       {/* Categories Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {categoriesLoading ? (
-        <ListRowsSkeleton rows={4} />
+        <ListLoading label="Loading categories..." />
       ) : (
       <section className="space-y-4">
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}

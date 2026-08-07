@@ -7,7 +7,7 @@ import { Button } from "../../components/common/Button";
 import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
-import { ListRowsSkeleton } from "../../components/common/skeletons";
+import { ListLoading } from "../../components/common/skeletons";
 import { useToast } from "../../components/common/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { formatDate } from "../../utils/format";
@@ -143,7 +143,7 @@ export const AdminOrdersPage = () => {
 
       {/* Orders Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {tableLoading ? (
-        <ListRowsSkeleton rows={5} />
+        <ListLoading label="Loading orders..." />
       ) : (
       <div className="space-y-4">
         {/* Mobile View: High-Density Order Cards */}
