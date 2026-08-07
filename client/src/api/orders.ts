@@ -16,7 +16,13 @@ export interface CreateOrderPayload {
   orderNotes?: string;
 }
 
-export async function getOrders(params?: { status?: OrderStatus; page?: number; limit?: number }) {
+export interface OrderListParams {
+  status?: OrderStatus;
+  page?: number;
+  limit?: number;
+}
+
+export async function getOrders(params?: OrderListParams) {
   const res = await api.get<ApiResponse<OrdersResponse>>("/orders", { params });
   return res.data.data;
 }
@@ -43,8 +49,28 @@ export async function confirmOrderReceived(orderNumber: string) {
   return res.data.data;
 }
 
-// The CSV export isn't JSON, so it returns the raw text.
+// Exports every order as a CSV download. The no-cache header stops the browser
+// from serving a stale/blank previously-downloaded CSV.
 export async function getOrdersCsv() {
-  const res = await api.get("/orders/export", { responseType: "text" });
+  const res = await api.get("/orders/export", {
+    responseType: "text",
+    headers: { "Cache-Control": "no-cache", Pragma: "no-cache" },
+  });
   return res.data;
+}
+
+// Downloads a raw CSV string as a file in the browser. Uses a UTF-8 BOM so
+// Excel/spreadsheets render it correctly, appends the anchor to the DOM, and
+// revokes the object URL after a tick so the download isn't aborted.
+export function downloadCsv(csv: string, filename: string) {
+  const blob = new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

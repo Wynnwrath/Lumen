@@ -229,7 +229,7 @@ export const orderService = {
     });
   },
 
-  // Customer confirms they received the order -> money released to the seller.
+  // Customer confirms they received the order for delivery settlement.
   // Owner-only and only allowed from "Completed".
   async confirmReceived(orderNumber: string, customerId: string) {
     const order = await prisma.order.findUnique({ where: { orderNumber } });

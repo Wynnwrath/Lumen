@@ -32,6 +32,9 @@ export const orderController = {
     const csv = await orderService.exportCsv();
     res.setHeader("Content-Type", "text/csv; charset=utf-8");
     res.setHeader("Content-Disposition", 'attachment; filename="orders.csv"');
+    // Never cache the generated CSV, or the browser serves stale/blank exports.
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
     res.send(csv);
   }),
 

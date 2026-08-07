@@ -14,7 +14,7 @@ router.get("/mine", protect, orderController.getMine);
 router.get("/export", protect, authorize("admin"), orderController.exportCsv);
 router.get("/:orderNumber", protect, authorize("admin"), orderController.getByOrderNumber);
 router.patch("/:orderNumber/status", protect, authorize("admin"), validate(updateOrderStatusSchema), orderController.updateStatus);
-// Customer confirms receipt of their own Completed order (releases payment).
+// Customer confirms receipt of their own Completed order (delivery settlement).
 router.post("/:orderNumber/confirm-received", protect, orderController.confirmReceived);
 
 export default router;

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { getOrders, updateOrderStatus, getOrdersCsv } from "../../api/orders";
+import { useState, useMemo } from "react";
+import { updateOrderStatus, getOrdersCsv, downloadCsv } from "../../api/orders";
 import { Icon } from "../../components/common/Icon";
 import type { Order, OrderStatus } from "../../types";
 import { getStatusClasses } from "../../components/common/StatusBadge";
@@ -8,41 +8,42 @@ import { Modal } from "../../components/common/Modal";
 import { SearchInput } from "../../components/common/SearchInput";
 import { EmptyState } from "../../components/common/EmptyState";
 import { LoadingSpinner } from "../../components/common/skeletons";
+import { AdminPagination } from "../../components/common/AdminPagination";
 import { useToast } from "../../components/common/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
+import { usePagination } from "../../hooks/usePagination";
 import { formatDate } from "../../utils/format";
 import { OrderStatusSelect } from "../../components/common/OrderStatusSelect";
 
-// Admin order management: paginated list, search, status updates, CSV export.
+// Admin order management: client-side filtered list, status updates, CSV export.
 export const AdminOrdersPage = () => {
-  const { orders: allOrders, refresh: refreshOrders } = useOrders();
+  const { orders, refresh: refreshOrders, loading } = useOrders();
   const { showToast } = useToast();
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [pagedOrders, setPagedOrders] = useState<Order[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [tableLoading, setTableLoading] = useState(true);
-  const [refreshToken, setRefreshToken] = useState(0);
-  const PAGE_SIZE = 10;
 
-  useEffect(() => {
-    setTableLoading(true);
-    getOrders({ page, limit: PAGE_SIZE, status: statusFilter === "all" ? undefined : (statusFilter as OrderStatus) })
-      .then((res) => {
-        setPagedOrders(res.orders);
-        setTotalPages(res.totalPages || 1);
-      })
-      .catch(() => setPagedOrders([]))
-      .finally(() => setTableLoading(false));
-  }, [page, statusFilter, refreshToken]);
+  // Client-side filtering (status + search) over the loaded orders, matching
+  // the other admin pages so changing filters never hits the server.
+  const filteredOrders = useMemo(() => {
+    return orders.filter((ord) => {
+      if (statusFilter !== "all" && ord.status !== statusFilter) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchNum = ord.orderNumber.toLowerCase().includes(q);
+        const matchCust = ord.customer.name.toLowerCase().includes(q);
+        if (!matchNum && !matchCust) return false;
+      }
+      return true;
+    });
+  }, [orders, statusFilter, searchQuery]);
+
+  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredOrders, 10);
 
   const handleUpdateStatus = async (orderNumber: string, newStatus: OrderStatus) => {
     try {
       await updateOrderStatus(orderNumber, newStatus);
       await refreshOrders();
-      setRefreshToken((t) => t + 1);
       if (selectedOrder && selectedOrder.orderNumber === orderNumber) {
         setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
@@ -54,32 +55,17 @@ export const AdminOrdersPage = () => {
   const handleExportCsv = async () => {
     try {
       const csv = await getOrdersCsv();
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "orders.csv";
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadCsv(csv, "orders.csv");
+      showToast("Orders exported successfully", "success");
     } catch (error) {
       showToast("Failed to export orders", "error");
     }
   };
 
-  const filteredOrders = pagedOrders.filter((ord) => {
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchNum = ord.orderNumber.includes(q);
-      const matchCust = ord.customer.name.toLowerCase().includes(q);
-      if (!matchNum && !matchCust) return false;
-    }
-    return true;
-  });
-
-  const totalRevenue = allOrders
+  const totalRevenue = orders
     .filter((o) => o.status !== "Cancelled")
     .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const pendingOrdersCount = allOrders.filter(
+  const pendingOrdersCount = orders.filter(
     (o) => o.status === "Pending" || o.status === "Confirmed" || o.status === "Preparing"
   ).length;
 
@@ -127,7 +113,7 @@ export const AdminOrdersPage = () => {
       {/* Orders Summary Strip */}
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 px-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
         <span>
-          <span className="font-extrabold text-slate-900 dark:text-white">{allOrders.length}</span> orders
+          <span className="font-extrabold text-slate-900 dark:text-white">{orders.length}</span> orders
         </span>
         <span className="text-slate-300 dark:text-slate-600">•</span>
         <span>
@@ -143,7 +129,7 @@ export const AdminOrdersPage = () => {
       </div>
 
       {/* Orders Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
-      {tableLoading ? (
+      {loading ? (
         <LoadingSpinner label="Loading orders..." />
       ) : (
       <div className="space-y-4">
@@ -152,7 +138,7 @@ export const AdminOrdersPage = () => {
           {filteredOrders.length === 0 ? (
             <EmptyState message="No orders found matching your criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
           ) : (
-            filteredOrders.map((ord) => (
+            paginated.map((ord) => (
               <div
                 key={ord._id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-3 shadow-xs rounded-none"
@@ -224,7 +210,7 @@ export const AdminOrdersPage = () => {
                     colSpan={8}
                   />
                 ) : (
-                  filteredOrders.map((ord) => (
+                  paginated.map((ord) => (
                   <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">#{ord.orderNumber}</td>
                     <td className="p-4">
@@ -268,28 +254,14 @@ export const AdminOrdersPage = () => {
       </div>
       )}
 
-      {/* Pagination Controls */}
-      {!tableLoading && totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 pt-1">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Prev
-          </button>
-          <span className="text-xs font-bold text-slate-900 dark:text-white">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            className="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-bold border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <AdminPagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        start={start}
+        end={end}
+        onChange={setPage}
+      />
 
       {/* Invoice Modal */}
       <Modal
