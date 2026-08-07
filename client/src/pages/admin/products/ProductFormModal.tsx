@@ -156,7 +156,7 @@ export const ProductFormModal = ({
                     className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
                   />
                 </AdminField>
-                <AdminField label="Product Status * (PDF Spec)">
+                <AdminField label="Product Status *">
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as ProductStatus)}

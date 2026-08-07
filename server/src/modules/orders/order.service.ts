@@ -158,7 +158,7 @@ export const orderService = {
     });
 
     // Quote values that contain commas/quotes/newlines so the CSV stays valid.
-    const escape = (value: unknown): string => {
+    const escapeCsvField = (value: unknown): string => {
       const s = String(value ?? "");
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
@@ -195,7 +195,7 @@ export const orderService = {
         o.address,
         o.items.map((i) => `${i.name} x${i.quantity}`).join(" | "),
       ]
-        .map(escape)
+        .map(escapeCsvField)
         .join(",")
     );
 
