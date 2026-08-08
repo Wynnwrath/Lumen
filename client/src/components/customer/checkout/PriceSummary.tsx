@@ -1,4 +1,5 @@
 import { formatMoney } from "../../../utils/format";
+import { TAX_RATE } from "../../../constants";
 
 // Shared price breakdown used across cart + checkout so the numbers never drift.
 interface PriceSummaryProps {
@@ -45,7 +46,7 @@ export const PriceSummary = ({
         </span>
       </div>
       <div className="flex justify-between text-on-surface-variant font-medium">
-        <span>Estimated Sales Tax (8%)</span>
+        <span>Estimated Sales Tax ({Math.round(TAX_RATE * 100)}%)</span>
         <span className="font-bold text-on-surface">{formatMoney(estimatedTax)}</span>
       </div>
       <div className="border-t border-outline-variant/30 pt-3 flex justify-between text-sm sm:text-base font-black text-on-surface">

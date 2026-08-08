@@ -14,6 +14,7 @@ import { useProducts } from "../../hooks/useProducts";
 import { useCustomers } from "../../hooks/useCustomers";
 import { useOrderMetrics } from "../../hooks/useOrderMetrics";
 import { formatDate, formatMoney } from "../../utils/format";
+import { ADMIN_LOW_STOCK_THRESHOLD } from "../../constants";
 import { RevenueBarChart } from "../../components/admin/analytics/RevenueBarChart";
 import { OrdersByStatusList } from "../../components/admin/orders/OrdersByStatusList";
 import { TopProductsChart } from "../../components/admin/analytics/TopProductsChart";
@@ -56,8 +57,8 @@ export const AdminDashboardPage = () => {
     topProducts,
   } = useOrderMetrics(orders);
 
-  // Low stock products (< 5)
-  const lowStockProducts = useMemo(() => products.filter((p) => p.stock < 5), [products]);
+  // Low stock products (below the admin restock threshold)
+  const lowStockProducts = useMemo(() => products.filter((p) => p.stock < ADMIN_LOW_STOCK_THRESHOLD), [products]);
 
   const handleUpdateStatus = async (orderNumber: string, newStatus: OrderStatus) => {
     try {

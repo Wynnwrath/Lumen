@@ -4,6 +4,7 @@ import { Button } from "../../ui/Button";
 import { EmptyState } from "../../ui/EmptyState";
 import { Icon } from "../../ui/Icon";
 import type { Product } from "../../../types";
+import { ADMIN_LOW_STOCK_THRESHOLD } from "../../../constants";
 
 interface LowStockPanelProps {
   products: Product[];
@@ -17,7 +18,7 @@ export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Low Stock Alerts</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Items requiring urgent restocking (&lt; 5 units)</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Items requiring urgent restocking (&lt; {ADMIN_LOW_STOCK_THRESHOLD} units)</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-300 border border-amber-200 dark:border-amber-800 shrink-0">

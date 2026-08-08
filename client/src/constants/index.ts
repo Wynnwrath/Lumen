@@ -1,5 +1,17 @@
 import type { OrderStatus } from "../types";
 
+// ─── Pricing rules ─────────────────────────────────────────────────────────
+// Keep in sync with the server (server/src/modules/orders/order.service.ts).
+export const FREE_SHIPPING_MIN = 100;   // orders >= this ship free
+export const SHIPPING_FEE = 12;         // flat shipping fee below the threshold
+export const TAX_RATE = 0.08;           // 8% estimated sales tax
+
+// ─── Stock thresholds ──────────────────────────────────────────────────────
+// Storefront "Only X left" urgency badge (ProductCard / ProductDetailPage).
+export const STORE_LOW_STOCK_THRESHOLD = 3;
+// Admin "needs restocking" alert + filters (dashboard / products page).
+export const ADMIN_LOW_STOCK_THRESHOLD = 5;
+
 // The full allowed order lifecycle states (matches the server enum).
 export const ORDER_STATUSES: OrderStatus[] = [
   "Pending",

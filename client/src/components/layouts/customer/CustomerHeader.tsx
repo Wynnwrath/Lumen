@@ -3,6 +3,8 @@ import { useThemeStore } from "../../../stores/theme.store";
 import { useCartStore } from "../../../stores/cart.store";
 import { useWishlistStore } from "../../../stores/wishlist.store";
 import { Icon } from "../../ui/Icon";
+import { formatMoney } from "../../../utils/format";
+import { FREE_SHIPPING_MIN } from "../../../constants";
 import { HeaderSearch } from "./HeaderSearch";
 import { HeaderCartPreview } from "./HeaderCartPreview";
 import { HeaderUserMenu } from "./HeaderUserMenu";
@@ -26,7 +28,7 @@ export const CustomerHeader = () => {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 text-slate-300">
               <Icon name="local_shipping" className="text-sm text-secondary-fixed" />
-              Free Worldwide Express Shipping on orders over $100
+              Free Worldwide Express Shipping on orders over {formatMoney(FREE_SHIPPING_MIN)}
             </span>
             <span className="hidden md:inline text-slate-700">|</span>
             <span className="hidden md:flex items-center gap-1 text-slate-300">

@@ -1,5 +1,6 @@
 import type { CartItem } from "../types";
 import { validateCoupon as validateCouponApi } from "../api/coupons";
+import { FREE_SHIPPING_MIN, SHIPPING_FEE, TAX_RATE } from "../constants";
 
 // Asks the server to check the code; invalid codes return null.
 export async function checkCoupon(code: string, subtotal: number) {
@@ -20,8 +21,8 @@ export async function checkCoupon(code: string, subtotal: number) {
 export function calculateOrderTotals(items: CartItem[], discountRate = 0) {
   const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
   const discountAmount = Math.round(subtotal * discountRate * 100) / 100;
-  const shippingFee = subtotal >= 100 || items.length === 0 ? 0 : 12.0;
-  const estimatedTax = Math.round(subtotal * 0.08 * 100) / 100;
+  const shippingFee = subtotal >= FREE_SHIPPING_MIN || items.length === 0 ? 0 : SHIPPING_FEE;
+  const estimatedTax = Math.round(subtotal * TAX_RATE * 100) / 100;
   const grandTotal = Math.round((subtotal + estimatedTax + shippingFee - discountAmount) * 100) / 100;
 
   return { subtotal, discountAmount, shippingFee, estimatedTax, grandTotal };

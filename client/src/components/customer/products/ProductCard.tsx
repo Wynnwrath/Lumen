@@ -5,6 +5,7 @@ import { useWishlistStore } from "../../../stores/wishlist.store";
 import { Icon } from "../../ui/Icon";
 import { ProductImage } from "../../ui/ProductImage";
 import { formatMoney } from "../../../utils/format";
+import { STORE_LOW_STOCK_THRESHOLD } from "../../../constants";
 
 // tracks the mouse so the spotlight glow follows the cursor
 export const trackSpotlight = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -30,7 +31,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
   let statusBadge: React.ReactNode = null;
   if (isOutOfStock) {
     statusBadge = <span className="bg-red-100 dark:bg-red-900/60 text-red-600 dark:text-red-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Out of Stock</span>;
-  } else if (product.stock <= 3) {
+  } else if (product.stock <= STORE_LOW_STOCK_THRESHOLD) {
     statusBadge = <span className="bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Only {product.stock} Left</span>;
   } else if (product.arrival) {
     statusBadge = <span className="bg-secondary-container text-on-secondary-container text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">New</span>;

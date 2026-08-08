@@ -10,7 +10,7 @@ import { ProductCard } from "../components/customer/products/ProductCard";
 import { QuantityStepper } from "../components/customer/cart/QuantityStepper";
 import { Skeleton } from "../components/ui/Skeleton";
 import { useToast } from "../components/ui/ToastProvider";
-import { FALLBACK_PRODUCT_IMAGE } from "../constants";
+import { FALLBACK_PRODUCT_IMAGE, FREE_SHIPPING_MIN, STORE_LOW_STOCK_THRESHOLD } from "../constants";
 import { formatMoney } from "../utils/format";
 import type { Product } from "../types";
 
@@ -258,7 +258,7 @@ export const ProductDetailPage = () => {
                 <span className="inline-flex items-center gap-1 bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 text-[11px] font-extrabold px-2.5 py-1 rounded-full">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span> Out of Stock
                 </span>
-              ) : product.stock <= 3 ? (
+              ) : product.stock <= STORE_LOW_STOCK_THRESHOLD ? (
                 <span className="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold px-2.5 py-1 rounded-full">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> {product.stock} Left
                 </span>
@@ -328,7 +328,7 @@ export const ProductDetailPage = () => {
               </div>
               <div className="min-w-0">
                 <h4 className="text-[11px] sm:text-xs font-extrabold text-on-surface truncate">Free Shipping</h4>
-                <p className="text-[10px] sm:text-[11px] text-outline font-medium truncate">Orders over $100</p>
+                <p className="text-[10px] sm:text-[11px] text-outline font-medium truncate">Orders over {formatMoney(FREE_SHIPPING_MIN)}</p>
               </div>
             </div>
             <div className="p-3 rounded-2xl bg-surface dark:bg-slate-800/50 border border-outline-variant/30 flex items-center gap-2.5 sm:gap-3 hover:border-secondary/40 transition group">

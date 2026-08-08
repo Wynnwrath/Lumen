@@ -17,6 +17,7 @@ import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useProductForm } from "../../hooks/useProductForm";
 import { formatMoney, formatMoneyCompact } from "../../utils/format";
+import { ADMIN_LOW_STOCK_THRESHOLD } from "../../constants";
 import { ProductFormModal } from "../../components/admin/products/ProductFormModal";
 
 // Admin product CRUD: list, search, toggle status, add/edit via modal (useProductForm).
@@ -102,8 +103,8 @@ export const AdminProductsPage = () => {
       return false;
     }
     // Stock Filter
-    if (stockFilter === "instock" && p.stock <= 4) return false;
-    if (stockFilter === "lowstock" && (p.stock < 1 || p.stock >= 5)) return false;
+    if (stockFilter === "instock" && p.stock <= ADMIN_LOW_STOCK_THRESHOLD - 1) return false;
+    if (stockFilter === "lowstock" && (p.stock < 1 || p.stock >= ADMIN_LOW_STOCK_THRESHOLD)) return false;
     if (stockFilter === "outofstock" && p.stock !== 0) return false;
 
     // Search Query
@@ -307,7 +308,7 @@ export const AdminProductsPage = () => {
                           <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
                             0 units (Out)
                           </span>
-                        ) : product.stock < 5 ? (
+                        ) : product.stock < ADMIN_LOW_STOCK_THRESHOLD ? (
                           <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                             {product.stock} units (Low)
                           </span>
