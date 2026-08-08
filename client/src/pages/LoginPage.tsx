@@ -6,6 +6,7 @@ import { getApiError } from "../api/client";
 import { Icon } from "../components/ui/Icon";
 import { Button } from "../components/ui/Button";
 import { useToast } from "../components/ui/ToastProvider";
+import { isValidPhone, PHONE_PATTERN } from "../utils/validation";
 
 const getPasswordChecks = (password: string) => [
   { ok: password.length >= 8, msg: "at least 8 characters" },
@@ -43,6 +44,7 @@ export const LoginPage = () => {
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
   const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [regPhone, setRegPhone] = useState("");
+  const [regPhoneError, setRegPhoneError] = useState("");
   const [regTerms, setRegTerms] = useState(false);
 
   // UI state
@@ -92,6 +94,11 @@ export const LoginPage = () => {
     const failed = getPasswordChecks(regPassword).find((c) => !c.ok);
     if (failed) {
       setAlert({ message: `Password must include ${failed.msg}.`, type: "error" });
+      return;
+    }
+    if (regPhone && !isValidPhone(regPhone)) {
+      setAlert({ message: "Please enter a valid phone number.", type: "error" });
+      setRegPhoneError("Enter a valid phone number (e.g. +63928869230)");
       return;
     }
     try {
@@ -580,11 +587,18 @@ export const LoginPage = () => {
                           id="reg-phone"
                           type="tel"
                           value={regPhone}
-                          onChange={(e) => setRegPhone(e.target.value)}
+                          onChange={(e) => {
+                            setRegPhone(e.target.value);
+                            if (regPhoneError) setRegPhoneError("");
+                          }}
                           placeholder="+63928869230"
-                          className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
+                          pattern={PHONE_PATTERN}
+                          className={`w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition ${
+                            regPhoneError ? "border-error focus:border-error focus:ring-error/20" : "border-outline-variant/60"
+                          }`}
                         />
                       </div>
+                      {regPhoneError && <p className="text-[10px] font-bold text-error">{regPhoneError}</p>}
                     </div>
 
                     {/* Terms Checkbox */}

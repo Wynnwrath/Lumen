@@ -29,6 +29,7 @@ export interface Order {
   status: OrderStatus;
   address: string;
   email?: string;
+  phone?: string;
   couponUsed?: string;
   orderNotes?: string;
   completedAt?: string;

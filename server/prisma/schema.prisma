@@ -93,6 +93,7 @@ model Order {
   completedAt  DateTime?
   receivedAt   DateTime?
   address      String      @db.Text
+  phone        String?
   couponUsed   String?
   orderNotes   String?   @db.Text
   createdAt    DateTime    @default(now())

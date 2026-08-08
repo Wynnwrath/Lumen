@@ -135,6 +135,7 @@ export const useCheckoutForm = () => {
         address: `${address}${apt ? `, ${apt}` : ""}, ${city}, ${stateZip} (${country})`,
         paymentMethod,
         email: email.trim() || undefined,
+        phone: phone.trim() || undefined,
         couponCode: appliedDiscountRate > 0 ? couponCode.trim().toUpperCase() : undefined,
         orderNotes: orderNotes || undefined,
       });

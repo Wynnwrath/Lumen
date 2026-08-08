@@ -6,12 +6,26 @@ interface FormFieldProps {
   type?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder?: string;
   required?: boolean;
+  pattern?: string;       // HTML regex the value must match
+  error?: string;         // shown under the input when set
 }
 
 // Label wrapper for admin forms (children mode) or a labeled input (checkout mode).
-export const FormField = ({ label, children, type = "text", value, onChange, placeholder, required }: FormFieldProps) => {
+export const FormField = ({
+  label,
+  children,
+  type = "text",
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+  required,
+  pattern,
+  error,
+}: FormFieldProps) => {
   if (children) {
     return (
       <div>
@@ -28,11 +42,17 @@ export const FormField = ({ label, children, type = "text", value, onChange, pla
       <input
         type={type}
         required={required}
+        pattern={pattern}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
-        className="w-full bg-white dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border border-outline-variant/40 focus:ring-2 focus:ring-secondary focus:outline-none font-medium"
+        aria-invalid={error ? true : undefined}
+        className={`w-full bg-white dark:bg-slate-700/60 text-on-surface text-xs rounded-xl px-3 py-2 border focus:ring-2 focus:ring-secondary focus:outline-none font-medium ${
+          error ? "border-error focus:ring-error" : "border-outline-variant/40"
+        }`}
       />
+      {error && <p className="mt-1 text-[10px] font-bold text-error">{error}</p>}
     </div>
   );
 };

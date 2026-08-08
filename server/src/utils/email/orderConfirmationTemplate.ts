@@ -16,6 +16,7 @@ export interface OrderEmailData {
   tax: number;
   total: number;
   paymentMethod: string;
+  phone: string | null;
   address: string;
   clientUrl: string;
   items: OrderEmailItem[];
@@ -143,6 +144,7 @@ export function orderConfirmationTemplate(data: OrderEmailData): string {
                     <td style="padding:16px;font-size:13px;color:#475569;">
                       <div style="font-weight:800;color:#0f172a;margin-bottom:6px;">Delivery Details</div>
                       <div><span style="color:#94a3b8;">Address:</span> ${esc(data.address)}</div>
+                      <div style="margin-top:4px;"><span style="color:#94a3b8;">Phone:</span> ${data.phone ? esc(data.phone) : "—"}</div>
                       <div style="margin-top:4px;"><span style="color:#94a3b8;">Payment:</span> ${esc(data.paymentMethod)}</div>
                     </td>
                   </tr>

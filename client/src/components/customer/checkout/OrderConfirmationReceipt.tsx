@@ -36,7 +36,7 @@ export const OrderConfirmationReceipt = ({ order, phone }: OrderConfirmationRece
           </div>
           <div className="flex justify-between">
             <span className="text-outline">Phone:</span>
-            <span className="font-bold text-on-surface">{phone}</span>
+            <span className="font-bold text-on-surface">{order.phone || phone}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-outline">Address:</span>

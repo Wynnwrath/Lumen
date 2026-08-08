@@ -94,6 +94,7 @@ export const orderService = {
           total,
           paymentMethod: input.paymentMethod,
           email: input.email?.trim().toLowerCase(),
+          phone: input.phone?.trim() || null,
           address: input.address,
           couponUsed: input.couponCode?.toUpperCase(),
           orderNotes: input.orderNotes,
@@ -123,6 +124,7 @@ export const orderService = {
         tax: order.tax,
         total: order.total,
         paymentMethod: order.paymentMethod,
+        phone: order.phone,
         address: order.address,
         clientUrl: config.clientUrl,
         items: order.items.map((i) => ({

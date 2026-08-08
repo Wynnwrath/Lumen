@@ -13,6 +13,7 @@ export interface CreateOrderPayload {
   address: string;
   paymentMethod: string;
   email?: string;
+  phone?: string;
   couponCode?: string;
   orderNotes?: string;
 }

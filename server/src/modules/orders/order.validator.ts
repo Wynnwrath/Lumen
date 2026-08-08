@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ORDER_STATUSES, ADMIN_ORDER_STATUSES } from "./order.model.js";
+import { PHONE_PATTERN } from "../../utils/validation.js";
 
 const orderItemSchema = z.object({
   // `product` is the product's id (matches what the client sends).
@@ -9,9 +10,10 @@ const orderItemSchema = z.object({
 
 export const createOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1, "Cart must have at least one item"),
-  address: z.string().min(1, "Delivery address is required"),
+  address: z.string().min(5, "Delivery address is too short"),
   paymentMethod: z.enum(["Cash on Delivery", "E-Wallet", "Bank Transfer"]),
   email: z.string().email("Valid email required").optional(),
+  phone: z.string().regex(PHONE_PATTERN, "Invalid phone number").optional(),
   couponCode: z.string().optional(),
   orderNotes: z.string().optional(),
 });
