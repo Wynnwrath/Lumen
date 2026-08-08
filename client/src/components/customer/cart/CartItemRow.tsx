@@ -6,15 +6,46 @@ import type { CartItem } from "../../../types";
 import { formatMoney } from "../../../utils/format";
 
 // One line in the cart: image, name, quantity stepper (or read-only count), line total.
+// `compact` is the small read-only row used in the header cart quick preview.
 interface CartItemRowProps {
   item: CartItem;
   onUpdateQuantity?: (productId: string, qty: number) => void;
   onRemove?: (productId: string) => void;
   showLineTotal?: boolean;
+  variant?: "default" | "compact";
 }
 
-export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = true }: CartItemRowProps) => {
+export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = true, variant = "default" }: CartItemRowProps) => {
   const { product, quantity } = item;
+
+  // Small preview row (header quick-preview): image, name, qty x price, remove.
+  if (variant === "compact") {
+    return (
+      <div className="flex items-center justify-between gap-2 p-2 bg-surface dark:bg-slate-800/60 rounded-xl">
+        <ProductImage
+          src={product.images[0]}
+          alt={product.name}
+          className="w-10 h-10 object-cover rounded-lg shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold text-on-surface truncate">{product.name}</p>
+          <p className="text-[10px] text-outline">
+            Qty: {quantity} &times; {formatMoney(product.price)}
+          </p>
+        </div>
+        {onRemove && (
+          <button
+            onClick={() => onRemove(product._id)}
+            className="text-outline hover:text-error p-1"
+            title="Remove item"
+          >
+            <Icon name="close" className="text-sm" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4 group">
       <Link to={`/product/${product._id}`} className="shrink-0">
