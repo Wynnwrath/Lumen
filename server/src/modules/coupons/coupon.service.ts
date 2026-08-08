@@ -2,11 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../../utils/AppError.js";
 import { requireFound } from "../../utils/requireFound.js";
 import { calcDiscount } from "../../utils/calcDiscount.js";
-import type { createCouponSchema, updateCouponSchema } from "./coupon.validator.js";
-import type { z } from "zod";
-
-type CreateCouponInput = z.infer<typeof createCouponSchema>;
-type UpdateCouponInput = z.infer<typeof updateCouponSchema>;
+import type { CreateCouponInput, UpdateCouponInput } from "./coupon.validator.js";
 
 export const couponService = {
   // Checks a code at checkout and returns the discount it gives on a subtotal.

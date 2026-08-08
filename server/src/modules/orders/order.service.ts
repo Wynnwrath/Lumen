@@ -237,6 +237,7 @@ export const orderService = {
   },
 
   async updateStatus(orderNumber: string, status: OrderStatus) {
+    await requireFound(await prisma.order.findUnique({ where: { orderNumber } }), "Order");
     return prisma.order.update({
       where: { orderNumber },
       data: {

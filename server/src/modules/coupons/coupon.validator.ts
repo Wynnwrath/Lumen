@@ -18,3 +18,6 @@ export const updateCouponSchema = z.object({
   discountPercent: z.number().min(1).max(90).optional(),
   isActive: z.boolean().optional(),
 });
+
+export type CreateCouponInput = z.infer<typeof createCouponSchema>;
+export type UpdateCouponInput = z.infer<typeof updateCouponSchema>;
