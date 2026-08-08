@@ -84,8 +84,8 @@ export const AdminDashboardPage = () => {
 
   return (
     <div className="space-y-5 sm:space-y-6 w-full">
-      {/* Top KPI Cards Row */}
-      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-3 sm:gap-5 w-full">
+      {/* Top KPI Cards — primary metrics */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 w-full">
         {/* Total Revenue / Units Sold */}
         <KpiCard
           label="Total Sales"
@@ -97,7 +97,6 @@ export const AdminDashboardPage = () => {
           iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
           subtext="Total order value"
           id="kpi-sales"
-          className="rounded-2xl"
         />
 
         {/* Total Orders */}
@@ -110,30 +109,6 @@ export const AdminDashboardPage = () => {
           iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
           subtext="All customer orders"
           id="kpi-orders"
-        />
-
-        {/* Total Products */}
-        <KpiCard
-          label="Total Products"
-          chip="Catalog"
-          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
-          value={products.length.toLocaleString()}
-          icon="inventory"
-          iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
-          subtext="Items on sale"
-          id="kpi-products"
-        />
-
-        {/* Total Customers */}
-        <KpiCard
-          label="Total Customers"
-          chip="Registered"
-          chipClassName="bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/60"
-          value={customers.length.toLocaleString()}
-          icon="group"
-          iconClassName="text-purple-600 dark:text-purple-400 text-sm sm:text-base font-bold"
-          subtext="Customer accounts"
-          id="kpi-customers"
         />
 
         {/* Avg Order Value */}
@@ -161,6 +136,33 @@ export const AdminDashboardPage = () => {
           subtext="Awaiting processing"
           id="kpi-pending"
         />
+      </section>
+
+      {/* Secondary metrics strip */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 w-full">
+        {/* Total Products */}
+        <KpiCard
+          label="Total Products"
+          chip="Catalog"
+          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
+          value={products.length.toLocaleString()}
+          icon="inventory"
+          iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
+          subtext="Items on sale"
+          id="kpi-products"
+        />
+
+        {/* Total Customers */}
+        <KpiCard
+          label="Total Customers"
+          chip="Registered"
+          chipClassName="bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800/60"
+          value={customers.length.toLocaleString()}
+          icon="group"
+          iconClassName="text-purple-600 dark:text-purple-400 text-sm sm:text-base font-bold"
+          subtext="Customer accounts"
+          id="kpi-customers"
+        />
 
         {/* Completed Orders */}
         <KpiCard
@@ -173,7 +175,6 @@ export const AdminDashboardPage = () => {
           iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
           subtext="Delivered to buyers"
           id="kpi-completed"
-          className="col-span-2 sm:col-span-1"
         />
       </section>
 

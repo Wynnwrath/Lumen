@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
 import { ProductImage } from "../../ui/ProductImage";
 import { Button } from "../../ui/Button";
 import { EmptyState } from "../../ui/EmptyState";
+import { Icon } from "../../ui/Icon";
 import type { Product } from "../../../types";
 
 interface LowStockPanelProps {
@@ -17,9 +19,18 @@ export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
             <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Low Stock Alerts</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Items requiring urgent restocking (&lt; 5 units)</p>
           </div>
-          <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-300 border border-amber-200 dark:border-amber-800 shrink-0">
-            <span id="low-stock-count">{products.length}</span> Items
-          </span>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-300 border border-amber-200 dark:border-amber-800 shrink-0">
+              <span id="low-stock-count">{products.length}</span> Items
+            </span>
+            <Link
+              to="/admin/products"
+              className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
+            >
+              View all
+              <Icon name="arrow_forward" className="text-xs" />
+            </Link>
+          </div>
         </div>
 
         <div id="low-stock-container" className="divide-y divide-slate-100 dark:divide-slate-800/80 max-h-80 overflow-y-auto">

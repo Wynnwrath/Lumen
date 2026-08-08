@@ -119,9 +119,9 @@ export const AdminProductsPage = () => {
   const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredProducts, 10);
 
   return (
-    <div className="space-y-6 w-full font-sans">
+    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full font-sans">
       {/* Top Catalog KPI Cards */}
-      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 w-full">
+      <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 w-full shrink-0">
         {/* Total Products */}
         <KpiCard
           label="Total Products"
@@ -167,48 +167,50 @@ export const AdminProductsPage = () => {
       </section>
 
       {/* Filter Controls Bar */}
-      <AdminToolbar
-        search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search product name..." id="catalog-search" />}
-        actions={
-          <>
-            <select
-              id="catalog-category-filter"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
-            >
-              <option value="all">All Categories</option>
-              {categories.map((c) => (
-                <option key={c._id} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+      <div className="shrink-0">
+        <AdminToolbar
+          search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search product name..." id="catalog-search" />}
+          actions={
+            <>
+              <select
+                id="catalog-category-filter"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+              >
+                <option value="all">All Categories</option>
+                {categories.map((c) => (
+                  <option key={c._id} value={c.slug}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
 
-            <select
-              id="catalog-stock-filter"
-              value={stockFilter}
-              onChange={(e) => setStockFilter(e.target.value)}
-              className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
-            >
-              <option value="all">All Stock Status</option>
-              <option value="instock">In Stock (&gt;5)</option>
-              <option value="lowstock">Low Stock (1-4)</option>
-              <option value="outofstock">Out of Stock (0)</option>
-            </select>
+              <select
+                id="catalog-stock-filter"
+                value={stockFilter}
+                onChange={(e) => setStockFilter(e.target.value)}
+                className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+              >
+                <option value="all">All Stock Status</option>
+                <option value="instock">In Stock (&gt;5)</option>
+                <option value="lowstock">Low Stock (1-4)</option>
+                <option value="outofstock">Out of Stock (0)</option>
+              </select>
 
-            <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
-              Add Product
-            </Button>
-          </>
-        }
-      />
+              <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
+                Add Product
+              </Button>
+            </>
+          }
+        />
+      </div>
 
       {/* Products Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {productsLoading ? (
         <LoadingSpinner label="Loading products..." />
       ) : (
-      <section className="space-y-4">
+      <section className="flex-1 min-h-0 overflow-y-auto space-y-4">
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredProducts.length === 0 ? (
@@ -262,7 +264,7 @@ export const AdminProductsPage = () => {
           <div className="overflow-x-auto w-full">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   <th className="px-5 py-4">Product</th>
                   <th className="px-5 py-4">Category</th>
                   <th className="px-5 py-4">Price</th>
@@ -339,14 +341,16 @@ export const AdminProductsPage = () => {
       </section>
       )}
 
-      <AdminPagination
-        page={page}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        start={start}
-        end={end}
-        onChange={setPage}
-      />
+      <div className="shrink-0">
+        <AdminPagination
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          start={start}
+          end={end}
+          onChange={setPage}
+        />
+      </div>
 
       {/* Add / Edit Product Modal (SalesSync 2-Column UI 1-to-1) */}
       <ProductFormModal

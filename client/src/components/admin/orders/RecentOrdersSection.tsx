@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Icon } from "../../ui/Icon";
 import { EmptyState } from "../../ui/EmptyState";
 import { StatusBadge, getStatusClasses } from "../../ui/StatusBadge";
@@ -19,26 +20,28 @@ interface RecentOrdersSectionProps {
 export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: RecentOrdersSectionProps) => {
   const [orderFilter, setOrderFilter] = useState<string>("all");
 
-  // Filtered recent orders
+  // Filtered recent orders (capped to the 9 newest; paginated 3 at a time).
   const recentOrders = useMemo(() => {
-    return orders.filter((o) => {
-      if (orderFilter === "pending") return isPendingStatus(o.status);
-      if (orderFilter === "completed") return isCompletedStatus(o.status);
-      return true;
-    });
+    return orders
+      .filter((o) => {
+        if (orderFilter === "pending") return isPendingStatus(o.status);
+        if (orderFilter === "completed") return isCompletedStatus(o.status);
+        return true;
+      })
+      .slice(0, 9);
   }, [orders, orderFilter]);
 
-  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(recentOrders, 8);
+  const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(recentOrders, 3);
 
   return (
-    <div className="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/90 shadow-sm overflow-hidden transition-colors duration-200 rounded-none">
+    <div className="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/90 shadow-sm overflow-hidden transition-colors duration-200 rounded-none flex flex-col">
       <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Recent Transactions</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Customer orders and real-time status management</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Filter:</span>
           <select
             value={orderFilter}
@@ -49,11 +52,18 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
             <option value="pending">Pending</option>
             <option value="completed">Completed</option>
           </select>
+          <Link
+            to="/admin/orders"
+            className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1 shrink-0"
+          >
+            View all
+            <Icon name="arrow_forward" className="text-xs" />
+          </Link>
         </div>
       </div>
 
       {/* Table Container: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
-      <div className="p-4 sm:p-6 pt-0 sm:pt-0">
+      <div className="p-4 sm:p-6 pt-0 sm:pt-0 flex-1 flex flex-col">
         {/* Mobile View: High-Density Transaction Cards */}
         <div className="block md:hidden space-y-3 mt-3">
           {recentOrders.length === 0 ? (

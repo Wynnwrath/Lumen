@@ -1,5 +1,7 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { EmptyState } from "../../ui/EmptyState";
+import { Icon } from "../../ui/Icon";
 import { formatMoney } from "../../../utils/format";
 import type { Order } from "../../../types";
 
@@ -32,9 +34,18 @@ export const AwaitingConfirmationPanel = ({ orders }: AwaitingConfirmationPanelP
           <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Awaiting Confirmation</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">Orders delivered but not yet confirmed by customers</p>
         </div>
-        <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shrink-0">
-          {awaiting.length} Orders
-        </span>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shrink-0">
+            {awaiting.length} Orders
+          </span>
+          <Link
+            to="/admin/orders"
+            className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center gap-1"
+          >
+            View all
+            <Icon name="arrow_forward" className="text-xs" />
+          </Link>
+        </div>
       </div>
 
       {awaiting.length === 0 ? (

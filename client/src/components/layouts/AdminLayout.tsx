@@ -19,50 +19,34 @@ export const AdminLayout = () => {
     navigate("/admin/login");
   };
 
+  // Dashboard (General Metrics) keeps natural page scroll because it holds many
+  // widgets. Every other admin page is a fixed shell: the page never scrolls,
+  // only the inner tables/card stacks scroll.
+  const isDashboard = location.pathname === "/admin" || location.pathname === "/admin/dashboard";
+
   const getPageConfig = () => {
-    if (location.pathname === "/admin" || location.pathname === "/admin/dashboard") {
-      return {
-        title: "General Metrics",
-        showTimeFilter: true,
-      };
+    if (isDashboard) {
+      return { title: "General Metrics" };
     }
     if (location.pathname === "/admin/products") {
-      return {
-        title: "Products Catalog",
-        showTimeFilter: false,
-      };
+      return { title: "Products Catalog" };
     }
     if (location.pathname === "/admin/categories") {
-      return {
-        title: "Categories",
-        showTimeFilter: false,
-      };
+      return { title: "Categories" };
     }
     if (location.pathname === "/admin/orders") {
-      return {
-        title: "Orders List",
-        showTimeFilter: true,
-      };
+      return { title: "Orders List" };
     }
     if (location.pathname === "/admin/customers") {
-      return {
-        title: "Customers",
-        showTimeFilter: false,
-      };
+      return { title: "Customers" };
     }
     if (location.pathname === "/admin/coupons") {
-      return {
-        title: "Coupons & Promotions",
-        showTimeFilter: false,
-      };
+      return { title: "Coupons & Promotions" };
     }
-    return {
-      title: "Admin Portal",
-      showTimeFilter: false,
-    };
+    return { title: "Admin Portal" };
   };
 
-  const { title, showTimeFilter } = getPageConfig();
+  const { title } = getPageConfig();
 
   const navItems = [
     { path: "/admin", label: "General Metrics", icon: "grid_view" },
@@ -74,7 +58,7 @@ export const AdminLayout = () => {
   ];
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex">
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased h-dvh flex overflow-hidden">
       {/* Left Sidebar Navigation */}
       <aside
         className={`w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between fixed top-0 bottom-0 left-0 z-30 transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -171,9 +155,9 @@ export const AdminLayout = () => {
       )}
 
       {/* Main Content Workspace */}
-      <div className="flex-1 md:ml-64 flex flex-col min-w-0 w-full">
+      <div className="flex-1 md:ml-64 flex flex-col min-w-0 w-full overflow-hidden">
         {/* Top Header Bar */}
-        <header className="min-h-16 h-auto py-3.5 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 w-full transition-colors duration-200">
+        <header className="min-h-16 h-auto py-3.5 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900 z-20 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 w-full transition-colors duration-200 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -191,13 +175,6 @@ export const AdminLayout = () => {
 
           {/* Top Action Controls */}
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            {showTimeFilter && (
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/90 px-2.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-700/80 text-xs font-bold text-slate-700 dark:text-slate-200">
-                <Icon name="calendar_today" className="text-sm text-slate-500 dark:text-slate-400" />
-                <span className="text-[11px] sm:text-xs">Last 7 days</span>
-              </div>
-            )}
-
             {/* Theme Toggle Button */}
             <button
               onClick={toggle}
@@ -210,7 +187,11 @@ export const AdminLayout = () => {
         </header>
 
         {/* Main Body Outlet */}
-        <main className="p-4 sm:p-6 lg:p-8 flex-1 w-full min-w-0">
+        {/* key={pathname} remounts <main> per route so inner scroll resets on navigation */}
+        <main
+          key={location.pathname}
+          className={`p-4 sm:p-6 lg:p-8 flex-1 w-full min-w-0 min-h-0 ${isDashboard ? "overflow-y-auto" : "overflow-hidden"}`}
+        >
           <Outlet />
         </main>
       </div>

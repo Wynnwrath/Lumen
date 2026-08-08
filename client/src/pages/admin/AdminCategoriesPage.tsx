@@ -158,9 +158,9 @@ export const AdminCategoriesPage = () => {
   ];
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
       {/* Metrics Overview Cards Section */}
-      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full">
+      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full shrink-0">
         {/* Total Categories Stat Card */}
         <KpiCard
           label="Total Categories"
@@ -196,20 +196,22 @@ export const AdminCategoriesPage = () => {
       </section>
 
       {/* Search & Actions Bar */}
-      <AdminToolbar
-        search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search category title or description..." id="category-search" />}
-        actions={
-          <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
-            Add Category
-          </Button>
-        }
-      />
+      <div className="shrink-0">
+        <AdminToolbar
+          search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search category title or description..." id="category-search" />}
+          actions={
+            <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
+              Add Category
+            </Button>
+          }
+        />
+      </div>
 
       {/* Categories Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {categoriesLoading ? (
         <LoadingSpinner label="Loading categories..." />
       ) : (
-      <section className="space-y-4">
+      <section className="flex-1 min-h-0 overflow-y-auto space-y-4">
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredCategories.length === 0 ? (
@@ -266,7 +268,7 @@ export const AdminCategoriesPage = () => {
           <div className="overflow-x-auto w-full">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   <th className="px-5 py-4">Category Name</th>
                   <th className="px-5 py-4">Identifier / Slug</th>
                   <th className="px-5 py-4">Description</th>
@@ -329,14 +331,16 @@ export const AdminCategoriesPage = () => {
       </section>
       )}
 
-      <AdminPagination
-        page={page}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        start={start}
-        end={end}
-        onChange={setPage}
-      />
+      <div className="shrink-0">
+        <AdminPagination
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          start={start}
+          end={end}
+          onChange={setPage}
+        />
+      </div>
 
       {/* Add / Edit Category Modal */}
       <Modal

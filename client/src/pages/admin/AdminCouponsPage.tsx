@@ -156,9 +156,9 @@ export const AdminCouponsPage = () => {
   ];
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
       {/* Metrics Overview */}
-      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full">
+      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full shrink-0">
         <KpiCard
           label="Total Coupons"
           chip="All"
@@ -188,20 +188,22 @@ export const AdminCouponsPage = () => {
       </section>
 
       {/* Search & Actions Bar */}
-      <AdminToolbar
-        search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by code or discount %..." id="coupon-search" />}
-        actions={
-          <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
-            Add Coupon
-          </Button>
-        }
-      />
+      <div className="shrink-0">
+        <AdminToolbar
+          search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by code or discount %..." id="coupon-search" />}
+          actions={
+            <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
+              Add Coupon
+            </Button>
+          }
+        />
+      </div>
 
       {/* Content: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {loading ? (
         <LoadingSpinner label="Loading coupons..." />
       ) : (
-        <section className="space-y-4">
+        <section className="flex-1 min-h-0 overflow-y-auto space-y-4">
           {/* Mobile View */}
           <div className="block md:hidden space-y-3">
             {filteredCoupons.length === 0 ? (
@@ -248,7 +250,7 @@ export const AdminCouponsPage = () => {
             <div className="overflow-x-auto w-full">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <th className="px-5 py-4">Coupon Code</th>
                     <th className="px-5 py-4">Discount</th>
                     <th className="px-5 py-4">Status</th>
@@ -303,14 +305,16 @@ export const AdminCouponsPage = () => {
         </section>
       )}
 
-      <AdminPagination
-        page={page}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        start={start}
-        end={end}
-        onChange={setPage}
-      />
+      <div className="shrink-0">
+        <AdminPagination
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          start={start}
+          end={end}
+          onChange={setPage}
+        />
+      </div>
 
       {/* Add / Edit Coupon Modal */}
       <Modal

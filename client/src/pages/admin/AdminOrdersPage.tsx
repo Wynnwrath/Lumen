@@ -7,8 +7,10 @@ import { Modal } from "../../components/ui/Modal";
 import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { LoadingSpinner } from "../../components/ui/skeletons";
+import { ProductImage } from "../../components/ui/ProductImage";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
 import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
+import { KpiCard } from "../../components/admin/shared/KpiCard";
 import { useToast } from "../../components/ui/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { usePagination } from "../../hooks/usePagination";
@@ -24,6 +26,7 @@ export const AdminOrdersPage = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   // Client-side filtering (status + search) over the loaded orders, matching
   // the other admin pages so changing filters never hits the server.
@@ -67,64 +70,85 @@ export const AdminOrdersPage = () => {
   const { totalRevenue, pendingCount: pendingOrdersCount } = useOrderMetrics(orders);
 
   return (
-    <div className="space-y-6">
+    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
+      {/* Orders Summary KPIs */}
+      <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full shrink-0">
+        <KpiCard
+          label="Total Orders"
+          chip="Orders"
+          chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+          value={orders.length.toLocaleString()}
+          icon="shopping_cart"
+          iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
+          subtext="All customer orders"
+          id="stat-total-orders"
+        />
+        <KpiCard
+          label="Total Revenue"
+          chip="Sales"
+          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
+          value={formatMoney(totalRevenue)}
+          valueClassName="font-mono"
+          icon="north_east"
+          iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
+          subtext="Total order value"
+          id="stat-total-revenue"
+        />
+        <KpiCard
+          label="Pending Orders"
+          chip="Action"
+          chipClassName="bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
+          value={pendingOrdersCount}
+          valueClassName="text-amber-600 dark:text-amber-400"
+          icon="schedule"
+          iconClassName="text-amber-600 dark:text-amber-400 text-sm sm:text-base font-bold"
+          subtext="Awaiting processing"
+          id="stat-pending-orders"
+          className="col-span-2 sm:col-span-1"
+        />
+      </section>
+
       {/* Search & Filter Bar */}
-      <AdminToolbar
-        search={
-          <SearchInput
-            value={searchQuery}
-            onChange={(q) => {
-              setSearchQuery(q);
-              setPage(1);
-            }}
-            placeholder="Search by order # or customer name..."
-          />
-        }
-        actions={
-          <>
-            <Button variant="blue" icon="download" onClick={handleExportCsv}>
-              Export CSV
-            </Button>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
+      <div className="shrink-0">
+        <AdminToolbar
+          search={
+            <SearchInput
+              value={searchQuery}
+              onChange={(q) => {
+                setSearchQuery(q);
                 setPage(1);
               }}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
-            >
-              <option value="all">All Statuses</option>
-              {ORDER_STATUSES.map((st) => (
-                <option key={st} value={st}>{st}</option>
-              ))}
-            </select>
-          </>
-        }
-      />
-
-      {/* Orders Summary Strip */}
-      <div className="flex items-center flex-wrap gap-x-4 gap-y-1 px-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-        <span>
-          <span className="font-extrabold text-slate-900 dark:text-white">{orders.length}</span> orders
-        </span>
-        <span className="text-slate-300 dark:text-slate-600">•</span>
-        <span>
-          <span className="font-extrabold text-slate-900 dark:text-white font-mono">
-            {formatMoney(totalRevenue)}
-          </span>{" "}
-          revenue
-        </span>
-        <span className="text-slate-300 dark:text-slate-600">•</span>
-        <span>
-          <span className="font-extrabold text-slate-900 dark:text-white">{pendingOrdersCount}</span> pending
-        </span>
+              placeholder="Search by order # or customer name..."
+            />
+          }
+          actions={
+            <>
+              <Button variant="blue" icon="download" onClick={handleExportCsv}>
+                Export CSV
+              </Button>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+              >
+                <option value="all">All Statuses</option>
+                {ORDER_STATUSES.map((st) => (
+                  <option key={st} value={st}>{st}</option>
+                ))}
+              </select>
+            </>
+          }
+        />
       </div>
 
       {/* Orders Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {loading ? (
         <LoadingSpinner label="Loading orders..." />
       ) : (
-      <div className="space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-4">
         {/* Mobile View: High-Density Order Cards */}
         <div className="block md:hidden space-y-3">
           {filteredOrders.length === 0 ? (
@@ -136,18 +160,28 @@ export const AdminOrdersPage = () => {
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-3 shadow-xs rounded-none"
               >
                 <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
-                  <div>
-                    <span className="font-mono font-black text-sm text-slate-900 dark:text-white">
-                      #{ord.orderNumber}
-                    </span>
-                    <p className="text-[10px] text-slate-500 font-medium">
-                      {ord.items.length} items • {ord.paymentMethod}
-                    </p>
-                    <p className="text-[10px] text-slate-500 font-medium">
-                      {formatDate(ord.createdAt)}
-                    </p>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <ProductImage
+                      src={ord.items[0]?.image}
+                      alt={ord.items[0]?.name || "Product"}
+                      className="w-12 h-12 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700"
+                    />
+                    <div className="min-w-0">
+                      <span className="font-mono font-black text-sm text-slate-900 dark:text-white">
+                        #{ord.orderNumber}
+                      </span>
+                      <p className="text-[10px] text-slate-500 font-medium truncate">
+                        {ord.items[0]?.name || "Product"}{ord.items.length > 1 ? ` +${ord.items.length - 1} more` : ""}
+                      </p>
+                      <p className="text-[10px] text-slate-500 font-medium">
+                        {ord.items.length} {ord.items.length === 1 ? "item" : "items"} • {ord.paymentMethod}
+                      </p>
+                      <p className="text-[10px] text-slate-500 font-medium">
+                        {formatDate(ord.createdAt)}
+                      </p>
+                    </div>
                   </div>
-                  <span className="font-mono font-extrabold text-base text-blue-600 dark:text-blue-400">
+                  <span className="font-mono font-extrabold text-base text-blue-600 dark:text-blue-400 shrink-0">
                     {formatMoney(ord.total)}
                   </span>
                 </div>
@@ -166,7 +200,7 @@ export const AdminOrdersPage = () => {
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                  <Button variant="outline" size="sm" fullWidth onClick={() => setSelectedOrder(ord)}>
+                  <Button variant="outline" size="sm" fullWidth onClick={() => { setSelectedItemIndex(0); setSelectedOrder(ord); }}>
                     View Invoice
                   </Button>
                 </div>
@@ -180,7 +214,7 @@ export const AdminOrdersPage = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   <th className="p-4">Order #</th>
                   <th className="p-4">Customer</th>
                   <th className="p-4">Order Date</th>
@@ -211,8 +245,22 @@ export const AdminOrdersPage = () => {
                     <td className="p-4 font-medium text-slate-600 dark:text-slate-400">
                       {formatDate(ord.createdAt)}
                     </td>
-                    <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
-                      {ord.items.length} items
+                    <td className="p-4">
+                      <div className="flex items-center gap-2.5">
+                        <ProductImage
+                          src={ord.items[0]?.image}
+                          alt={ord.items[0]?.name || "Product"}
+                          className="w-9 h-9 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700"
+                        />
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          {ord.items.length} {ord.items.length === 1 ? "item" : "items"}
+                          {ord.items.length > 1 && (
+                            <span className="ml-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                              +{ord.items.length - 1}
+                            </span>
+                          )}
+                        </span>
+                      </div>
                     </td>
                     <td className="p-4 font-semibold text-slate-600 dark:text-slate-400">{ord.paymentMethod}</td>
                     <td className="p-4 font-mono font-extrabold text-slate-900 dark:text-white">
@@ -226,7 +274,7 @@ export const AdminOrdersPage = () => {
                       />
                     </td>
                     <td className="p-4 text-right">
-                      <Button variant="outline" size="sm" onClick={() => setSelectedOrder(ord)}>
+                      <Button variant="outline" size="sm" onClick={() => { setSelectedItemIndex(0); setSelectedOrder(ord); }}>
                         View Invoice
                       </Button>
                     </td>
@@ -240,14 +288,16 @@ export const AdminOrdersPage = () => {
       </div>
       )}
 
-      <AdminPagination
-        page={page}
-        totalPages={totalPages}
-        totalItems={totalItems}
-        start={start}
-        end={end}
-        onChange={setPage}
-      />
+      <div className="shrink-0">
+        <AdminPagination
+          page={page}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          start={start}
+          end={end}
+          onChange={setPage}
+        />
+      </div>
 
       {/* Invoice Modal */}
       <Modal
@@ -282,16 +332,42 @@ export const AdminOrdersPage = () => {
               )}
             </div>
 
-            <div className="space-y-2">
-              <h4 className="font-bold text-slate-700 dark:text-slate-300 text-xs">Items:</h4>
-              <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
-                {selectedOrder.items.map((item) => (
-                  <div key={`${item.name}-${item.quantity}`} className="flex items-center justify-between text-xs p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <span className="font-semibold text-slate-900 dark:text-white">{item.name} &times; {item.quantity}</span>
-                    <span className="font-mono font-bold">{formatMoney(item.price * item.quantity)}</span>
-                  </div>
-                ))}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Ordered Items</label>
+                <select
+                  value={selectedItemIndex}
+                  onChange={(e) => setSelectedItemIndex(Number(e.target.value))}
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+                >
+                  {selectedOrder.items.map((item, idx) => (
+                    <option key={`${item.name}-${idx}`} value={idx}>
+                      {item.name} &times; {item.quantity} — {formatMoney(item.price * item.quantity)}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              {selectedOrder.items[selectedItemIndex] && (
+                <div className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <ProductImage
+                    src={selectedOrder.items[selectedItemIndex].image}
+                    alt={selectedOrder.items[selectedItemIndex].name}
+                    className="w-14 h-14 rounded-lg object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      {selectedOrder.items[selectedItemIndex].name}
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      {formatMoney(selectedOrder.items[selectedItemIndex].price)} &times; {selectedOrder.items[selectedItemIndex].quantity}
+                    </p>
+                  </div>
+                  <span className="font-mono font-bold text-xs text-slate-900 dark:text-white shrink-0">
+                    {formatMoney(selectedOrder.items[selectedItemIndex].price * selectedOrder.items[selectedItemIndex].quantity)}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="space-y-1.5 text-xs bg-slate-50 dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-200 dark:border-slate-700/60">

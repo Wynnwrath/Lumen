@@ -20,7 +20,9 @@ export const RowActions = ({ actions }: { actions: RowAction[] }) => {
     <div ref={ref} className="relative inline-block">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`p-1.5 rounded-lg transition text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 ${open ? "bg-slate-100 dark:bg-slate-800" : ""}`}
+        className={`p-1.5 rounded-lg transition text-slate-700 dark:text-slate-200 bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 ${
+          open ? "bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600" : ""
+        }`}
         aria-label="Row actions"
         title="Actions"
       >
