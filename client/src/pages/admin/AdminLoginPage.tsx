@@ -15,6 +15,7 @@ export const AdminLoginPage = () => {
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // UI state
   const [alert, setAlert] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -300,13 +301,21 @@ export const AdminLoginPage = () => {
                       <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                       <input
                         id="login-password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         required
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
+                        className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-11 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface dark:hover:text-white"
+                        title={showPassword ? "Hide password" : "Show password"}
+                      >
+                        <Icon name={showPassword ? "eye_off" : "eye"} className="text-lg" />
+                      </button>
                     </div>
                   </div>
 

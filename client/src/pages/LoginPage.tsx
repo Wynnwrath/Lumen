@@ -27,11 +27,15 @@ export const LoginPage = () => {
   // Form states - Login
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Form states - Register
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [regConfirmPassword, setRegConfirmPassword] = useState("");
+  const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [regPhone, setRegPhone] = useState("");
   const [regTerms, setRegTerms] = useState(false);
 
@@ -71,8 +75,12 @@ export const LoginPage = () => {
       setAlert({ message: "You must agree to the Terms of Service to register.", type: "error" });
       return;
     }
-    if (!regName || !regEmail || !regPassword) {
+    if (!regName || !regEmail || !regPassword || !regConfirmPassword) {
       setAlert({ message: "Please fill in all required fields.", type: "error" });
+      return;
+    }
+    if (regPassword !== regConfirmPassword) {
+      setAlert({ message: "Passwords do not match.", type: "error" });
       return;
     }
     const failed = getPasswordChecks(regPassword).find((c) => !c.ok);
@@ -386,13 +394,21 @@ export const LoginPage = () => {
                         <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                         <input
                           id="login-password"
-                          type="password"
+                          type={showLoginPassword ? "text" : "password"}
                           required
                           value={loginPassword}
                           onChange={(e) => setLoginPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
+                          className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-11 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowLoginPassword(!showLoginPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface dark:hover:text-white"
+                          title={showLoginPassword ? "Hide password" : "Show password"}
+                        >
+                          <Icon name={showLoginPassword ? "eye_off" : "eye"} className="text-lg" />
+                        </button>
                       </div>
                     </div>
 
@@ -471,7 +487,7 @@ export const LoginPage = () => {
                       </div>
                     </div>
 
-                    {/* Password & Phone Grid */}
+                    {/* Password & Confirm Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <label
@@ -484,31 +500,84 @@ export const LoginPage = () => {
                           <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                           <input
                             id="reg-password"
-                            type="password"
+                            type={showRegPassword ? "text" : "password"}
                             required
                             value={regPassword}
                             onChange={(e) => setRegPassword(e.target.value)}
                             placeholder="Min 8 chars"
-                            className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
+                            className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-11 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowRegPassword(!showRegPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface dark:hover:text-white"
+                            title={showRegPassword ? "Hide password" : "Show password"}
+                          >
+                            <Icon name={showRegPassword ? "eye_off" : "eye"} className="text-lg" />
+                          </button>
                         </div>
                       </div>
 
                       <div className="space-y-1.5">
-                        <label htmlFor="reg-phone" className="block text-xs font-bold text-on-surface dark:text-slate-200">
-                          Phone Number (Optional)
+                        <label
+                          htmlFor="reg-confirm-password"
+                          className="block text-xs font-bold text-on-surface dark:text-slate-200"
+                        >
+                          Confirm Password
                         </label>
                         <div className="relative">
-                          <Icon name="call" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
+                          <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
                           <input
-                            id="reg-phone"
-                            type="tel"
-                            value={regPhone}
-                            onChange={(e) => setRegPhone(e.target.value)}
-                            placeholder="+1 (555) 000-0000"
-                            className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
+                            id="reg-confirm-password"
+                            type={showRegConfirm ? "text" : "password"}
+                            required
+                            value={regConfirmPassword}
+                            onChange={(e) => setRegConfirmPassword(e.target.value)}
+                            placeholder="Re-enter password"
+                            className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-11 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowRegConfirm(!showRegConfirm)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface dark:hover:text-white"
+                            title={showRegConfirm ? "Hide password" : "Show password"}
+                          >
+                            <Icon name={showRegConfirm ? "eye_off" : "eye"} className="text-lg" />
+                          </button>
                         </div>
+                      </div>
+                    </div>
+
+                    {/* Live password requirements */}
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1">
+                      {getPasswordChecks(regPassword).map((c) => (
+                        <li
+                          key={c.msg}
+                          className={`flex items-center gap-1.5 text-[11px] font-semibold ${
+                            c.ok ? "text-emerald-600 dark:text-emerald-400" : "text-outline"
+                          }`}
+                        >
+                          <Icon name="check_circle" className={`text-sm ${c.ok ? "" : "opacity-40"}`} />
+                          {c.msg}
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Phone (optional) */}
+                    <div className="space-y-1.5">
+                      <label htmlFor="reg-phone" className="block text-xs font-bold text-on-surface dark:text-slate-200">
+                        Phone Number (Optional)
+                      </label>
+                      <div className="relative">
+                        <Icon name="call" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
+                        <input
+                          id="reg-phone"
+                          type="tel"
+                          value={regPhone}
+                          onChange={(e) => setRegPhone(e.target.value)}
+                          placeholder="+63928869230"
+                          className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
+                        />
                       </div>
                     </div>
 
