@@ -31,17 +31,6 @@
   }
 }
 
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 @keyframes cardIn {
   from {
     opacity: 0;
@@ -69,10 +58,6 @@
 /* Entrance helpers */
 .animate-fade-up {
   animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-fade-in-scale {
-  animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ---- Product cards ---- */
@@ -342,11 +327,6 @@ html.dark .bg-surface-container {
   background-color: #1e293b !important;
 }
 
-html.dark .bg-surface-container-high,
-html.dark .bg-surface-container-highest {
-  background-color: #334155 !important;
-}
-
 /* 3. Text Contrast & Typography */
 html.dark .text-on-surface,
 html.dark .text-primary,
@@ -388,11 +368,6 @@ html.dark .product-card {
 html.dark .product-card:hover {
   border-color: rgba(59, 130, 246, 0.5) !important;
   box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.7), 0 0 20px rgba(59, 130, 246, 0.2) !important;
-}
-
-html.dark .product-card-img-container,
-html.dark .bg-surface-container-low\/80 {
-  background-color: #1e293b !important;
 }
 
 /* 6. Form Controls: Inputs, Selects, Textareas */

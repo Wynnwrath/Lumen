@@ -159,14 +159,14 @@ export const HomePage = () => {
                 <div className="flex items-center gap-2 pt-1 sm:pt-3">
                   <button
                     onClick={(e) => handleQuickBuyHero(e, slide.id)}
-                    className="bg-secondary hover:bg-secondary-container text-white px-3.5 py-2 sm:px-8 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm transition-all shadow-lg active:scale-95 flex items-center gap-1.5 quick-buy-btn btn-sheen whitespace-nowrap"
+                    className="bg-secondary hover:bg-secondary-container text-white px-3.5 py-2 sm:px-8 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm transition-all shadow-lg active:scale-95 flex items-center gap-1.5 btn-sheen whitespace-nowrap"
                   >
                     <Icon name="shopping_bag" className="text-sm sm:text-xl" />
                     <span>{slide.cta}</span>
                   </button>
                   <Link
                     to={slide.link}
-                    className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-3 py-2 sm:px-7 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1 view-details-btn border border-white/15 whitespace-nowrap"
+                    className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md px-3 py-2 sm:px-7 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1 border border-white/15 whitespace-nowrap"
                   >
                     Learn More
                   </Link>
