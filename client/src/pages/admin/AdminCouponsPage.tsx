@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { getCoupons, createCoupon, updateCoupon, deleteCoupon } from "../../api/coupons";
+import React, { useState, useMemo } from "react";
+import { createCoupon, updateCoupon, deleteCoupon } from "../../api/coupons";
 import type { Coupon } from "../../api/coupons";
 import { getErrorMessage } from "../../api/client";
 import { Icon } from "../../components/ui/Icon";
@@ -15,14 +15,8 @@ import { RowActions, type RowAction } from "../../components/admin/shared/RowAct
 import { ToggleSwitch } from "../../components/admin/shared/ToggleSwitch";
 import { useToast } from "../../components/ui/ToastProvider";
 import { usePagination } from "../../hooks/usePagination";
+import { useCoupons } from "../../hooks/useCoupons";
 import { formatDate } from "../../utils/format";
-
-// Deterministic sort so the list never reshuffles on refresh/toggle.
-const sortCoupons = (list: Coupon[]) =>
-  [...list].sort((a, b) => {
-    if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
-    return a._id < b._id ? 1 : -1;
-  });
 
 // Gradient discount badge reused on cards + table rows.
 const DiscountBadge = ({ percent }: { percent: number }) => (
@@ -33,8 +27,7 @@ const DiscountBadge = ({ percent }: { percent: number }) => (
 );
 
 export const AdminCouponsPage = () => {
-  const [coupons, setCoupons] = useState<Coupon[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { coupons, refresh: refreshCoupons, loading, updateLocal } = useCoupons();
   const [searchQuery, setSearchQuery] = useState("");
   const { showToast } = useToast();
 
@@ -45,20 +38,6 @@ export const AdminCouponsPage = () => {
   const [formCode, setFormCode] = useState("");
   const [formPercent, setFormPercent] = useState(10);
   const [formActive, setFormActive] = useState(true);
-
-  const loadCoupons = useCallback(async () => {
-    try {
-      setCoupons(sortCoupons(await getCoupons()));
-    } catch (error) {
-      showToast(getErrorMessage(error), "error");
-    } finally {
-      setLoading(false);
-    }
-  }, [showToast]);
-
-  useEffect(() => {
-    loadCoupons();
-  }, [loadCoupons]);
 
   const filteredCoupons = useMemo(
     () =>
@@ -109,7 +88,7 @@ export const AdminCouponsPage = () => {
         showToast(`Created coupon "${formCode.trim().toUpperCase()}"`, "success");
       }
       setShowModal(false);
-      await loadCoupons();
+      await refreshCoupons();
     } catch (error) {
       showToast(getErrorMessage(error), "error");
     } finally {
@@ -121,17 +100,13 @@ export const AdminCouponsPage = () => {
     if (togglingId) return;
     setTogglingId(coupon._id);
     // Optimistic flip: update in place so the list doesn't reload/rearrange.
-    setCoupons((prev) =>
-      sortCoupons(prev.map((c) => (c._id === coupon._id ? { ...c, isActive: !c.isActive } : c)))
-    );
+    updateLocal((prev) => prev.map((c) => (c._id === coupon._id ? { ...c, isActive: !c.isActive } : c)));
     try {
       await updateCoupon(coupon.code, { isActive: !coupon.isActive });
       showToast(`${coupon.code} ${coupon.isActive ? "deactivated" : "activated"}`, "info");
     } catch (error) {
       // Revert on failure.
-      setCoupons((prev) =>
-        sortCoupons(prev.map((c) => (c._id === coupon._id ? { ...c, isActive: coupon.isActive } : c)))
-      );
+      updateLocal((prev) => prev.map((c) => (c._id === coupon._id ? { ...c, isActive: coupon.isActive } : c)));
       showToast(getErrorMessage(error), "error");
     } finally {
       setTogglingId(null);
@@ -142,7 +117,7 @@ export const AdminCouponsPage = () => {
     try {
       await deleteCoupon(coupon.code);
       showToast(`Coupon "${coupon.code}" deleted`, "info");
-      await loadCoupons();
+      await refreshCoupons();
     } catch (error) {
       showToast(getErrorMessage(error), "error");
     }
