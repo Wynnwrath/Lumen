@@ -17,7 +17,7 @@ export async function sendOrderConfirmation(to: string, order: OrderEmailData): 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Lumen Store <onboarding@resend.dev>",
+        from: config.resendFrom,
         to: [to],
         subject,
         html,
