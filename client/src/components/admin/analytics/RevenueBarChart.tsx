@@ -1,4 +1,4 @@
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { EmptyState } from "../../ui/EmptyState";
 import type { DashboardCharts } from "../../../api/dashboard";
 
@@ -15,7 +15,13 @@ export const RevenueBarChart = ({ data }: RevenueBarChartProps) => (
     ) : (
       <div className="h-48 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+            <defs>
+              <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.15)" vertical={false} />
             <XAxis
               dataKey="label"
@@ -25,15 +31,23 @@ export const RevenueBarChart = ({ data }: RevenueBarChartProps) => (
             />
             <YAxis hide />
             <Tooltip
-              cursor={{ fill: "rgba(148, 163, 184, 0.1)" }}
+              cursor={{ stroke: "rgba(148, 163, 184, 0.2)", strokeWidth: 1 }}
               formatter={(value) => [
                 `$${Number(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                 "Revenue",
               ]}
               contentStyle={{ borderRadius: 8, fontSize: 12, fontWeight: 600 }}
             />
-            <Bar dataKey="total" fill="#10b981" radius={[4, 4, 0, 0]} barSize={26} />
-          </BarChart>
+            <Area
+              type="monotone"
+              dataKey="total"
+              stroke="#10b981"
+              strokeWidth={2}
+              fill="url(#revenueGradient)"
+              dot={{ fill: "#10b981", stroke: "#fff", strokeWidth: 2, r: 3 }}
+              activeDot={{ fill: "#10b981", stroke: "#fff", strokeWidth: 2, r: 5 }}
+            />
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     )}
