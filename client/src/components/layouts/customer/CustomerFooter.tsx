@@ -7,6 +7,8 @@ import logo from "../../../assets/logo.png";
 export const CustomerFooter = () => {
   const { showToast } = useToast();
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [companyOpen, setCompanyOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +27,9 @@ export const CustomerFooter = () => {
   return (
     <>
       {/* Footer */}
-      <footer className="bg-primary-container text-on-primary py-8 sm:py-12 border-t border-slate-800 mt-auto">
-        <div className="hidden md:grid max-w-container-max mx-auto px-4 sm:px-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+      <footer className="bg-primary-container text-on-primary py-6 sm:py-12 border-t border-slate-800 mt-auto">
+        <div className="max-w-container-max mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
+          {/* Brand Column */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <img
@@ -36,31 +39,52 @@ export const CustomerFooter = () => {
               />
               <span className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Lumen</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
               Illuminate your lifestyle with our curated collection of premium tech, fashion, and modern goods.
             </p>
           </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 sm:mb-3">Company</h4>
-            <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400">
+          {/* Company Accordion / Column */}
+          <div className="border-b border-slate-800 pb-4 md:border-none md:pb-0">
+            <button
+              onClick={() => setCompanyOpen(!companyOpen)}
+              className="w-full flex items-center justify-between text-left md:pointer-events-none"
+            >
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">Company</h4>
+              <Icon
+                name={companyOpen ? "expand_less" : "expand_more"}
+                className="text-slate-400 md:hidden text-lg"
+              />
+            </button>
+            <ul className={`mt-2 md:mt-3 space-y-1.5 sm:space-y-2 text-xs text-slate-400 ${companyOpen ? "block" : "hidden md:block"}`}>
               <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">About Us</a></li>
               <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Careers</a></li>
               <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Press Release</a></li>
             </ul>
           </div>
 
-          <div>
-            <h4 id="support" className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 sm:mb-3">
-              Customer Support
-            </h4>
-            <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400">
+          {/* Customer Support Accordion / Column */}
+          <div className="border-b border-slate-800 pb-4 md:border-none md:pb-0">
+            <button
+              onClick={() => setSupportOpen(!supportOpen)}
+              className="w-full flex items-center justify-between text-left md:pointer-events-none"
+            >
+              <h4 id="support" className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                Customer Support
+              </h4>
+              <Icon
+                name={supportOpen ? "expand_less" : "expand_more"}
+                className="text-slate-400 md:hidden text-lg"
+              />
+            </button>
+            <ul className={`mt-2 md:mt-3 space-y-1.5 sm:space-y-2 text-xs text-slate-400 ${supportOpen ? "block" : "hidden md:block"}`}>
               <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Returns &amp; Refunds</a></li>
               <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Shipping Policy</a></li>
               <li><a href="mailto:support@lumen.com" className="hover:text-white transition">Contact Support</a></li>
             </ul>
           </div>
 
+          {/* Stay Connected Column */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 sm:mb-3">Stay Connected</h4>
             <div className="flex items-center gap-2.5 mb-3">
@@ -120,7 +144,7 @@ export const CustomerFooter = () => {
           </div>
         </div>
 
-        <div className="max-w-container-max mx-auto px-4 sm:px-6 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-3 text-center sm:text-left">
+        <div className="max-w-container-max mx-auto px-4 sm:px-6 mt-4 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-3 text-center sm:text-left">
           <div className="flex gap-4">
             <a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Privacy Policy</a>
             <a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Terms of Service</a>
