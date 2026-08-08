@@ -11,7 +11,7 @@ interface OrderConfirmationReceiptProps {
 
 export const OrderConfirmationReceipt = ({ order, phone }: OrderConfirmationReceiptProps) => {
   return (
-    <main className="w-full max-w-2xl mx-auto px-3 sm:px-6 py-6 md:py-10">
+    <main className="h-full min-h-0 overflow-y-auto w-full max-w-2xl mx-auto px-3 sm:px-6 py-6 md:py-10">
       <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-3xl p-5 md:p-8 shadow-2xl border border-outline-variant/30 text-center space-y-5 animate-fade-up">
         <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl">
           <Icon name="check_circle" className="text-2xl" />

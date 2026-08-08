@@ -395,11 +395,22 @@ export const CheckoutPage = () => {
       {/* MOBILE STICKY BAR */}
       {items.length > 0 && currentStep < 3 && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-3 flex items-center justify-between lg:hidden shadow-2xl pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <div>
-            <span className="text-[10px] text-outline block leading-none">Total Payable</span>
-            <span className="text-base font-black text-primary dark:text-white">
-              {formatMoney(grandTotal)}
-            </span>
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Always-available escape hatch: the bottom dock is hidden on
+                checkout, so this is the only way back to the cart on mobile. */}
+            <Link
+              to="/cart"
+              className="flex items-center gap-1 text-secondary font-bold text-xs shrink-0"
+            >
+              <Icon name="arrow_back" className="text-sm" />
+              <span>Cart</span>
+            </Link>
+            <div className="min-w-0">
+              <span className="text-[10px] text-outline block leading-none">Total Payable</span>
+              <span className="text-base font-black text-primary dark:text-white">
+                {formatMoney(grandTotal)}
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {currentStep === 2 && (
