@@ -53,6 +53,13 @@ export const HomePage = () => {
     return () => clearInterval(interval);
   }, [isPaused]);
 
+  // Pause the autoplay while the tab is hidden so slides don't jump on return.
+  useEffect(() => {
+    const handleVisibility = () => setIsPaused(document.hidden);
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
   // Filter & sort products logic
   const displayProducts = useMemo(() => {
     const sortedProducts = [...fetchedProducts];

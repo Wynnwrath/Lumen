@@ -71,6 +71,16 @@ export const ProductDetailPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
+  // Close the image zoom lightbox with the Escape key.
+  useEffect(() => {
+    if (!isZoomOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsZoomOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isZoomOpen]);
+
   if (loading) {
     return (
       <div className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8">
@@ -390,7 +400,7 @@ export const ProductDetailPage = () => {
       )}
 
       {/* Persistent Sticky Bottom Action Bar for Mobile Viewports */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-2.5 flex items-center gap-2 lg:hidden shadow-2xl">
+      <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-2.5 flex items-center gap-2 lg:hidden shadow-2xl">
         <div className="shrink-0 pr-2 border-r border-outline-variant/30">
           <span className="text-xs text-outline block leading-none">Total</span>
           <span className="text-base font-black text-primary dark:text-white">

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../../stores/theme.store";
 import { useCartStore } from "../../../stores/cart.store";
@@ -68,6 +68,18 @@ export const CustomerHeader = () => {
     setShowSearchDropdown(false);
   };
 
+  // Keep the header search box in sync with the catalog URL: clear it when
+  // leaving /products, and reflect external navigation (e.g. filters reset).
+  useEffect(() => {
+    if (location.pathname === "/products") {
+      const s = new URLSearchParams(location.search).get("search") || "";
+      setSearchQuery((cur) => (cur === s ? cur : s));
+    } else {
+      setSearchQuery("");
+    }
+    setShowSearchDropdown(false);
+  }, [location.pathname, location.search]);
+
   return (
     <>
       {/* Top Announcement Bar (desktop only) */}
@@ -119,6 +131,14 @@ export const CustomerHeader = () => {
               >
                 <Icon name={mode === "dark" ? "light_mode" : "dark_mode"} className="text-xl" />
               </button>
+              <Link to="/products?wishlist=true" className="p-2 text-primary dark:text-inverse-primary relative" title="Wishlist">
+                <Icon name="favorite" className="text-xl" />
+                {wishlistIds.length > 0 && (
+                  <span className="absolute top-1 right-1 bg-error text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    {wishlistIds.length}
+                  </span>
+                )}
+              </Link>
               <Link to="/cart" className="p-2 text-primary dark:text-inverse-primary relative">
                 <Icon name="shopping_cart" className="text-xl" />
                 {itemCount > 0 && (

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
+import { useCartStore } from "../stores/cart.store";
+import { useCatalogProducts } from "../hooks/useCatalogProducts";
 import { getMyOrders, confirmOrderReceived } from "../api/orders";
 import { getErrorMessage } from "../api/client";
 import { useToast } from "../components/ui/ToastProvider";
@@ -40,6 +42,8 @@ function getAutoReceiveLabel(order: Order): string | null {
 export const MyOrdersPage = () => {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
+  const { addItem } = useCartStore();
+  const { products: catalogProducts } = useCatalogProducts();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -72,6 +76,25 @@ export const MyOrdersPage = () => {
       showToast(getErrorMessage(error), "error");
     } finally {
       setConfirmingId(null);
+    }
+  };
+
+  // Re-adds every item from a past order back into the cart. Items that are no
+  // longer available (or out of stock) are skipped so the rest still works.
+  const handleReorder = (order: Order) => {
+    let added = 0;
+    order.items.forEach((item) => {
+      const product = catalogProducts.find((p) => p._id === item.productId);
+      if (product && product.stock > 0) {
+        addItem(product, item.quantity);
+        added += 1;
+      }
+    });
+    if (added > 0) {
+      showToast(`Added ${added} item${added === 1 ? "" : "s"} back to your cart`, "success");
+      navigate("/cart");
+    } else {
+      showToast("These items are no longer available.", "error");
     }
   };
 
@@ -218,12 +241,12 @@ export const MyOrdersPage = () => {
                     <span className="text-outline text-sm"> &bull; {order.paymentMethod}</span>
                   </div>
                   {order.status === "Received" && (
-                    <Link
-                      to={order.items[0]?.productId ? `/product/${order.items[0].productId}` : "/products"}
+                    <button
+                      onClick={() => handleReorder(order)}
                       className="text-sm font-bold text-secondary hover:underline"
                     >
                       Reorder
-                    </Link>
+                    </button>
                   )}
                 </div>
                 <Button variant="secondary" onClick={() => setSelectedOrder(order)}>

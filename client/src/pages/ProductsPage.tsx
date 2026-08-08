@@ -9,7 +9,8 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { Pagination } from "../components/customer/products/Pagination";
 import { useAddToCart } from "../hooks/useAddToCart";
 
-// Product listing with filters (category/search/sale/wishlist), sorting, and pagination.
+// Product listing with filters (category/search/sale/wishlist), sorting, and
+// pagination (10 products per page).
 export const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const handleAddToCart = useAddToCart();
@@ -30,7 +31,7 @@ export const ProductsPage = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 20;
+  const PAGE_SIZE = 10;
 
   const { products, loading: productsLoading } = useCatalogProducts();
 
@@ -155,6 +156,134 @@ export const ProductsPage = () => {
     });
   };
 
+  // Lock page scroll while the mobile filter drawer is open.
+  useEffect(() => {
+    document.body.style.overflow = isMobileFilterOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileFilterOpen]);
+
+  // Filter controls shared by the desktop sidebar and the mobile drawer.
+  const filterPanel = (
+    <>
+      <hr className="border-outline-variant/20" />
+
+      {/* Categories Section */}
+      <div className="space-y-2">
+        <h4 className="text-[11px] font-bold uppercase tracking-wider text-outline">Categories</h4>
+        <div className="space-y-1">
+          {categories.map((cat) => {
+            const isActive = selectedCategory.toLowerCase() === cat.slug.toLowerCase();
+            return (
+              <button
+                key={cat.slug}
+                onClick={() => {
+                  handleCategorySelect(cat.slug);
+                  setIsMobileFilterOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  isActive
+                    ? "bg-secondary text-white shadow-xs font-bold"
+                    : "text-on-surface-variant hover:bg-surface-container dark:hover:bg-slate-700/60"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Icon name={cat.icon} className="text-base" />
+                  <span>{cat.label}</span>
+                </span>
+                <span className={`text-[10px] ${isActive ? "text-white/80" : "text-outline"}`}>
+                  {cat.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <hr className="border-outline-variant/20" />
+
+      {/* Price Range Filter */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-outline">Price Range</h4>
+          <span className="text-xs font-extrabold text-secondary">${maxPrice}</span>
+        </div>
+        <div className="space-y-2 pt-1">
+          <input
+            type="range"
+            min="0"
+            max="1500"
+            step="25"
+            value={maxPrice}
+                onChange={(e) => {
+                  setPage(1);
+                  setMaxPrice(Number(e.target.value));
+                }}
+            className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-secondary"
+          />
+          <div className="flex justify-between text-[10px] font-bold text-outline">
+            <span>$0</span>
+            <span>$1,500</span>
+          </div>
+        </div>
+      </div>
+
+      <hr className="border-outline-variant/20" />
+
+      {/* Availability & Special Offers */}
+      <div className="space-y-2">
+        <h4 className="text-[11px] font-bold uppercase tracking-wider text-outline">Availability & Offers</h4>
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs text-on-surface font-semibold cursor-pointer hover:text-secondary transition">
+            <input
+              type="checkbox"
+              checked={onlyInStock}
+                  onChange={(e) => {
+                    setPage(1);
+                    setOnlyInStock(e.target.checked);
+                  }}
+              className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
+            />
+            <span>In Stock Only</span>
+          </label>
+          <label className="flex items-center gap-2 text-xs text-on-surface font-semibold cursor-pointer hover:text-secondary transition">
+            <input
+              type="checkbox"
+              checked={onlySale}
+                  onChange={(e) => {
+                    setPage(1);
+                    setOnlySale(e.target.checked);
+                  }}
+              className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
+            />
+            <span>On Sale Only</span>
+          </label>
+          <label className="flex items-center gap-2 text-xs text-on-surface font-semibold cursor-pointer hover:text-secondary transition">
+            <input
+              type="checkbox"
+              checked={onlyWishlist}
+                  onChange={(e) => {
+                    setPage(1);
+                    setOnlyWishlist(e.target.checked);
+                  }}
+              className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
+            />
+            <span>Saved Wishlist Items</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Mobile Done Button */}
+      <button
+        onClick={() => setIsMobileFilterOpen(false)}
+        className="w-full lg:hidden py-2 bg-slate-900 text-white rounded-xl text-xs font-bold"
+      >
+        Apply Filters
+      </button>
+    </>
+  );
+
   return (
     <main className="max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-8 flex-grow w-full">
       {/* Header Section: Title & Controls */}
@@ -258,11 +387,8 @@ export const ProductsPage = () => {
 
       {/* Body Section: Clean React Filter Sidebar + Main Product Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Filter Panel (Desktop sidebar + Mobile Collapsible Drawer) */}
-        <aside className={`lg:col-span-3 space-y-5 bg-surface-container-lowest dark:bg-slate-800/80 p-5 rounded-2xl border border-outline-variant/30 shadow-sm ${
-          isMobileFilterOpen ? "block" : "hidden lg:block"
-        }`}>
-          {/* Header & Clear Filters Button */}
+        {/* Filter Panel (Desktop sidebar + Mobile slide-in drawer) */}
+        <aside className="hidden lg:block lg:col-span-3 space-y-5 bg-surface-container-lowest dark:bg-slate-800/80 p-5 rounded-2xl border border-outline-variant/30 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-on-surface flex items-center gap-2">
               <Icon name="filter_alt" className="text-secondary" />
@@ -277,122 +403,46 @@ export const ProductsPage = () => {
               </button>
             )}
           </div>
-
-          <hr className="border-outline-variant/20" />
-
-          {/* Categories Section */}
-          <div className="space-y-2">
-            <h4 className="text-[11px] font-bold uppercase tracking-wider text-outline">Categories</h4>
-            <div className="space-y-1">
-              {categories.map((cat) => {
-                const isActive = selectedCategory.toLowerCase() === cat.slug.toLowerCase();
-                return (
-                  <button
-                    key={cat.slug}
-                    onClick={() => {
-                      handleCategorySelect(cat.slug);
-                      setIsMobileFilterOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-                      isActive
-                        ? "bg-secondary text-white shadow-xs font-bold"
-                        : "text-on-surface-variant hover:bg-surface-container dark:hover:bg-slate-700/60"
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <Icon name={cat.icon} className="text-base" />
-                      <span>{cat.label}</span>
-                    </span>
-                    <span className={`text-[10px] ${isActive ? "text-white/80" : "text-outline"}`}>
-                      {cat.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <hr className="border-outline-variant/20" />
-
-          {/* Price Range Filter */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h4 className="text-[11px] font-bold uppercase tracking-wider text-outline">Price Range</h4>
-              <span className="text-xs font-extrabold text-secondary">${maxPrice}</span>
-            </div>
-            <div className="space-y-2 pt-1">
-              <input
-                type="range"
-                min="0"
-                max="1500"
-                step="25"
-                value={maxPrice}
-                onChange={(e) => {
-                  setPage(1);
-                  setMaxPrice(Number(e.target.value));
-                }}
-                className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-secondary"
-              />
-              <div className="flex justify-between text-[10px] font-bold text-outline">
-                <span>$0</span>
-                <span>$1,500</span>
-              </div>
-            </div>
-          </div>
-
-          <hr className="border-outline-variant/20" />
-
-          {/* Availability & Special Offers */}
-          <div className="space-y-2">
-            <h4 className="text-[11px] font-bold uppercase tracking-wider text-outline">Availability & Offers</h4>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 text-xs text-on-surface font-semibold cursor-pointer hover:text-secondary transition">
-                <input
-                  type="checkbox"
-                  checked={onlyInStock}
-                  onChange={(e) => {
-                    setPage(1);
-                    setOnlyInStock(e.target.checked);
-                  }}
-                  className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
-                />
-                <span>In Stock Only</span>
-              </label>
-              <label className="flex items-center gap-2 text-xs text-on-surface font-semibold cursor-pointer hover:text-secondary transition">
-                <input
-                  type="checkbox"
-                  checked={onlySale}
-                  onChange={(e) => {
-                    setPage(1);
-                    setOnlySale(e.target.checked);
-                  }}
-                  className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
-                />
-                <span>On Sale Only</span>
-              </label>
-              <label className="flex items-center gap-2 text-xs text-on-surface font-semibold cursor-pointer hover:text-secondary transition">
-                <input
-                  type="checkbox"
-                  checked={onlyWishlist}
-                  onChange={(e) => {
-                    setPage(1);
-                    setOnlyWishlist(e.target.checked);
-                  }}
-                  className="rounded border-outline-variant/80 text-secondary focus:ring-secondary w-3.5 h-3.5"
-                />
-                <span>Saved Wishlist Items</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Mobile Done Button */}
-          <button
-            onClick={() => setIsMobileFilterOpen(false)}
-            className="w-full lg:hidden py-2 bg-slate-900 text-white rounded-xl text-xs font-bold"
-          >
-            Apply Filters
-          </button>
+          {filterPanel}
         </aside>
+
+        {/* Mobile Filter Drawer (overlay on phones/tablets) */}
+        {isMobileFilterOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div
+              className="absolute inset-0 bg-slate-950/60"
+              onClick={() => setIsMobileFilterOpen(false)}
+            ></div>
+            <aside className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-surface-container-lowest dark:bg-slate-800/90 shadow-2xl border-r border-outline-variant/30 flex flex-col">
+              <div className="flex items-center justify-between p-5 pb-0 shrink-0">
+                <h3 className="text-sm font-bold text-on-surface flex items-center gap-2">
+                  <Icon name="filter_alt" className="text-secondary" />
+                  <span>Filter Options</span>
+                </h3>
+                <div className="flex items-center gap-2">
+                  {hasActiveFilters && (
+                    <button
+                      onClick={handleResetFilters}
+                      className="text-xs font-bold text-secondary hover:underline flex items-center gap-1"
+                    >
+                      <Icon name="refresh" className="text-xs" /> Clear All
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setIsMobileFilterOpen(false)}
+                    className="p-1.5 text-outline hover:text-on-surface rounded-lg bg-surface dark:bg-slate-700"
+                    aria-label="Close filters"
+                  >
+                    <Icon name="close" className="text-lg" />
+                  </button>
+                </div>
+              </div>
+              <div className="p-5 space-y-5 flex-1 overflow-y-auto">
+                {filterPanel}
+              </div>
+            </aside>
+          </div>
+        )}
 
         {/* Right Main Product Area */}
         <section className="lg:col-span-9 space-y-3">
@@ -454,7 +504,14 @@ export const ProductsPage = () => {
 
           {/* Pagination Controls */}
           {!productsLoading && filteredProducts.length > 0 && totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={filteredProducts.length}
+              start={(page - 1) * PAGE_SIZE + 1}
+              end={Math.min(page * PAGE_SIZE, filteredProducts.length)}
+              onChange={setPage}
+            />
           )}
         </section>
       </div>

@@ -14,6 +14,13 @@ export const CustomerFooter = () => {
     setNewsletterEmail("");
   };
 
+  // Placeholder links that don't have real pages yet — give feedback instead
+  // of silently doing nothing.
+  const handlePlaceholderClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    showToast("This section is coming soon", "info");
+  };
+
   return (
     <>
       {/* Footer */}
@@ -34,9 +41,9 @@ export const CustomerFooter = () => {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 sm:mb-3">Company</h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400">
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">About Us</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Careers</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Press Release</a></li>
+              <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">About Us</a></li>
+              <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Careers</a></li>
+              <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Press Release</a></li>
             </ul>
           </div>
 
@@ -45,8 +52,8 @@ export const CustomerFooter = () => {
               Customer Support
             </h4>
             <ul className="space-y-1.5 sm:space-y-2 text-xs text-slate-400">
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Returns &amp; Refunds</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()} className="hover:text-white transition">Shipping Policy</a></li>
+              <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Returns &amp; Refunds</a></li>
+              <li><a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Shipping Policy</a></li>
               <li><a href="mailto:support@lumen.com" className="hover:text-white transition">Contact Support</a></li>
             </ul>
           </div>
@@ -112,8 +119,8 @@ export const CustomerFooter = () => {
 
         <div className="max-w-container-max mx-auto px-4 sm:px-6 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-3 text-center sm:text-left">
           <div className="flex gap-4">
-            <a href="#" className="hover:text-white transition">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition">Terms of Service</a>
+            <a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Privacy Policy</a>
+            <a href="#" onClick={handlePlaceholderClick} className="hover:text-white transition">Terms of Service</a>
           </div>
         </div>
       </footer>
