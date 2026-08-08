@@ -21,4 +21,12 @@ export const ADMIN_ORDER_STATUSES = [
   "Cancelled",
 ] as const;
 
+// Statuses that count as "in progress / awaiting fulfillment" (used for the
+// dashboard's pending counts, mirrors client/src/constants/index.ts).
+export const PENDING_STATUSES = ["Pending", "Confirmed", "Preparing"] as const;
+
+// Statuses that count as "delivered / finished" (used for the dashboard's
+// completed counts, mirrors client/src/constants/index.ts).
+export const COMPLETED_STATUSES = ["Completed", "Received"] as const;
+
 export type OrderStatus = "Pending" | "Confirmed" | "Preparing" | "Shipped" | "Completed" | "Received" | "Cancelled";

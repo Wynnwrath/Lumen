@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useCartStore } from "../stores/cart.store";
@@ -16,6 +16,7 @@ import { OrderStatusTimeline, ORDER_TRACK_STEPS } from "../components/customer/o
 import { ListRowsSkeleton } from "../components/ui/skeletons";
 import { Button } from "../components/ui/Button";
 import { formatDate, formatMoney } from "../utils/format";
+import { isCompletedStatus } from "../constants";
 
 const AUTO_RECEIVE_DAYS = 3;
 
@@ -49,6 +50,7 @@ export const MyOrdersPage = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | "completed" | "not-completed">("all");
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -61,6 +63,14 @@ export const MyOrdersPage = () => {
       .catch(() => setOrders([]))
       .finally(() => setLoading(false));
   }, [user, navigate]);
+
+  // Client-side status filter: "Completed" and "Received" count as completed,
+  // everything still in progress is "not completed yet".
+  const filteredOrders = useMemo(() => {
+    if (statusFilter === "all") return orders;
+    const isDone = (status: Order["status"]) => isCompletedStatus(status);
+    return orders.filter((o) => (statusFilter === "completed" ? isDone(o.status) : !isDone(o.status)));
+  }, [orders, statusFilter]);
 
   const handleConfirmReceived = async (order: Order) => {
     if (confirmingId) return;
@@ -106,20 +116,41 @@ export const MyOrdersPage = () => {
         <span className="text-on-surface font-semibold">My Orders</span>
       </nav>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <h1 className="text-xl md:text-2xl font-extrabold text-on-surface tracking-tight">My Orders</h1>
-        <Link to="/products" className="text-sm font-bold text-secondary hover:underline">
-          Continue Shopping
-        </Link>
+
+        <div className="flex items-center gap-1.5">
+          {([
+            ["all", "All"],
+            ["completed", "Completed"],
+            ["not-completed", "Not Completed"],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => setStatusFilter(value)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                statusFilter === value
+                  ? "bg-secondary text-white shadow-sm"
+                  : "bg-surface-container-low dark:bg-slate-800 text-on-surface-variant hover:bg-surface-container"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? (
         <ListRowsSkeleton rows={4} />
-      ) : orders.length === 0 ? (
+      ) : filteredOrders.length === 0 ? (
         <EmptyState
           icon="shopping_bag"
-          title="No orders yet"
-          subtitle="When you place an order, it will show up here so you can track its status."
+          title={orders.length === 0 ? "No orders yet" : "No orders in this status"}
+          subtitle={
+            orders.length === 0
+              ? "When you place an order, it will show up here so you can track its status."
+              : "Try a different filter to see more of your orders."
+          }
           action={
             <Button to="/products" variant="secondary">
               Browse Products
@@ -128,7 +159,7 @@ export const MyOrdersPage = () => {
         />
       ) : (
         <div className="space-y-4">
-          {orders.map((order) => (
+          {filteredOrders.map((order) => (
             <div
               key={order._id}
               className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 p-5 sm:p-6 shadow-xs hover:border-secondary/40 hover:shadow-sm transition"
@@ -146,26 +177,25 @@ export const MyOrdersPage = () => {
                 <StatusBadge status={order.status} />
               </div>
 
-              <div className="py-3.5 space-y-3">
-                {order.items.slice(0, 3).map((item) => (
-                  <div key={`${item.name}-${item.quantity}`} className="flex items-center gap-3">
-                    <ProductImage
-                      src={item.image}
-                      alt={item.name}
-                      className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"
-                    />
-                    <span className="font-semibold text-on-surface text-base truncate flex-1 min-w-0">
-                      {item.name}
-                    </span>
-                    <span className="text-outline text-sm shrink-0">&times; {item.quantity}</span>
-                    <span className="font-mono font-bold text-base text-on-surface shrink-0 w-24 text-right">
-                      {formatMoney(item.price * item.quantity)}
-                    </span>
-                  </div>
-                ))}
-                {order.items.length > 3 && (
-                  <p className="text-xs text-outline">+{order.items.length - 3} more item(s)</p>
-                )}
+              <div className="py-3.5">
+                <div className={`space-y-3 ${order.items.length > 3 ? "max-h-64 overflow-y-auto pr-1" : ""}`}>
+                  {order.items.map((item) => (
+                    <div key={`${item.name}-${item.quantity}`} className="flex items-center gap-3">
+                      <ProductImage
+                        src={item.image}
+                        alt={item.name}
+                        className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"
+                      />
+                      <span className="font-semibold text-on-surface text-base truncate flex-1 min-w-0">
+                        {item.name}
+                      </span>
+                      <span className="text-outline text-sm shrink-0">&times; {item.quantity}</span>
+                      <span className="font-mono font-bold text-base text-on-surface shrink-0 w-24 text-right">
+                        {formatMoney(item.price * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Order Progress + Track Dropdown */}

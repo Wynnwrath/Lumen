@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
+import { PENDING_STATUSES, COMPLETED_STATUSES } from "../orders/order.model.js";
 
 // Products below this stock level count as "low stock" in the alerts.
 const LOW_STOCK_THRESHOLD = 5;
@@ -21,8 +22,8 @@ export const dashboardService = {
         prisma.order.count(),
         prisma.user.count({ where: { role: "customer" } }),
         prisma.product.count({ where: { stock: { lt: LOW_STOCK_THRESHOLD } } }),
-        prisma.order.count({ where: { status: { in: ["Completed", "Received"] } } }),
-        prisma.order.count({ where: { status: "Pending" } }),
+        prisma.order.count({ where: { status: { in: [...COMPLETED_STATUSES] } } }),
+        prisma.order.count({ where: { status: { in: [...PENDING_STATUSES] } } }),
         // Total revenue, excluding cancelled orders.
         prisma.order.aggregate({
           where: { status: { not: "Cancelled" } },

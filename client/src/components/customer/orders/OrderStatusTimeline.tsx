@@ -1,17 +1,11 @@
 import { Icon } from "../../ui/Icon";
 import type { Order, OrderStatus } from "../../../types";
+import { ORDER_STATUSES } from "../../../constants";
 import { formatDate } from "../../../utils/format";
 
 // The forward progress of an order, in display order. "Received" is the final,
 // customer-confirmed state (or auto-marked after the grace window).
-export const ORDER_TRACK_STEPS: OrderStatus[] = [
-  "Pending",
-  "Confirmed",
-  "Preparing",
-  "Shipped",
-  "Completed",
-  "Received",
-];
+export const ORDER_TRACK_STEPS: OrderStatus[] = ORDER_STATUSES.filter((s) => s !== "Cancelled");
 
 const STEP_ICONS: Record<string, string> = {
   Pending: "schedule",
