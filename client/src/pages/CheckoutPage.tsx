@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
+import { useAuthStore } from "../stores/auth.store";
 import { Icon } from "../components/ui/Icon";
 import { ProductImage } from "../components/ui/ProductImage";
 import { QuantityStepper } from "../components/customer/cart/QuantityStepper";
@@ -10,12 +11,14 @@ import { CheckoutSteps } from "../components/customer/checkout/CheckoutSteps";
 import { PromoCodeBox } from "../components/customer/checkout/PromoCodeBox";
 import { PaymentMethodSelector } from "../components/customer/checkout/PaymentMethodSelector";
 import { OrderConfirmationReceipt } from "../components/customer/checkout/OrderConfirmationReceipt";
+import { PriceSummary } from "../components/customer/checkout/PriceSummary";
 import { FormField } from "../components/ui/FormField";
 import { formatMoney } from "../utils/format";
 
 // Checkout in 3 steps: Review (items + coupon + totals) -> Details (form) -> Confirmation.
 export const CheckoutPage = () => {
   const { items, getItemCount, updateQuantity, removeItem } = useCartStore();
+  const { user } = useAuthStore();
   const {
     email,
     setEmail,
@@ -66,10 +69,16 @@ export const CheckoutPage = () => {
     return <OrderConfirmationReceipt order={placedOrder} phone={phone} />;
   }
 
+  // Checkout requires a signed-in customer. Gate at entry so nobody fills the
+  // whole form only to get bounced (and lose their input) at submit time.
+  if (!user && items.length > 0) {
+    return <Navigate to="/login?redirect=/checkout" replace />;
+  }
+
   return (
-    <main className="flex-grow max-w-container-max w-full mx-auto px-3 sm:px-6 py-4 sm:py-8 pb-24 md:pb-8">
+    <main className="h-full min-h-0 flex flex-col w-full max-w-container-max mx-auto px-3 sm:px-6 py-4 sm:py-8">
       {/* Breadcrumb Navigation */}
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between shrink-0">
         <nav className="flex items-center gap-1.5 text-xs text-outline font-medium">
           <Link to="/" className="hover:text-secondary">
             Home
@@ -80,128 +89,120 @@ export const CheckoutPage = () => {
       </div>
 
       {/* Centered Page Title */}
-      <h1 className="text-2xl sm:text-4xl font-extrabold text-on-surface text-center tracking-tight mb-4 sm:mb-8">
+      <h1 className="text-2xl sm:text-4xl font-extrabold text-on-surface text-center tracking-tight mb-4 sm:mb-8 shrink-0">
         Checkout
       </h1>
 
       {items.length === 0 ? (
-        <EmptyState
-          icon="shopping_cart_off"
-          title="Your Shopping Cart is Empty"
-          subtitle="Explore our catalog of flagship tech and luxury goods to populate your cart."
-          action={
-            <Link
-              to="/products"
-              className="inline-block px-5 py-2.5 rounded-xl bg-secondary text-white text-xs font-bold shadow-sm hover:bg-secondary-container transition"
-            >
-              Browse Products Catalog
-            </Link>
-          }
-          className="max-w-lg mx-auto"
-        />
+        <div className="flex-1 min-h-0 overflow-y-auto flex items-center justify-center">
+          <EmptyState
+            icon="shopping_cart_off"
+            title="Your Shopping Cart is Empty"
+            subtitle="Explore our catalog of flagship tech and luxury goods to populate your cart."
+            action={
+              <Link
+                to="/products"
+                className="inline-block px-5 py-2.5 rounded-xl bg-secondary text-white text-xs font-bold shadow-sm hover:bg-secondary-container transition"
+              >
+                Browse Products Catalog
+              </Link>
+            }
+            className="max-w-lg mx-auto py-10"
+          />
+        </div>
       ) : (
         <>
-          <CheckoutSteps currentStep={currentStep} />
+          <div className="shrink-0">
+            <CheckoutSteps currentStep={currentStep} />
+          </div>
+
+          {/* Step area: each step manages its own internal scrolling */}
+          <div className="flex-1 min-h-0">
 
           {/* STEP 1 — REVIEW */}
           {currentStep === 1 && (
-            <div className="max-w-3xl mx-auto space-y-5">
-              <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20">
-                <h2 className="text-base sm:text-lg font-extrabold text-on-surface">Shopping Items</h2>
-                <span className="text-xs font-extrabold text-secondary bg-secondary/10 px-3 py-1 rounded-full">
-                  {getItemCount()} Items
-                </span>
-              </div>
+            <div className="h-full min-h-0 overflow-y-auto lg:overflow-hidden lg:grid lg:grid-cols-12 lg:gap-6 pb-24 lg:pb-0">
+              <div className="lg:col-span-8 lg:h-full lg:min-h-0 flex flex-col">
+                <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20 shrink-0">
+                  <h2 className="text-base sm:text-lg font-extrabold text-on-surface">Shopping Items</h2>
+                  <span className="text-xs font-extrabold text-secondary bg-secondary/10 px-3 py-1 rounded-full">
+                    {getItemCount()} Items
+                  </span>
+                </div>
 
-              <div className="space-y-3">
-                {items.map(({ product, quantity }) => (
-                  <div
-                    key={product._id}
-                    className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs border border-outline-variant/30 flex items-center gap-3 sm:gap-4"
-                  >
-                    <ProductImage
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"
-                    />
-                    <div className="flex-1 min-w-0 space-y-0.5 text-left">
-                      <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-secondary">
-                        {product.category}
-                      </span>
-                      <h3 className="text-xs sm:text-sm font-bold text-on-surface truncate">{product.name}</h3>
-                      <p className="text-xs font-extrabold text-primary dark:text-white">
-                        {formatMoney(product.price)}
-                      </p>
+                {/* Products list scrolls internally (like admin tables) */}
+                <div className="space-y-3 mt-3 max-h-[45vh] lg:max-h-none lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
+                  {items.map(({ product, quantity }) => (
+                    <div
+                      key={product._id}
+                      className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs border border-outline-variant/30 flex items-center gap-3 sm:gap-4"
+                    >
+                      <ProductImage
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"
+                      />
+                      <div className="flex-1 min-w-0 space-y-0.5 text-left">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-secondary">
+                          {product.category}
+                        </span>
+                        <h3 className="text-xs sm:text-sm font-bold text-on-surface truncate">{product.name}</h3>
+                        <p className="text-xs font-extrabold text-primary dark:text-white">
+                          {formatMoney(product.price)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product._id, q)} min={1} max={product.stock} />
+                        <span className="text-xs sm:text-sm font-black text-on-surface w-14 sm:w-16 text-right">
+                          {formatMoney(product.price * quantity)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(product._id)}
+                          className="p-1 sm:p-1.5 text-outline hover:text-error rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+                          title="Remove Item"
+                        >
+                          <Icon name="delete" className="text-base" />
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                      <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product._id, q)} min={1} max={product.stock} />
-                      <span className="text-xs sm:text-sm font-black text-on-surface w-14 sm:w-16 text-right">
-                        {formatMoney(product.price * quantity)}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeItem(product._id)}
-                        className="p-1 sm:p-1.5 text-outline hover:text-error rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition"
-                        title="Remove Item"
-                      >
-                        <Icon name="delete" className="text-base" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <PromoCodeBox
-                couponCode={couponCode}
-                onCouponChange={setCouponCode}
-                onApply={handleApplyCoupon}
-                message={couponMessage}
-              />
-
-              <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/30 space-y-3">
-                <h3 className="text-xs sm:text-sm font-extrabold text-on-surface border-b border-outline-variant/20 pb-2">
-                  Price Details
-                </h3>
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between text-on-surface-variant font-medium">
-                    <span>Subtotal</span>
-                    <span className="font-bold text-on-surface">{formatMoney(subtotalBeforeDiscount)}</span>
-                  </div>
-                  {appliedDiscountRate > 0 && (
-                    <div className="flex justify-between text-emerald-600 font-medium">
-                      <span>Coupon Savings ({Math.round(appliedDiscountRate * 100)}%)</span>
-                      <span className="font-bold">-{formatMoney(discountAmount)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-on-surface-variant font-medium">
-                    <span>Estimated Shipping</span>
-                    <span className="font-bold text-emerald-600">
-                      {shippingFee === 0 ? "FREE" : formatMoney(shippingFee)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-on-surface-variant font-medium">
-                    <span>Estimated Sales Tax (8%)</span>
-                    <span className="font-bold text-on-surface">{formatMoney(estimatedTax)}</span>
-                  </div>
-                  <div className="border-t border-outline-variant/30 pt-3 flex justify-between text-sm sm:text-base font-black text-on-surface">
-                    <span>Total Payable Amount</span>
-                    <span className="text-secondary dark:text-secondary-fixed">{formatMoney(grandTotal)}</span>
-                  </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="flex justify-end hidden lg:flex">
-                <Button icon="arrow_forward" onClick={nextStep}>
-                  Continue to Details
-                </Button>
+              {/* Fixed right rail: coupon, totals, continue */}
+              <div className="mt-5 lg:mt-0 lg:col-span-4 space-y-5 shrink-0">
+                <PromoCodeBox
+                  couponCode={couponCode}
+                  onCouponChange={setCouponCode}
+                  onApply={handleApplyCoupon}
+                  message={couponMessage}
+                />
+
+                <PriceSummary
+                  subtotal={subtotalBeforeDiscount}
+                  discountAmount={discountAmount}
+                  appliedDiscountRate={appliedDiscountRate}
+                  shippingFee={shippingFee}
+                  estimatedTax={estimatedTax}
+                  grandTotal={grandTotal}
+                />
+
+                <div className="flex justify-end hidden lg:flex">
+                  <Button icon="arrow_forward" onClick={nextStep}>
+                    Continue to Details
+                  </Button>
+                </div>
               </div>
             </div>
           )}
 
           {/* STEP 2 — DETAILS FORM */}
           {currentStep === 2 && (
-            <form id="checkout-form" onSubmit={handleSubmitOrder} className="max-w-2xl mx-auto space-y-5">
+            <div className="h-full min-h-0 overflow-y-auto pb-24 lg:pb-8">
+            <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+            <form id="checkout-form" onSubmit={handleSubmitOrder} className="lg:col-span-8 space-y-5">
               <div className="space-y-2.5">
                 <h3 className="text-xs sm:text-sm font-extrabold text-on-surface">Contact Information</h3>
 
@@ -322,22 +323,63 @@ export const CheckoutPage = () => {
                 </Button>
               </div>
             </form>
+
+            {/* Persistent order summary so shoppers keep sight of what they're buying */}
+            <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-6">
+              <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/30 space-y-3">
+                <h3 className="text-xs sm:text-sm font-extrabold text-on-surface border-b border-outline-variant/20 pb-2">
+                  Order Summary
+                </h3>
+                <div className="space-y-2.5">
+                  {items.map(({ product, quantity }) => (
+                    <div key={product._id} className="flex items-center gap-2.5">
+                      <ProductImage
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="w-10 h-10 object-cover rounded-lg bg-surface dark:bg-slate-700/50 shrink-0 border border-outline-variant/30"
+                      />
+                      <span className="text-xs font-semibold text-on-surface truncate flex-1 min-w-0">
+                        {product.name}
+                      </span>
+                      <span className="text-xs text-outline shrink-0">&times; {quantity}</span>
+                      <span className="font-mono font-bold text-xs text-on-surface shrink-0 w-16 text-right">
+                        {formatMoney(product.price * quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <PriceSummary
+                subtotal={subtotalBeforeDiscount}
+                discountAmount={discountAmount}
+                appliedDiscountRate={appliedDiscountRate}
+                shippingFee={shippingFee}
+                estimatedTax={estimatedTax}
+                grandTotal={grandTotal}
+              />
+            </aside>
+            </div>
+            </div>
           )}
 
           {/* STEP 3 — PLACING YOUR ORDER */}
           {currentStep === 3 && (
-            <div className="max-w-md mx-auto text-center space-y-4 py-16 animate-fade-up">
-              <div className="w-12 h-12 mx-auto border-4 border-outline-variant border-t-secondary rounded-full animate-spin"></div>
-              <p className="text-sm font-bold text-on-surface">Placing your order...</p>
-              <p className="text-xs text-outline">Please wait while we confirm your order.</p>
+            <div className="h-full min-h-0 overflow-y-auto flex items-center justify-center pb-24 lg:pb-0">
+              <div className="max-w-md mx-auto text-center space-y-4 py-16 animate-fade-up">
+                <div className="w-12 h-12 mx-auto border-4 border-outline-variant border-t-secondary rounded-full animate-spin"></div>
+                <p className="text-sm font-bold text-on-surface">Placing your order...</p>
+                <p className="text-xs text-outline">Please wait while we confirm your order.</p>
+              </div>
             </div>
           )}
+          </div>
         </>
       )}
 
       {/* MOBILE STICKY BAR */}
       {items.length > 0 && currentStep < 3 && (
-        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-3 flex items-center justify-between lg:hidden shadow-2xl">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container-lowest/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-outline-variant/30 p-3 flex items-center justify-between lg:hidden shadow-2xl pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <div>
             <span className="text-[10px] text-outline block leading-none">Total Payable</span>
             <span className="text-base font-black text-primary dark:text-white">

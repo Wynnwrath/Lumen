@@ -16,12 +16,14 @@ interface CartItemRowProps {
 export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = true }: CartItemRowProps) => {
   const { product, quantity } = item;
   return (
-    <div className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
-      <ProductImage
-        src={product.images[0]}
-        alt={product.name}
-        className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0 border border-outline-variant/30"
-      />
+    <div className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4 group">
+      <Link to={`/product/${product._id}`} className="shrink-0">
+        <ProductImage
+          src={product.images[0]}
+          alt={product.name}
+          className="w-14 h-14 sm:w-16 sm:h-16 aspect-square object-cover rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0 border border-outline-variant/30 transition group-hover:opacity-90"
+        />
+      </Link>
 
       <div className="flex-1 min-w-0 space-y-0.5 text-left">
         <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-secondary">

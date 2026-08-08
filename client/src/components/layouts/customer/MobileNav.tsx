@@ -33,7 +33,7 @@ export const MobileNav = () => {
   return (
     <>
       {/* Mobile Bottom Navigation Dock */}
-      <nav className="fixed bottom-0 left-0 w-full z-40 md:hidden bg-surface dark:bg-slate-900 border-t border-outline-variant/40 flex justify-around items-center h-16 px-2 shadow-lg">
+      <nav className="fixed bottom-0 left-0 w-full z-40 md:hidden bg-surface dark:bg-slate-900 border-t border-outline-variant/40 flex justify-around items-center min-h-16 px-2 shadow-lg pb-[env(safe-area-inset-bottom)]">
         <Link
           to="/"
           className={`flex flex-col items-center justify-center p-2 active:scale-95 transition ${

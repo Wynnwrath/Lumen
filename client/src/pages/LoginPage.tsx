@@ -1,5 +1,5 @@
 ﻿import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useThemeStore } from "../stores/theme.store";
 import { getApiError } from "../api/client";
@@ -18,9 +18,15 @@ const getPasswordChecks = (password: string) => [
 // Customer login/register page with a live password-strength checklist.
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, login, register, logout } = useAuthStore();
   const { toggle } = useThemeStore();
   const { showToast } = useToast();
+
+  // Where to send the user after auth (e.g. back to /checkout). Only accept
+  // internal paths so a crafted "redirect" can't bounce users off-site.
+  const rawRedirect = searchParams.get("redirect");
+  const redirectTo = rawRedirect && rawRedirect.startsWith("/") ? rawRedirect : "/";
 
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 
@@ -61,7 +67,7 @@ export const LoginPage = () => {
       await login(loginEmail, loginPassword);
       showToast("Signed in successfully!", "success");
       setTimeout(() => {
-        navigate("/");
+        navigate(redirectTo);
       }, 500);
     } catch {
       setAlert({ message: "Invalid email or password.", type: "error" });
@@ -93,7 +99,7 @@ export const LoginPage = () => {
       setAlert({ message: "Customer account created successfully! Welcome to Lumen.", type: "success" });
       showToast("Welcome to Lumen Member Rewards!", "success");
       setTimeout(() => {
-        navigate("/");
+        navigate(redirectTo);
       }, 1000);
     } catch (error) {
       const { message: serverMsg, details } = getApiError(error);
