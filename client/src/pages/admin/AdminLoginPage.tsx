@@ -1,6 +1,7 @@
 ﻿import React, { useState } from "react";
 import { Icon } from "../../components/ui/Icon";
 import { Button } from "../../components/ui/Button";
+import { PasswordInput } from "../../components/ui/PasswordInput";
 import { useToast } from "../../components/ui/ToastProvider";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
@@ -15,7 +16,6 @@ export const AdminLoginPage = () => {
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
   // UI state
   const [alert, setAlert] = useState<{ message: string; type: "success" | "error" } | null>(null);
@@ -281,11 +281,12 @@ export const AdminLoginPage = () => {
                   </div>
 
                   {/* Password input */}
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label htmlFor="login-password" className="block text-xs font-bold text-on-surface dark:text-slate-200">
-                        Password
-                      </label>
+                  <PasswordInput
+                    id="login-password"
+                    label="Password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    rightAction={
                       <a
                         href="#"
                         onClick={(e) => {
@@ -296,28 +297,8 @@ export const AdminLoginPage = () => {
                       >
                         Forgot password?
                       </a>
-                    </div>
-                    <div className="relative">
-                      <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg" />
-                      <input
-                        id="login-password"
-                        type={showPassword ? "text" : "password"}
-                        required
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full bg-surface dark:bg-slate-900 text-on-surface dark:text-white border border-outline-variant/60 rounded-xl py-2.5 pl-10 pr-11 text-xs font-medium outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface dark:hover:text-white"
-                        title={showPassword ? "Hide password" : "Show password"}
-                      >
-                        <Icon name={showPassword ? "eye_off" : "eye"} className="text-lg" />
-                      </button>
-                    </div>
-                  </div>
+                    }
+                  />
 
                   {/* Checkbox & Submit */}
                   <div className="flex items-center justify-between pt-1">
