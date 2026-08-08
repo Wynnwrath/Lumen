@@ -3,24 +3,24 @@ import { updateOrderStatus } from "../../api/orders";
 import { updateProduct } from "../../api/products";
 import { getDashboardCharts, type DashboardCharts } from "../../api/dashboard";
 import type { Order, OrderStatus, Product } from "../../types";
-import { KpiCard } from "../../components/common/KpiCard";
-import { Modal } from "../../components/common/Modal";
-import { Button } from "../../components/common/Button";
-import { StatusBadge } from "../../components/common/StatusBadge";
-import { OrderStatusSelect } from "../../components/common/OrderStatusSelect";
-import { useToast } from "../../components/common/ToastProvider";
+import { KpiCard } from "../../components/admin/shared/KpiCard";
+import { Modal } from "../../components/ui/Modal";
+import { Button } from "../../components/ui/Button";
+import { StatusBadge } from "../../components/ui/StatusBadge";
+import { OrderStatusSelect } from "../../components/admin/orders/OrderStatusSelect";
+import { useToast } from "../../components/ui/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { useProducts } from "../../hooks/useProducts";
 import { useCustomers } from "../../hooks/useCustomers";
 import { formatDate, formatMoney } from "../../utils/format";
 import { isPendingStatus } from "../../constants";
-import { RevenueBarChart } from "./dashboard/RevenueBarChart";
-import { OrdersByStatusList } from "./dashboard/OrdersByStatusList";
-import { TopProductsChart } from "./dashboard/TopProductsChart";
-import { RecentOrdersSection } from "./dashboard/RecentOrdersSection";
-import { LowStockPanel } from "./dashboard/LowStockPanel";
-import { AwaitingConfirmationPanel } from "./dashboard/AwaitingConfirmationPanel";
-import { RestockModal } from "./dashboard/RestockModal";
+import { RevenueBarChart } from "../../components/admin/analytics/RevenueBarChart";
+import { OrdersByStatusList } from "../../components/admin/orders/OrdersByStatusList";
+import { TopProductsChart } from "../../components/admin/analytics/TopProductsChart";
+import { RecentOrdersSection } from "../../components/admin/orders/RecentOrdersSection";
+import { LowStockPanel } from "../../components/admin/products/LowStockPanel";
+import { AwaitingConfirmationPanel } from "../../components/admin/orders/AwaitingConfirmationPanel";
+import { RestockModal } from "../../components/admin/products/RestockModal";
 
 // Admin overview: KPI cards, revenue/status charts, recent orders, low-stock alerts.
 export const AdminDashboardPage = () => {

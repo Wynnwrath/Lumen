@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { deleteProduct, updateProduct } from "../../api/products";
 import type { Product } from "../../types";
-import { Button } from "../../components/common/Button";
-import { KpiCard } from "../../components/common/KpiCard";
-import { SearchInput } from "../../components/common/SearchInput";
-import { EmptyState } from "../../components/common/EmptyState";
-import { LoadingSpinner } from "../../components/common/skeletons";
-import { AdminPagination } from "../../components/common/AdminPagination";
-import { RowActions } from "../../components/common/RowActions";
-import { ToggleSwitch } from "../../components/common/ToggleSwitch";
-import { ProductImage } from "../../components/common/ProductImage";
-import { useToast } from "../../components/common/ToastProvider";
+import { Button } from "../../components/ui/Button";
+import { KpiCard } from "../../components/admin/shared/KpiCard";
+import { SearchInput } from "../../components/admin/shared/SearchInput";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { LoadingSpinner } from "../../components/ui/skeletons";
+import { AdminPagination } from "../../components/admin/shared/AdminPagination";
+import { RowActions } from "../../components/admin/shared/RowActions";
+import { ToggleSwitch } from "../../components/admin/shared/ToggleSwitch";
+import { ProductImage } from "../../components/ui/ProductImage";
+import { useToast } from "../../components/ui/ToastProvider";
 import { usePagination } from "../../hooks/usePagination";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useProductForm } from "../../hooks/useProductForm";
 import { formatMoney } from "../../utils/format";
-import { ProductFormModal } from "./products/ProductFormModal";
+import { ProductFormModal } from "../../components/admin/products/ProductFormModal";
 
 // Admin product CRUD: list, search, toggle status, add/edit via modal (useProductForm).
 export const AdminProductsPage = () => {

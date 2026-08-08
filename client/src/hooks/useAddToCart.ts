@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useCartStore } from "../stores/cart.store";
-import { useToast } from "../components/common/ToastProvider";
+import { useToast } from "../components/ui/ToastProvider";
 import type { Product } from "../types";
 
 // Shared "add to cart" handler used by product cards across pages.

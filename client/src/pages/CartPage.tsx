@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
-import { Icon } from "../components/common/Icon";
-import { Button } from "../components/common/Button";
-import { CartItemRow } from "../components/common/CartItemRow";
-import { EmptyState } from "../components/common/EmptyState";
+import { Icon } from "../components/ui/Icon";
+import { Button } from "../components/ui/Button";
+import { CartItemRow } from "../components/customer/cart/CartItemRow";
+import { EmptyState } from "../components/ui/EmptyState";
 import { calculateOrderTotals } from "../services/pricing";
 import { formatMoney } from "../utils/format";
 

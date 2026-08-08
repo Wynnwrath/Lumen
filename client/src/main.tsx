@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { ToastProvider } from "./components/common/ToastProvider";
+import { ToastProvider } from "./components/ui/ToastProvider";
 import App from "./App";
 import "./index.css";
 

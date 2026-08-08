@@ -3,11 +3,11 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useWishlistStore } from "../stores/wishlist.store";
 import { getProducts } from "../api/products";
 import type { Product } from "../types";
-import { Icon } from "../components/common/Icon";
-import { ProductCard } from "../components/common/ProductCard";
-import { ProductGridSkeleton } from "../components/common/skeletons";
-import { EmptyState } from "../components/common/EmptyState";
-import { Pagination } from "../components/common/Pagination";
+import { Icon } from "../components/ui/Icon";
+import { ProductCard } from "../components/customer/products/ProductCard";
+import { ProductGridSkeleton } from "../components/ui/skeletons";
+import { EmptyState } from "../components/ui/EmptyState";
+import { Pagination } from "../components/customer/products/Pagination";
 import { useAddToCart } from "../hooks/useAddToCart";
 
 // Product listing with filters (category/search/sale/wishlist), sorting, and pagination.

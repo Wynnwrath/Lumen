@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
 import { useAuthStore } from "../stores/auth.store";
-import { useToast } from "../components/common/ToastProvider";
+import { useToast } from "../components/ui/ToastProvider";
 import { createOrder, getMyOrders } from "../api/orders";
 import { getErrorMessage } from "../api/client";
 import { checkCoupon, calculateOrderTotals } from "../services/pricing";

@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { PublicLayout } from "./components/layout/PublicLayout";
-import { AdminLayout } from "./components/layout/AdminLayout";
+import { CustomerLayout } from "./components/layouts/customer/CustomerLayout";
+import { AdminLayout } from "./components/layouts/AdminLayout";
 
 // Public Pages
 import { HomePage } from "./pages/HomePage";
@@ -22,7 +22,7 @@ import { AdminCustomersPage } from "./pages/admin/AdminCustomersPage";
 import { AdminCouponsPage } from "./pages/admin/AdminCouponsPage";
 
 import { useAuthStore } from "./stores/auth.store";
-import { ScrollToTop } from "./components/common/ScrollToTop";
+import { ScrollToTop } from "./components/ui/ScrollToTop";
 
 // Client-side guard for admin routes: redirects to /admin/login if not an admin.
 // (Real security is the server's protect + authorize middleware.)
@@ -45,7 +45,7 @@ export const App = () => {
         <Route path="/admin/login" element={<AdminLoginPage />} />
 
         {/* Customer Storefront Routes */}
-        <Route path="/" element={<PublicLayout />}>
+          <Route path="/" element={<CustomerLayout />}>
           <Route index element={<HomePage />} />
           <Route path="products" element={<ProductsPage />} />
           <Route path="product/:id" element={<ProductDetailPage />} />

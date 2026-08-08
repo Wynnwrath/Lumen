@@ -1,19 +1,19 @@
 import { useState, useMemo } from "react";
 import { updateOrderStatus, getOrdersCsv, downloadCsv } from "../../api/orders";
 import type { Order, OrderStatus } from "../../types";
-import { getStatusClasses } from "../../components/common/StatusBadge";
-import { Button } from "../../components/common/Button";
-import { Modal } from "../../components/common/Modal";
-import { SearchInput } from "../../components/common/SearchInput";
-import { EmptyState } from "../../components/common/EmptyState";
-import { LoadingSpinner } from "../../components/common/skeletons";
-import { AdminPagination } from "../../components/common/AdminPagination";
-import { useToast } from "../../components/common/ToastProvider";
+import { getStatusClasses } from "../../components/ui/StatusBadge";
+import { Button } from "../../components/ui/Button";
+import { Modal } from "../../components/ui/Modal";
+import { SearchInput } from "../../components/admin/shared/SearchInput";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { LoadingSpinner } from "../../components/ui/skeletons";
+import { AdminPagination } from "../../components/admin/shared/AdminPagination";
+import { useToast } from "../../components/ui/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { usePagination } from "../../hooks/usePagination";
 import { formatDate, formatMoney } from "../../utils/format";
 import { ORDER_STATUSES, isPendingStatus } from "../../constants";
-import { OrderStatusSelect } from "../../components/common/OrderStatusSelect";
+import { OrderStatusSelect } from "../../components/admin/orders/OrderStatusSelect";
 
 // Admin order management: client-side filtered list, status updates, CSV export.
 export const AdminOrdersPage = () => {

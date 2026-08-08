@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Icon } from "../../components/common/Icon";
+import { Icon } from "../../components/ui/Icon";
 import type { CustomerListItem } from "../../types";
-import { Button } from "../../components/common/Button";
-import { Modal } from "../../components/common/Modal";
-import { SearchInput } from "../../components/common/SearchInput";
-import { EmptyState } from "../../components/common/EmptyState";
-import { LoadingSpinner } from "../../components/common/skeletons";
-import { AdminPagination } from "../../components/common/AdminPagination";
+import { Button } from "../../components/ui/Button";
+import { Modal } from "../../components/ui/Modal";
+import { SearchInput } from "../../components/admin/shared/SearchInput";
+import { EmptyState } from "../../components/ui/EmptyState";
+import { LoadingSpinner } from "../../components/ui/skeletons";
+import { AdminPagination } from "../../components/admin/shared/AdminPagination";
 import { usePagination } from "../../hooks/usePagination";
 import { useCustomers } from "../../hooks/useCustomers";
-import { TierBadge } from "../../components/common/TierBadge";
+import { TierBadge } from "../../components/admin/customers/TierBadge";
 import { formatMoney } from "../../utils/format";
 
 // Admin customer directory: search, tier badges, order stats, profile modal.

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createProduct, updateProduct } from "../api/products";
 import { uploadProductImage } from "../api/storage";
 import type { Category, Product, ProductStatus } from "../types";
-import { useToast } from "../components/common/ToastProvider";
+import { useToast } from "../components/ui/ToastProvider";
 import { FALLBACK_PRODUCT_IMAGE } from "../constants";
 
 // Add/edit product form state + save logic, so AdminProductsPage stays readable.

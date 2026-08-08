@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
 import { useCartStore } from "../stores/cart.store";
-import { Icon } from "../components/common/Icon";
-import { ProductImage } from "../components/common/ProductImage";
-import { QuantityStepper } from "../components/common/QuantityStepper";
-import { EmptyState } from "../components/common/EmptyState";
-import { Button } from "../components/common/Button";
+import { Icon } from "../components/ui/Icon";
+import { ProductImage } from "../components/ui/ProductImage";
+import { QuantityStepper } from "../components/customer/cart/QuantityStepper";
+import { EmptyState } from "../components/ui/EmptyState";
+import { Button } from "../components/ui/Button";
 import { useCheckoutForm } from "../hooks/useCheckoutForm";
-import { CheckoutSteps } from "./checkout/CheckoutSteps";
-import { PromoCodeBox } from "./checkout/PromoCodeBox";
-import { PaymentMethodSelector } from "./checkout/PaymentMethodSelector";
-import { OrderConfirmationReceipt } from "./checkout/OrderConfirmationReceipt";
-import { FormField } from "../components/common/FormField";
+import { CheckoutSteps } from "../components/customer/checkout/CheckoutSteps";
+import { PromoCodeBox } from "../components/customer/checkout/PromoCodeBox";
+import { PaymentMethodSelector } from "../components/customer/checkout/PaymentMethodSelector";
+import { OrderConfirmationReceipt } from "../components/customer/checkout/OrderConfirmationReceipt";
+import { FormField } from "../components/ui/FormField";
 
 // Checkout in 3 steps: Review (items + coupon + totals) -> Details (form) -> Confirmation.
 export const CheckoutPage = () => {

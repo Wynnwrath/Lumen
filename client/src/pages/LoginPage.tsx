@@ -3,9 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useThemeStore } from "../stores/theme.store";
 import { getApiError } from "../api/client";
-import { Icon } from "../components/common/Icon";
-import { Button } from "../components/common/Button";
-import { useToast } from "../components/common/ToastProvider";
+import { Icon } from "../components/ui/Icon";
+import { Button } from "../components/ui/Button";
+import { useToast } from "../components/ui/ToastProvider";
 
 const getPasswordChecks = (password: string) => [
   { ok: password.length >= 8, msg: "at least 8 characters" },
