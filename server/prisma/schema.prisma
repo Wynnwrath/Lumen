@@ -88,6 +88,7 @@ model Order {
   discount     Float       @default(0)
   total        Float
   paymentMethod String
+  email        String?
   status       String      @default("Pending")
   completedAt  DateTime?
   receivedAt   DateTime?

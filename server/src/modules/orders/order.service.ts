@@ -6,6 +6,7 @@ import { AppError } from "../../utils/AppError.js";
 import { requireFound } from "../../utils/requireFound.js";
 import { calcDiscount } from "../../utils/calcDiscount.js";
 import { sendOrderConfirmation } from "../../utils/email.js";
+import { config } from "../../config/env.js";
 
 // Human-friendly order reference like LMN-<timestamp><random>.
 function generateOrderNumber(): string {
@@ -87,6 +88,7 @@ export const orderService = {
           discount,
           total,
           paymentMethod: input.paymentMethod,
+          email: input.email?.trim().toLowerCase(),
           address: input.address,
           couponUsed: input.couponCode?.toUpperCase(),
           orderNotes: input.orderNotes,
@@ -97,17 +99,33 @@ export const orderService = {
       return order;
     });
 
-    // Fire the confirmation email after the order is safely saved.
+    // Fire the confirmation email after the order is safely saved. Prefer the
+    // email typed at checkout; fall back to the account email.
     const user = await prisma.user.findUnique({
       where: { id: customerId },
       select: { email: true, name: true },
     });
-    if (user) {
-      void sendOrderConfirmation(user.email, {
+    const emailTo = order.email || user?.email;
+    if (emailTo) {
+      void sendOrderConfirmation(emailTo, {
         orderNumber: order.orderNumber,
-        customerName: user.name,
+        customerName: user?.name ?? "Customer",
+        status: order.status,
+        createdAt: order.createdAt.toISOString(),
+        subtotal: order.subtotal,
+        discount: order.discount,
+        shipping: order.shipping,
+        tax: order.tax,
         total: order.total,
-        items: order.items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price })),
+        paymentMethod: order.paymentMethod,
+        address: order.address,
+        clientUrl: config.clientUrl,
+        items: order.items.map((i) => ({
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+          image: i.image,
+        })),
       }).catch((err) => console.error("Order email failed:", err));
     }
 

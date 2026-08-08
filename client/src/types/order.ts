@@ -28,6 +28,7 @@ export interface Order {
   paymentMethod: string;
   status: OrderStatus;
   address: string;
+  email?: string;
   couponUsed?: string;
   orderNotes?: string;
   completedAt?: string;

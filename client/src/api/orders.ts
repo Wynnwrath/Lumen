@@ -12,6 +12,7 @@ export interface CreateOrderPayload {
   items: { product: string; quantity: number }[];
   address: string;
   paymentMethod: string;
+  email?: string;
   couponCode?: string;
   orderNotes?: string;
 }

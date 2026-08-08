@@ -31,7 +31,7 @@ export const OrderConfirmationReceipt = ({ order, phone }: OrderConfirmationRece
           </div>
           <div className="flex justify-between">
             <span className="text-outline">Email:</span>
-            <span className="font-bold text-on-surface truncate max-w-[180px]">{order.customer.email}</span>
+            <span className="font-bold text-on-surface truncate max-w-[180px]">{order.email || order.customer.email}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-outline">Phone:</span>

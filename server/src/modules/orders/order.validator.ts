@@ -10,6 +10,7 @@ export const createOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1, "Cart must have at least one item"),
   address: z.string().min(1, "Delivery address is required"),
   paymentMethod: z.enum(["Cash on Delivery", "E-Wallet", "Bank Transfer"]),
+  email: z.string().email("Valid email required").optional(),
   couponCode: z.string().optional(),
   orderNotes: z.string().optional(),
 });
