@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../stores/theme.store";
 import { useAuthStore } from "../../stores/auth.store";
 import { Icon } from "../ui/Icon";
+import logo from "../../assets/logo.png";
 
 // Admin shell: sidebar + header + the admin page. Also guards nothing here;
 // route protection lives in App.tsx (ProtectedAdminRoute).
@@ -68,9 +69,11 @@ export const AdminLayout = () => {
           {/* Brand Header */}
           <div className="h-16 px-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <Link to="/admin" className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm tracking-tighter shadow-sm">
-                L
-              </div>
+              <img
+                src={logo}
+                alt="Lumen logo"
+                className="w-8 h-8 object-contain rounded-lg shadow-sm"
+              />
               <div className="flex flex-col">
                 <span className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white leading-none">
                   LUMEN

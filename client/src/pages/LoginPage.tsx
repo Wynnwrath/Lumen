@@ -10,6 +10,7 @@ import { useToast } from "../components/ui/ToastProvider";
 import { isValidPhone, PHONE_PATTERN } from "../utils/validation";
 import { FREE_SHIPPING_MIN } from "../constants";
 import { formatMoney } from "../utils/format";
+import logo from "../assets/logo.png";
 
 const getPasswordChecks = (password: string) => [
   { ok: password.length >= 8, msg: "at least 8 characters" },
@@ -126,9 +127,11 @@ export const LoginPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 bg-primary dark:bg-white text-white dark:text-primary rounded-xl flex items-center justify-center font-black text-lg tracking-tighter shadow-sm group-hover:scale-105 transition duration-200">
-              L
-            </div>
+            <img
+              src={logo}
+              alt="Lumen logo"
+              className="w-9 h-9 object-contain rounded-xl shadow-sm group-hover:scale-105 transition duration-200"
+            />
             <span className="font-extrabold text-xl tracking-tight text-on-surface dark:text-white">LUMEN</span>
           </Link>
 

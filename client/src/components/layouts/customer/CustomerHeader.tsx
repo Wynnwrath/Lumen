@@ -5,6 +5,7 @@ import { useWishlistStore } from "../../../stores/wishlist.store";
 import { Icon } from "../../ui/Icon";
 import { formatMoney } from "../../../utils/format";
 import { FREE_SHIPPING_MIN } from "../../../constants";
+import logo from "../../../assets/logo.png";
 import { HeaderSearch } from "./HeaderSearch";
 import { HeaderCartPreview } from "./HeaderCartPreview";
 import { HeaderUserMenu } from "./HeaderUserMenu";
@@ -58,9 +59,11 @@ export const CustomerHeader = () => {
           {/* Brand Logo */}
           <div className="flex items-center justify-between w-full md:w-auto">
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 bg-primary dark:bg-white text-white dark:text-primary rounded-xl flex items-center justify-center font-black text-lg tracking-tighter shadow-sm group-hover:scale-105 transition duration-200">
-                L
-              </div>
+              <img
+                src={logo}
+                alt="Lumen logo"
+                className="w-9 h-9 object-contain rounded-xl shadow-sm group-hover:scale-105 transition duration-200"
+              />
               <span className="font-extrabold text-xl tracking-tight text-on-surface dark:text-white">LUMEN</span>
             </Link>
             <div className="flex items-center gap-2 md:hidden">

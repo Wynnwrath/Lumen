@@ -6,6 +6,7 @@ import { useToast } from "../../components/ui/ToastProvider";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
 import { useThemeStore } from "../../stores/theme.store";
+import logo from "../../assets/logo.png";
 
 export const AdminLoginPage = () => {
   const navigate = useNavigate();
@@ -52,9 +53,11 @@ export const AdminLoginPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 bg-primary dark:bg-white text-white dark:text-primary rounded-xl flex items-center justify-center font-black text-lg tracking-tighter shadow-sm group-hover:scale-105 transition duration-200">
-              L
-            </div>
+            <img
+              src={logo}
+              alt="Lumen logo"
+              className="w-9 h-9 object-contain rounded-xl shadow-sm group-hover:scale-105 transition duration-200"
+            />
             <div className="flex flex-col">
               <span className="font-extrabold text-base tracking-tight text-on-surface dark:text-white leading-none">
                 LUMEN

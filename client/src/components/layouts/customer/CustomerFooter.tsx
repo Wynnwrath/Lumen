@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "../../ui/Icon";
 import { useToast } from "../../ui/ToastProvider";
+import logo from "../../../assets/logo.png";
 
 // Storefront footer: brand blurb, link columns, socials, newsletter form (demo only).
 export const CustomerFooter = () => {
@@ -28,9 +29,11 @@ export const CustomerFooter = () => {
         <div className="hidden md:grid max-w-container-max mx-auto px-4 sm:px-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-white">
-                <Icon name="auto_awesome" className="text-sm" />
-              </div>
+              <img
+                src={logo}
+                alt="Lumen logo"
+                className="w-7 h-7 object-contain rounded-lg"
+              />
               <span className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Lumen</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
