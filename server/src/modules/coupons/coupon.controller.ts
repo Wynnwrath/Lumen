@@ -8,7 +8,7 @@ export const couponController = {
   validateCoupon: asyncHandler(async (req: Request, res: Response) => {
     const { code, subtotal } = req.body;
     const data = await couponService.validate(code, subtotal);
-    res.json({ success: true, data });
+    res.json({ success: true, data: toApi(data) });
   }),
 
   getAll: asyncHandler(async (_req: Request, res: Response) => {
@@ -27,7 +27,7 @@ export const couponController = {
   }),
 
   remove: asyncHandler(async (req: Request, res: Response) => {
-    const coupon = await couponService.remove(req.params.code);
-    res.json({ success: true, data: toApi(coupon) });
+    await couponService.remove(req.params.code);
+    res.json({ success: true, data: null });
   }),
 };

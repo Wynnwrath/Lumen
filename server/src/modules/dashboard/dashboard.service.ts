@@ -1,5 +1,8 @@
 import { prisma } from "../../lib/prisma.js";
 
+// Products below this stock level count as "low stock" in the alerts.
+const LOW_STOCK_THRESHOLD = 5;
+
 // Local YYYY-MM-DD key (no UTC conversion) so day bucketing matches the
 // server's local calendar instead of drifting across timezones.
 function localDayKey(date: Date): string {
@@ -17,7 +20,7 @@ export const dashboardService = {
         prisma.product.count(),
         prisma.order.count(),
         prisma.user.count({ where: { role: "customer" } }),
-        prisma.product.count({ where: { stock: { lt: 5 } } }),
+        prisma.product.count({ where: { stock: { lt: LOW_STOCK_THRESHOLD } } }),
         prisma.order.count({ where: { status: { in: ["Completed", "Received"] } } }),
         prisma.order.count({ where: { status: "Pending" } }),
         // Total revenue, excluding cancelled orders.

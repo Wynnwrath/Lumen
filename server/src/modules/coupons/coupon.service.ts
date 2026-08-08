@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 import { AppError } from "../../utils/AppError.js";
+import { requireFound } from "../../utils/requireFound.js";
 import { calcDiscount } from "../../utils/calcDiscount.js";
 import type { createCouponSchema, updateCouponSchema } from "./coupon.validator.js";
 import type { z } from "zod";
@@ -36,8 +37,7 @@ export const couponService = {
   },
 
   async update(code: string, input: UpdateCouponInput) {
-    const coupon = await prisma.coupon.findUnique({ where: { code } });
-    if (!coupon) throw new AppError("Coupon not found", 404, "NOT_FOUND");
+    await requireFound(await prisma.coupon.findUnique({ where: { code } }), "Coupon");
     return prisma.coupon.update({
       where: { code },
       data: {
@@ -49,8 +49,7 @@ export const couponService = {
   },
 
   async remove(code: string) {
-    const coupon = await prisma.coupon.findUnique({ where: { code } });
-    if (!coupon) throw new AppError("Coupon not found", 404, "NOT_FOUND");
+    await requireFound(await prisma.coupon.findUnique({ where: { code } }), "Coupon");
     return prisma.coupon.delete({ where: { code } });
   },
 };

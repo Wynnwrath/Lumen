@@ -19,6 +19,11 @@ function generateOrderNumber(): string {
 // before it auto-transitions to "Received" (money release).
 const RECEIVED_AUTO_DAYS = 3;
 
+// Pricing rules (kept in sync with the client checkout preview).
+const FREE_SHIPPING_MIN = 100;
+const SHIPPING_FLAT_RATE = 12;
+const TAX_RATE = 0.08;
+
 export const orderService = {
   // Places an order. Everything runs inside a transaction so it's all-or-nothing:
   // if any step fails (stock, coupon, insert) the whole order rolls back.
@@ -57,8 +62,8 @@ export const orderService = {
       }
 
       // Same pricing rules the client preview uses.
-      const shipping = subtotal >= 100 ? 0 : 12.0;
-      const tax = Math.round(subtotal * 0.08 * 100) / 100;
+      const shipping = subtotal >= FREE_SHIPPING_MIN ? 0 : SHIPPING_FLAT_RATE;
+      const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
       let discount = 0;
 
       if (input.couponCode) {
@@ -134,8 +139,6 @@ export const orderService = {
 
   // Admin list with status filter + pagination.
   async getAll(query: OrderQuery) {
-    await this.autoFinalizeReceived();
-
     const where: Prisma.OrderWhereInput = {};
     if (query.status) where.status = query.status;
 
@@ -160,8 +163,6 @@ export const orderService = {
   },
 
   async getByOrderNumber(orderNumber: string) {
-    await this.autoFinalizeReceived();
-
     const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: { customer: { select: { id: true, name: true, email: true } }, items: true },
@@ -171,8 +172,6 @@ export const orderService = {
 
   // Orders belonging to the logged-in customer.
   async getMine(customerId: string) {
-    await this.autoFinalizeReceived();
-
     return prisma.order.findMany({
       where: { customerId },
       include: { items: true },
@@ -250,8 +249,7 @@ export const orderService = {
   // Customer confirms they received the order for delivery settlement.
   // Owner-only and only allowed from "Completed".
   async confirmReceived(orderNumber: string, customerId: string) {
-    const order = await prisma.order.findUnique({ where: { orderNumber } });
-    if (!order) throw new AppError("Order not found", 404, "NOT_FOUND");
+    const order = requireFound(await prisma.order.findUnique({ where: { orderNumber } }), "Order");
     if (order.customerId !== customerId) {
       throw new AppError("You do not own this order", 403, "FORBIDDEN");
     }
