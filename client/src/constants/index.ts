@@ -29,6 +29,12 @@ export const PENDING_STATUSES: OrderStatus[] = ["Pending", "Confirmed", "Prepari
 export const isPendingStatus = (status: string): boolean =>
   PENDING_STATUSES.includes(status as OrderStatus);
 
+// Statuses that count as "delivered / finished" for the completed KPI.
+export const COMPLETED_STATUSES: OrderStatus[] = ["Completed", "Received"];
+
+export const isCompletedStatus = (status: string): boolean =>
+  COMPLETED_STATUSES.includes(status as OrderStatus);
+
 // Neutral placeholder used whenever a product has no image (or the image
 // fails to load). An inline SVG so there's no external network dependency.
 export const FALLBACK_PRODUCT_IMAGE =

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Icon } from "../../ui/Icon";
 import { ProductImage } from "../../ui/ProductImage";
+import { formatMoney } from "../../../utils/format";
 import type { Order } from "../../../types";
 
 interface OrderConfirmationReceiptProps {
@@ -57,7 +58,7 @@ export const OrderConfirmationReceipt = ({ order, phone }: OrderConfirmationRece
                   <span className="font-bold text-on-surface truncate max-w-[140px] sm:max-w-[220px]">{item.name}</span>
                 </div>
                 <span className="font-extrabold text-on-surface shrink-0">
-                  {item.quantity} &times; ${item.price.toFixed(2)}
+                  {item.quantity} &times; {formatMoney(item.price)}
                 </span>
               </div>
             ))}
@@ -67,7 +68,7 @@ export const OrderConfirmationReceipt = ({ order, phone }: OrderConfirmationRece
         <div className="pt-3 border-t border-outline-variant/20 flex justify-between items-center">
           <span className="text-xs sm:text-sm font-extrabold text-on-surface">Total Amount Paid:</span>
           <span className="text-lg sm:text-xl font-black text-secondary dark:text-secondary-fixed">
-            ${order.total.toFixed(2)}
+            {formatMoney(order.total)}
           </span>
         </div>
 

@@ -8,11 +8,13 @@ import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { LoadingSpinner } from "../../components/ui/skeletons";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
+import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
 import { useToast } from "../../components/ui/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { usePagination } from "../../hooks/usePagination";
+import { useOrderMetrics } from "../../hooks/useOrderMetrics";
 import { formatDate, formatMoney } from "../../utils/format";
-import { ORDER_STATUSES, isPendingStatus } from "../../constants";
+import { ORDER_STATUSES } from "../../constants";
 import { OrderStatusSelect } from "../../components/admin/orders/OrderStatusSelect";
 
 // Admin order management: client-side filtered list, status updates, CSV export.
@@ -62,43 +64,43 @@ export const AdminOrdersPage = () => {
     }
   };
 
-  const totalRevenue = orders
-    .filter((o) => o.status !== "Cancelled")
-    .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const pendingOrdersCount = orders.filter((o) => isPendingStatus(o.status)).length;
+  const { totalRevenue, pendingCount: pendingOrdersCount } = useOrderMetrics(orders);
 
   return (
     <div className="space-y-6">
       {/* Search & Filter Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
-        <SearchInput
-          value={searchQuery}
-          onChange={(q) => {
-            setSearchQuery(q);
-            setPage(1);
-          }}
-          placeholder="Search by order # or customer name..."
-        />
-
-        <div className="flex items-center gap-3">
-          <Button variant="blue" icon="download" onClick={handleExportCsv}>
-            Export CSV
-          </Button>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
+      <AdminToolbar
+        search={
+          <SearchInput
+            value={searchQuery}
+            onChange={(q) => {
+              setSearchQuery(q);
               setPage(1);
             }}
-            className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            {ORDER_STATUSES.map((st) => (
-              <option key={st} value={st}>{st}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+            placeholder="Search by order # or customer name..."
+          />
+        }
+        actions={
+          <>
+            <Button variant="blue" icon="download" onClick={handleExportCsv}>
+              Export CSV
+            </Button>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+            >
+              <option value="all">All Statuses</option>
+              {ORDER_STATUSES.map((st) => (
+                <option key={st} value={st}>{st}</option>
+              ))}
+            </select>
+          </>
+        }
+      />
 
       {/* Orders Summary Strip */}
       <div className="flex items-center flex-wrap gap-x-4 gap-y-1 px-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
@@ -126,7 +128,7 @@ export const AdminOrdersPage = () => {
         {/* Mobile View: High-Density Order Cards */}
         <div className="block md:hidden space-y-3">
           {filteredOrders.length === 0 ? (
-            <EmptyState message="No orders found matching your criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+            <EmptyState message="No orders found matching your criteria." card />
           ) : (
             paginated.map((ord) => (
               <div
@@ -193,7 +195,7 @@ export const AdminOrdersPage = () => {
                 {filteredOrders.length === 0 ? (
                   <EmptyState
                     message="No orders found matching your criteria."
-                    className="py-12 text-center text-sm text-slate-500 dark:text-slate-400"
+                   
                     colSpan={8}
                   />
                 ) : (

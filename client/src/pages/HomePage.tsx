@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getCategories } from "../api/categories";
-import { getProducts } from "../api/products";
 import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/ui/Icon";
 import { ProductCard, trackSpotlight } from "../components/customer/products/ProductCard";
@@ -9,7 +8,7 @@ import { ProductGridSkeleton } from "../components/ui/skeletons";
 import { useToast } from "../components/ui/ToastProvider";
 import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_META } from "../constants/home";
 import { useAddToCart } from "../hooks/useAddToCart";
-import type { Product } from "../types";
+import { useCatalogProducts } from "../hooks/useCatalogProducts";
 
 type DisplayCategory = { id: string; label: string; icon: string; bgColor: string };
 
@@ -28,6 +27,7 @@ export const HomePage = () => {
   const handleAddToCart = useAddToCart();
   const { addItem } = useCartStore();
   const { showToast } = useToast();
+  const { products: fetchedProducts, loading: productsLoading } = useCatalogProducts();
 
   const [categories, setCategories] = useState<DisplayCategory[]>(DEFAULT_CATEGORIES);
   const [sortBy, setSortBy] = useState<string>("featured");
@@ -35,16 +35,6 @@ export const HomePage = () => {
   // Carousel Hero Banner States
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
-
-  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-
-  useEffect(() => {
-    getProducts({ limit: 100 })
-      .then((res) => setFetchedProducts(res.products))
-      .catch(() => setFetchedProducts([]))
-      .finally(() => setProductsLoading(false));
-  }, []);
 
   useEffect(() => {
     getCategories()

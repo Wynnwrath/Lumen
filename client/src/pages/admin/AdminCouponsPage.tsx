@@ -10,7 +10,8 @@ import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { LoadingSpinner } from "../../components/ui/skeletons";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
-import { RowActions } from "../../components/admin/shared/RowActions";
+import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
+import { RowActions, type RowAction } from "../../components/admin/shared/RowActions";
 import { ToggleSwitch } from "../../components/admin/shared/ToggleSwitch";
 import { useToast } from "../../components/ui/ToastProvider";
 import { usePagination } from "../../hooks/usePagination";
@@ -147,6 +148,13 @@ export const AdminCouponsPage = () => {
     }
   };
 
+  // Row actions shared by the mobile card and the desktop table.
+  const getCouponActions = (coupon: Coupon): RowAction[] => [
+    { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(coupon) },
+    { label: coupon.isActive ? "Deactivate" : "Activate", icon: coupon.isActive ? "block" : "check", onClick: () => handleToggleActive(coupon) },
+    { label: "Delete", icon: "delete", danger: true, onClick: () => handleDelete(coupon) },
+  ];
+
   return (
     <div className="space-y-6 w-full">
       {/* Metrics Overview */}
@@ -180,14 +188,14 @@ export const AdminCouponsPage = () => {
       </section>
 
       {/* Search & Actions Bar */}
-      <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
-        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by code or discount %..." id="coupon-search" />
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+      <AdminToolbar
+        search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by code or discount %..." id="coupon-search" />}
+        actions={
           <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
             Add Coupon
           </Button>
-        </div>
-      </section>
+        }
+      />
 
       {/* Content: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {loading ? (
@@ -197,7 +205,7 @@ export const AdminCouponsPage = () => {
           {/* Mobile View */}
           <div className="block md:hidden space-y-3">
             {filteredCoupons.length === 0 ? (
-              <EmptyState message="No coupons found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+              <EmptyState message="No coupons found matching your search." card />
             ) : (
               paginated.map((coupon) => (
                 <div
@@ -213,13 +221,7 @@ export const AdminCouponsPage = () => {
                       <span className="font-mono font-extrabold text-sm text-slate-900 dark:text-white truncate tracking-tight">
                         {coupon.code}
                       </span>
-                      <RowActions
-                        actions={[
-                          { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(coupon) },
-                          { label: coupon.isActive ? "Deactivate" : "Activate", icon: coupon.isActive ? "block" : "check", onClick: () => handleToggleActive(coupon) },
-                          { label: "Delete", icon: "delete", danger: true, onClick: () => handleDelete(coupon) },
-                        ]}
-                      />
+                      <RowActions actions={getCouponActions(coupon)} />
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <DiscountBadge percent={coupon.discountPercent} />
@@ -257,7 +259,7 @@ export const AdminCouponsPage = () => {
                 </thead>
                 <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
                   {filteredCoupons.length === 0 ? (
-                    <EmptyState message="No coupons found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
+                    <EmptyState message="No coupons found matching your search." colSpan={6} />
                   ) : (
                     paginated.map((coupon) => (
                       <tr key={coupon._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800">
@@ -289,13 +291,7 @@ export const AdminCouponsPage = () => {
                           {formatDate(coupon.createdAt, { month: "short", day: "numeric", year: "numeric" })}
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <RowActions
-                            actions={[
-                              { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(coupon) },
-                              { label: coupon.isActive ? "Deactivate" : "Activate", icon: coupon.isActive ? "block" : "check", onClick: () => handleToggleActive(coupon) },
-                              { label: "Delete", icon: "delete", danger: true, onClick: () => handleDelete(coupon) },
-                            ]}
-                          />
+                          <RowActions actions={getCouponActions(coupon)} />
                         </td>
                       </tr>
                     ))

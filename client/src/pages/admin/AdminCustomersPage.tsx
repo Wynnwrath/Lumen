@@ -7,6 +7,7 @@ import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { LoadingSpinner } from "../../components/ui/skeletons";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
+import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
 import { usePagination } from "../../hooks/usePagination";
 import { useCustomers } from "../../hooks/useCustomers";
 import { TierBadge } from "../../components/admin/customers/TierBadge";
@@ -31,9 +32,7 @@ export const AdminCustomersPage = () => {
   return (
     <div className="space-y-6">
       {/* Search Filter Bar */}
-      <div className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex items-center gap-3 rounded-none">
-        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by customer name or email..." />
-      </div>
+      <AdminToolbar search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search by customer name or email..." />} />
 
       {/* Customers Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {customersLoading ? (
@@ -43,7 +42,7 @@ export const AdminCustomersPage = () => {
         {/* Mobile View: High-Density Customer Cards */}
         <div className="block md:hidden space-y-3">
           {filteredCustomers.length === 0 ? (
-            <EmptyState message="No customers found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+            <EmptyState message="No customers found matching your search." card />
           ) : (
             paginated.map((c) => (
               <div
@@ -106,7 +105,7 @@ export const AdminCustomersPage = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
                 {filteredCustomers.length === 0 ? (
-                  <EmptyState message="No customers found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
+                  <EmptyState message="No customers found matching your search." colSpan={6} />
                 ) : (
                 paginated.map((c) => (
                   <tr key={c._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">

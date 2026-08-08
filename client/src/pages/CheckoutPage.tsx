@@ -11,6 +11,7 @@ import { PromoCodeBox } from "../components/customer/checkout/PromoCodeBox";
 import { PaymentMethodSelector } from "../components/customer/checkout/PaymentMethodSelector";
 import { OrderConfirmationReceipt } from "../components/customer/checkout/OrderConfirmationReceipt";
 import { FormField } from "../components/ui/FormField";
+import { formatMoney } from "../utils/format";
 
 // Checkout in 3 steps: Review (items + coupon + totals) -> Details (form) -> Confirmation.
 export const CheckoutPage = () => {
@@ -129,14 +130,14 @@ export const CheckoutPage = () => {
                       </span>
                       <h3 className="text-xs sm:text-sm font-bold text-on-surface truncate">{product.name}</h3>
                       <p className="text-xs font-extrabold text-primary dark:text-white">
-                        ${product.price.toFixed(2)}
+                        {formatMoney(product.price)}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                       <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product._id, q)} min={1} max={product.stock} />
                       <span className="text-xs sm:text-sm font-black text-on-surface w-14 sm:w-16 text-right">
-                        ${(product.price * quantity).toFixed(2)}
+                        {formatMoney(product.price * quantity)}
                       </span>
                       <button
                         type="button"
@@ -165,27 +166,27 @@ export const CheckoutPage = () => {
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between text-on-surface-variant font-medium">
                     <span>Subtotal</span>
-                    <span className="font-bold text-on-surface">${subtotalBeforeDiscount.toFixed(2)}</span>
+                    <span className="font-bold text-on-surface">{formatMoney(subtotalBeforeDiscount)}</span>
                   </div>
                   {appliedDiscountRate > 0 && (
                     <div className="flex justify-between text-emerald-600 font-medium">
                       <span>Coupon Savings ({Math.round(appliedDiscountRate * 100)}%)</span>
-                      <span className="font-bold">-${discountAmount.toFixed(2)}</span>
+                      <span className="font-bold">-{formatMoney(discountAmount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-on-surface-variant font-medium">
                     <span>Estimated Shipping</span>
                     <span className="font-bold text-emerald-600">
-                      {shippingFee === 0 ? "FREE" : `$${shippingFee.toFixed(2)}`}
+                      {shippingFee === 0 ? "FREE" : formatMoney(shippingFee)}
                     </span>
                   </div>
                   <div className="flex justify-between text-on-surface-variant font-medium">
                     <span>Estimated Sales Tax (8%)</span>
-                    <span className="font-bold text-on-surface">${estimatedTax.toFixed(2)}</span>
+                    <span className="font-bold text-on-surface">{formatMoney(estimatedTax)}</span>
                   </div>
                   <div className="border-t border-outline-variant/30 pt-3 flex justify-between text-sm sm:text-base font-black text-on-surface">
                     <span>Total Payable Amount</span>
-                    <span className="text-secondary dark:text-secondary-fixed">${grandTotal.toFixed(2)}</span>
+                    <span className="text-secondary dark:text-secondary-fixed">{formatMoney(grandTotal)}</span>
                   </div>
                 </div>
               </div>
@@ -317,7 +318,7 @@ export const CheckoutPage = () => {
                   Back
                 </Button>
                 <Button type="submit" disabled={isSubmitting} icon="lock">
-                  {isSubmitting ? "Processing..." : `Place Order \u2022 $${grandTotal.toFixed(2)}`}
+                  {isSubmitting ? "Processing..." : `Place Order \u2022 ${formatMoney(grandTotal)}`}
                 </Button>
               </div>
             </form>
@@ -340,7 +341,7 @@ export const CheckoutPage = () => {
           <div>
             <span className="text-[10px] text-outline block leading-none">Total Payable</span>
             <span className="text-base font-black text-primary dark:text-white">
-              ${grandTotal.toFixed(2)}
+              {formatMoney(grandTotal)}
             </span>
           </div>
           <div className="flex items-center gap-2">

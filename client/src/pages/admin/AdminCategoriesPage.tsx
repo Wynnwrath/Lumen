@@ -10,7 +10,8 @@ import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { LoadingSpinner } from "../../components/ui/skeletons";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
-import { RowActions } from "../../components/admin/shared/RowActions";
+import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
+import { RowActions, type RowAction } from "../../components/admin/shared/RowActions";
 import { ProductImage } from "../../components/ui/ProductImage";
 import { useToast } from "../../components/ui/ToastProvider";
 import { usePagination } from "../../hooks/usePagination";
@@ -149,6 +150,13 @@ export const AdminCategoriesPage = () => {
     }
   };
 
+  // Row actions shared by the mobile card and the desktop table.
+  const getCategoryActions = (cat: Category): RowAction[] => [
+    { label: "View Products", icon: "view_list", onClick: () => setViewCategory(cat) },
+    { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(cat) },
+    { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteCategory(cat) },
+  ];
+
   return (
     <div className="space-y-6 w-full">
       {/* Metrics Overview Cards Section */}
@@ -188,14 +196,14 @@ export const AdminCategoriesPage = () => {
       </section>
 
       {/* Search & Actions Bar */}
-      <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-none">
-        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search category title or description..." id="category-search" />
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+      <AdminToolbar
+        search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search category title or description..." id="category-search" />}
+        actions={
           <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
             Add Category
           </Button>
-        </div>
-      </section>
+        }
+      />
 
       {/* Categories Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {categoriesLoading ? (
@@ -205,7 +213,7 @@ export const AdminCategoriesPage = () => {
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredCategories.length === 0 ? (
-            <EmptyState message="No categories found matching your search." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+            <EmptyState message="No categories found matching your search." card />
           ) : (
             paginated.map((cat) => {
               const count = categoryCounts.get(cat._id) ?? 0;
@@ -226,13 +234,7 @@ export const AdminCategoriesPage = () => {
                       <h4 className="font-extrabold text-sm text-slate-900 dark:text-white truncate tracking-tight">
                         {cat.name}
                       </h4>
-                      <RowActions
-                        actions={[
-                          { label: "View Products", icon: "view_list", onClick: () => setViewCategory(cat) },
-                          { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(cat) },
-                          { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteCategory(cat) },
-                        ]}
-                      />
+                      <RowActions actions={getCategoryActions(cat)} />
                     </div>
 
                     {/* Subtitle: Slug */}
@@ -274,7 +276,7 @@ export const AdminCategoriesPage = () => {
               </thead>
               <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
                   {filteredCategories.length === 0 ? (
-                    <EmptyState message="No categories found matching your search." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={5} />
+                    <EmptyState message="No categories found matching your search." colSpan={5} />
                   ) : (
                   paginated.map((cat) => {
                     const count = categoryCounts.get(cat._id) ?? 0;
@@ -314,13 +316,7 @@ export const AdminCategoriesPage = () => {
                           )}
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <RowActions
-                            actions={[
-                              { label: "View Products", icon: "view_list", onClick: () => setViewCategory(cat) },
-                              { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(cat) },
-                              { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteCategory(cat) },
-                            ]}
-                          />
+                          <RowActions actions={getCategoryActions(cat)} />
                         </td>
                       </tr>
                     );

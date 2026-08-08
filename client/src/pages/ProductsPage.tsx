@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useWishlistStore } from "../stores/wishlist.store";
-import { getProducts } from "../api/products";
-import type { Product } from "../types";
+import { useCatalogProducts } from "../hooks/useCatalogProducts";
 import { Icon } from "../components/ui/Icon";
 import { ProductCard } from "../components/customer/products/ProductCard";
 import { ProductGridSkeleton } from "../components/ui/skeletons";
@@ -33,15 +32,7 @@ export const ProductsPage = () => {
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 20;
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
-
-  useEffect(() => {
-    getProducts({ limit: 100 })
-      .then((res) => setProducts(res.products))
-      .catch(() => setProducts([]))
-      .finally(() => setProductsLoading(false));
-  }, []);
+  const { products, loading: productsLoading } = useCatalogProducts();
 
   // Prune stale wishlist ids that no longer match any product in the catalog
   useEffect(() => {

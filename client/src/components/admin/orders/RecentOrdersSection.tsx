@@ -7,7 +7,7 @@ import { Button } from "../../ui/Button";
 import { AdminPagination } from "../shared/AdminPagination";
 import { usePagination } from "../../../hooks/usePagination";
 import { formatDate, formatMoney } from "../../../utils/format";
-import { isPendingStatus } from "../../../constants";
+import { isPendingStatus, isCompletedStatus } from "../../../constants";
 import type { Order, OrderStatus } from "../../../types";
 
 interface RecentOrdersSectionProps {
@@ -23,7 +23,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
   const recentOrders = useMemo(() => {
     return orders.filter((o) => {
       if (orderFilter === "pending") return isPendingStatus(o.status);
-      if (orderFilter === "completed") return o.status === "Completed" || o.status === "Received";
+      if (orderFilter === "completed") return isCompletedStatus(o.status);
       return true;
     });
   }, [orders, orderFilter]);
@@ -113,7 +113,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
             </thead>
             <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800 text-xs sm:text-sm">
               {recentOrders.length === 0 ? (
-                <EmptyState message="No orders recorded yet." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
+                <EmptyState message="No orders recorded yet." colSpan={6} />
               ) : (
                 paginated.map((ord) => (
                   <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-dashed border-slate-200 dark:border-slate-800">

@@ -6,6 +6,14 @@ import { FormField } from "../../ui/FormField";
 import { ProductImage } from "../../ui/ProductImage";
 import type { Category, Product, ProductStatus } from "../../../types";
 
+// Shared form control styles so every field looks identical.
+const inputClass =
+  "w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition";
+const monoInputClass =
+  "w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition";
+const selectClass =
+  "w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition";
+
 interface ProductFormModalProps {
   open: boolean;
   onClose: () => void;
@@ -99,7 +107,7 @@ export const ProductFormModal = ({
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="Puffer Jacket With Pocket Detail"
-                  className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className={inputClass}
                 />
               </FormField>
 
@@ -109,7 +117,7 @@ export const ProductFormModal = ({
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   placeholder="Detailed specs, fabric details, features, or materials..."
-                  className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className={inputClass}
                 />
               </FormField>
             </div>
@@ -130,7 +138,7 @@ export const ProductFormModal = ({
                     value={formPrice}
                     onChange={(e) => setFormPrice(e.target.value)}
                     placeholder="47.55"
-                    className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className={monoInputClass}
                   />
                 </FormField>
                 <FormField label="Original Price ($)">
@@ -141,7 +149,7 @@ export const ProductFormModal = ({
                     value={formOriginalPrice}
                     onChange={(e) => setFormOriginalPrice(e.target.value)}
                     placeholder="60.00"
-                    className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className={monoInputClass}
                   />
                 </FormField>
               </div>
@@ -155,7 +163,7 @@ export const ProductFormModal = ({
                     value={formStock}
                     onChange={(e) => setFormStock(e.target.value)}
                     placeholder="77"
-                    className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-mono font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className={monoInputClass}
                   />
                 </FormField>
                 <FormField label="Product Status *">
@@ -163,7 +171,7 @@ export const ProductFormModal = ({
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as ProductStatus)}
                     required
-                    className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className={selectClass}
                   >
                     <option value="active">Active (Visible on Storefront)</option>
                     <option value="inactive">Inactive (Hidden from Customers)</option>
@@ -244,7 +252,7 @@ export const ProductFormModal = ({
                   value={formImage}
                   onChange={(e) => setFormImage(e.target.value)}
                   placeholder="Paste an image URL (e.g. https://...)"
-                  className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-medium rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className={inputClass}
                 />
               </FormField>
             </div>
@@ -260,7 +268,7 @@ export const ProductFormModal = ({
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
                   required
-                  className="w-full bg-slate-100 dark:bg-slate-800 border-0 text-slate-900 dark:text-white text-xs font-bold rounded-xl px-3.5 py-3 outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className={selectClass}
                 >
                   {categories.map((c) => (
                     <option key={c._id} value={c.slug}>

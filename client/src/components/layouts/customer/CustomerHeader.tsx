@@ -1,14 +1,13 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useThemeStore } from "../../../stores/theme.store";
 import { useCartStore } from "../../../stores/cart.store";
 import { useWishlistStore } from "../../../stores/wishlist.store";
 import { useAuthStore } from "../../../stores/auth.store";
-import { getProducts } from "../../../api/products";
-import type { Product } from "../../../types";
 import { Icon } from "../../ui/Icon";
 import { ProductImage } from "../../ui/ProductImage";
 import { useClickOutside } from "../../../hooks/useClickOutside";
+import { useCatalogProducts } from "../../../hooks/useCatalogProducts";
 import { formatMoney } from "../../../utils/format";
 
 export const CustomerHeader = () => {
@@ -23,7 +22,7 @@ export const CustomerHeader = () => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [catalog, setCatalog] = useState<Product[]>([]);
+  const { products: catalog } = useCatalogProducts();
 
   const searchRef = useRef<HTMLDivElement>(null);
   const cartModalRef = useRef<HTMLDivElement>(null);
@@ -31,12 +30,6 @@ export const CustomerHeader = () => {
 
   const itemCount = getItemCount();
   const subtotal = getSubtotal();
-
-  useEffect(() => {
-    getProducts({ limit: 100 })
-      .then((res) => setCatalog(res.products))
-      .catch(() => setCatalog([]));
-  }, []);
 
   // close each dropdown when clicking outside its container
   useClickOutside(searchRef, () => setShowSearchDropdown(false));

@@ -6,6 +6,9 @@ interface OrdersByStatusListProps {
 }
 
 export const OrdersByStatusList = ({ data }: OrdersByStatusListProps) => {
+  // Hoisted total so the .map doesn't re-scan the full array on every row (O(n²) fix).
+  const total = data.reduce((sum, x) => sum + x.count, 0) || 1;
+
   return (
     <div className="lg:col-span-5 bg-white dark:bg-slate-900 p-5 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm rounded-none">
       <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Orders by Status</h2>
@@ -15,7 +18,6 @@ export const OrdersByStatusList = ({ data }: OrdersByStatusListProps) => {
       ) : (
         <div className="space-y-3">
           {data.map((s) => {
-            const total = data.reduce((sum, x) => sum + x.count, 0) || 1;
             const pct = Math.round((s.count / total) * 100);
             return (
               <div key={s.status} className="space-y-1">

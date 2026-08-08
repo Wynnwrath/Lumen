@@ -12,8 +12,8 @@ import { useToast } from "../../components/ui/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
 import { useProducts } from "../../hooks/useProducts";
 import { useCustomers } from "../../hooks/useCustomers";
+import { useOrderMetrics } from "../../hooks/useOrderMetrics";
 import { formatDate, formatMoney } from "../../utils/format";
-import { isPendingStatus } from "../../constants";
 import { RevenueBarChart } from "../../components/admin/analytics/RevenueBarChart";
 import { OrdersByStatusList } from "../../components/admin/orders/OrdersByStatusList";
 import { TopProductsChart } from "../../components/admin/analytics/TopProductsChart";
@@ -46,42 +46,18 @@ export const AdminDashboardPage = () => {
     refreshProducts();
   };
 
-  // Calculated Metrics
-  const totalSales = useMemo(
-    () =>
-      orders
-        .filter((o) => o.status !== "Cancelled")
-        .reduce((sum, o) => sum + (Number(o.total) || 0), 0),
-    [orders]
-  );
-
-  const totalOrdersCount = useMemo(() => orders.length, [orders]);
-  const pendingOrdersCount = useMemo(
-    () => orders.filter((o) => isPendingStatus(o.status)).length,
-    [orders]
-  );
-  const completedOrdersCount = useMemo(
-    () => orders.filter((o) => o.status === "Completed" || o.status === "Received").length,
-    [orders]
-  );
-  const avgOrderValue = useMemo(() => (totalOrdersCount > 0 ? totalSales / totalOrdersCount : 0), [totalSales, totalOrdersCount]);
+  // Calculated Metrics (shared helper so the dashboard + orders page agree).
+  const {
+    totalRevenue: totalSales,
+    orderCount: totalOrdersCount,
+    pendingCount: pendingOrdersCount,
+    completedCount: completedOrdersCount,
+    avgOrderValue,
+    topProducts,
+  } = useOrderMetrics(orders);
 
   // Low stock products (< 5)
   const lowStockProducts = useMemo(() => products.filter((p) => p.stock < 5), [products]);
-
-  // Top selling products: aggregate units sold per product name, excluding cancelled orders.
-  const topProducts = useMemo(() => {
-    const counts = new Map<string, number>();
-    orders
-      .filter((o) => o.status !== "Cancelled")
-      .forEach((o) =>
-        o.items.forEach((item) => counts.set(item.name, (counts.get(item.name) || 0) + item.quantity))
-      );
-    return [...counts.entries()]
-      .map(([name, units]) => ({ name, units }))
-      .sort((a, b) => b.units - a.units)
-      .slice(0, 5);
-  }, [orders]);
 
   const handleUpdateStatus = async (orderNumber: string, newStatus: OrderStatus) => {
     try {

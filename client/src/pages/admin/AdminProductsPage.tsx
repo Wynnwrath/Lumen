@@ -7,7 +7,8 @@ import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { LoadingSpinner } from "../../components/ui/skeletons";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
-import { RowActions } from "../../components/admin/shared/RowActions";
+import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
+import { RowActions, type RowAction } from "../../components/admin/shared/RowActions";
 import { ToggleSwitch } from "../../components/admin/shared/ToggleSwitch";
 import { ProductImage } from "../../components/ui/ProductImage";
 import { useToast } from "../../components/ui/ToastProvider";
@@ -15,7 +16,7 @@ import { usePagination } from "../../hooks/usePagination";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
 import { useProductForm } from "../../hooks/useProductForm";
-import { formatMoney } from "../../utils/format";
+import { formatMoney, formatMoneyCompact } from "../../utils/format";
 import { ProductFormModal } from "../../components/admin/products/ProductFormModal";
 
 // Admin product CRUD: list, search, toggle status, add/edit via modal (useProductForm).
@@ -87,6 +88,12 @@ export const AdminProductsPage = () => {
       showToast("Failed to update status", "error");
     }
   };
+
+  // Row actions shared by the mobile card and the desktop table.
+  const getProductActions = (product: Product): RowAction[] => [
+    { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(product) },
+    { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteProduct(product._id, product.name) },
+  ];
 
   // Filtered Products
   const filteredProducts = products.filter((p) => {
@@ -160,44 +167,42 @@ export const AdminProductsPage = () => {
       </section>
 
       {/* Filter Controls Bar */}
-      <section className="bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 rounded-none">
-        {/* Search Input */}
-        <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search product name..." id="catalog-search" />
+      <AdminToolbar
+        search={<SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Search product name..." id="catalog-search" />}
+        actions={
+          <>
+            <select
+              id="catalog-category-filter"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((c) => (
+                <option key={c._id} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
-          {/* Category Filter */}
-          <select
-            id="catalog-category-filter"
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
-          >
-            <option value="all">All Categories</option>
-            {categories.map((c) => (
-              <option key={c._id} value={c.slug}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            <select
+              id="catalog-stock-filter"
+              value={stockFilter}
+              onChange={(e) => setStockFilter(e.target.value)}
+              className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
+            >
+              <option value="all">All Stock Status</option>
+              <option value="instock">In Stock (&gt;5)</option>
+              <option value="lowstock">Low Stock (1-4)</option>
+              <option value="outofstock">Out of Stock (0)</option>
+            </select>
 
-          {/* Stock Filter */}
-          <select
-            id="catalog-stock-filter"
-            value={stockFilter}
-            onChange={(e) => setStockFilter(e.target.value)}
-            className="flex-1 sm:flex-initial bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-2.5 outline-none cursor-pointer"
-          >
-            <option value="all">All Stock Status</option>
-            <option value="instock">In Stock (&gt;5)</option>
-            <option value="lowstock">Low Stock (1-4)</option>
-            <option value="outofstock">Out of Stock (0)</option>
-          </select>
-
-          <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
-            Add Product
-          </Button>
-        </div>
-      </section>
+            <Button variant="blue" icon="add" onClick={handleOpenAddModal}>
+              Add Product
+            </Button>
+          </>
+        }
+      />
 
       {/* Products Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {productsLoading ? (
@@ -207,7 +212,7 @@ export const AdminProductsPage = () => {
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredProducts.length === 0 ? (
-            <EmptyState message="No products found matching your filter criteria." className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 text-center text-xs text-slate-500 dark:text-slate-400 font-medium rounded-none" />
+            <EmptyState message="No products found matching your filter criteria." card />
           ) : (
             paginated.map((product) => {
               const isStockActive = product.status === "active" && product.stock > 0;
@@ -230,17 +235,12 @@ export const AdminProductsPage = () => {
                       <h4 className="font-extrabold text-sm text-slate-900 dark:text-white truncate tracking-tight">
                         {product.name}
                       </h4>
-                      <RowActions
-                        actions={[
-                          { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(product) },
-                          { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteProduct(product._id, product.name) },
-                        ]}
-                      />
+                      <RowActions actions={getProductActions(product)} />
                     </div>
 
                     {/* Price Subtitle */}
                     <p className="font-semibold text-xs text-slate-400 dark:text-slate-400 -mt-1 font-mono">
-                      {formatMoney(product.price).replace(/\.00$/, "")}
+                      {formatMoneyCompact(product.price)}
                     </p>
 
                     {/* Bottom Row: In Stock Toggle Switch */}
@@ -273,7 +273,7 @@ export const AdminProductsPage = () => {
               </thead>
               <tbody id="products-tbody" className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
                 {filteredProducts.length === 0 ? (
-                  <EmptyState message="No products found matching your filter criteria." className="py-12 text-center text-sm text-slate-500 dark:text-slate-400" colSpan={6} />
+                  <EmptyState message="No products found matching your filter criteria." colSpan={6} />
                 ) : (
                   paginated.map((product) => (
                     <tr
@@ -327,12 +327,7 @@ export const AdminProductsPage = () => {
                         </button>
                       </td>
                       <td className="px-5 py-4 text-right">
-                        <RowActions
-                          actions={[
-                            { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(product) },
-                            { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteProduct(product._id, product.name) },
-                          ]}
-                        />
+                        <RowActions actions={getProductActions(product)} />
                       </td>
                     </tr>
                   ))

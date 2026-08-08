@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getProduct, getProducts } from "../api/products";
+import { getProduct } from "../api/products";
+import { useCatalogProducts } from "../hooks/useCatalogProducts";
 import { useCartStore } from "../stores/cart.store";
 import { useWishlistStore } from "../stores/wishlist.store";
 import { Icon } from "../components/ui/Icon";
@@ -20,14 +21,23 @@ export const ProductDetailPage = () => {
   const { addItem } = useCartStore();
   const { ids: wishlistIds, toggle: toggleWishlist } = useWishlistStore();
   const { showToast } = useToast();
+  const { products: catalogProducts } = useCatalogProducts();
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
   const [isZoomOpen, setIsZoomOpen] = useState<boolean>(false);
+
+  // Same-category suggestions, derived from the shared catalog.
+  const relatedProducts = useMemo(
+    () =>
+      product
+        ? catalogProducts.filter((x) => x.category === product.category && x._id !== id).slice(0, 4)
+        : [],
+    [catalogProducts, product, id]
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -38,9 +48,6 @@ export const ProductDetailPage = () => {
         const p = await getProduct(id);
         if (!active) return;
         setProduct(p);
-        const res = await getProducts({ limit: 100 });
-        if (!active) return;
-        setRelatedProducts(res.products.filter((x) => x.category === p.category && x._id !== id).slice(0, 4));
       } catch {
         if (active) setProduct(null);
       } finally {

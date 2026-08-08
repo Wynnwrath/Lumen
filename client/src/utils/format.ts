@@ -13,3 +13,8 @@ export function formatDate(iso: string | undefined, opts: Intl.DateTimeFormatOpt
 export function formatMoney(n: number): string {
   return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
+
+// Money without trailing cents when whole: 1234 -> "$1,234" (used on compact cards).
+export function formatMoneyCompact(n: number): string {
+  return formatMoney(n).replace(/\.00$/, "");
+}
