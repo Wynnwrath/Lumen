@@ -85,9 +85,9 @@ export const AdminDashboardPage = () => {
 
   return (
     <div className="space-y-5 sm:space-y-6 w-full">
-      {/* Top KPI Cards — primary metrics */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 w-full">
-        {/* Total Revenue / Units Sold */}
+      {/* Top KPI Cards — 6 essential metrics in a balanced grid (3 cols desktop, 2 cols mobile) */}
+      <section className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 w-full">
+        {/* Total Revenue */}
         <KpiCard
           label="Total Sales"
           chip="Sales"
@@ -112,19 +112,6 @@ export const AdminDashboardPage = () => {
           id="kpi-orders"
         />
 
-        {/* Avg Order Value */}
-        <KpiCard
-          label="Average Order"
-          chip="Average"
-          chipClassName="bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60"
-          value={formatMoney(avgOrderValue)}
-          valueClassName="font-mono"
-          icon="north_east"
-          iconClassName="text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold"
-          subtext="Avg customer spend"
-          id="kpi-avg-order"
-        />
-
         {/* Pending Orders */}
         <KpiCard
           label="Pending"
@@ -137,10 +124,7 @@ export const AdminDashboardPage = () => {
           subtext="Awaiting processing"
           id="kpi-pending"
         />
-      </section>
 
-      {/* Secondary metrics strip */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 w-full">
         {/* Total Products */}
         <KpiCard
           label="Total Products"
@@ -165,17 +149,25 @@ export const AdminDashboardPage = () => {
           id="kpi-customers"
         />
 
-        {/* Completed Orders */}
+        {/* Low Stock Alert */}
         <KpiCard
-          label="Completed"
-          chip="Fulfilled"
-          chipClassName="bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
-          value={completedOrdersCount}
-          valueClassName="text-emerald-600 dark:text-emerald-400"
-          icon="task_alt"
-          iconClassName="text-emerald-600 dark:text-emerald-400 text-sm sm:text-base font-bold"
-          subtext="Delivered to buyers"
-          id="kpi-completed"
+          label="Low Stock Alert"
+          chip="Attention"
+          chipClassName={`${
+            lowStockProducts.length > 0
+              ? "bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
+              : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+          }`}
+          value={lowStockProducts.length}
+          valueClassName={lowStockProducts.length > 0 ? "text-rose-600 dark:text-rose-400" : ""}
+          icon="warning"
+          iconClassName={`${
+            lowStockProducts.length > 0
+              ? "text-rose-600 dark:text-rose-400"
+              : "text-slate-400"
+          } text-sm sm:text-base font-bold`}
+          subtext="Products below stock limit"
+          id="kpi-low-stock"
         />
       </section>
 
