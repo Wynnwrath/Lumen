@@ -17,7 +17,7 @@ const VARIANT_CLASSES: Record<CardVariant, string> = {
 interface CardProps {
   variant?: CardVariant;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const Card = ({ variant = "storefront", className, children }: CardProps) => (
