@@ -4,6 +4,8 @@ A full-stack e-commerce app — customers browse products, check out with coupon
 
 **Repository:** [https://github.com/Wynnwrath/Lumen](https://github.com/Wynnwrath/Lumen)
 
+**Live site:** [https://lumen-blue-one.vercel.app/](https://lumen-blue-one.vercel.app/)
+
 ## Features
 
 - Storefront product browsing with filters and sorting
@@ -204,5 +206,4 @@ Each server module follows: routes → middleware/validator → controller → s
 - Supabase Storage is only used for product image uploads; the app runs without it.
 - Resend is optional — without an API key, order confirmation emails are logged to the console in dev.
 - The server auto-seeds demo data on boot whenever `NODE_ENV` is not `production`.
-- No deployment configuration is included; setup is local-only.
 - Ports: client dev on `5173` (Vite), server API on `5000`; Vite proxies `/api` to `http://localhost:5000`.
