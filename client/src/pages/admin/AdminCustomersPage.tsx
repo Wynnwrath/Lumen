@@ -48,7 +48,7 @@ export const AdminCustomersPage = () => {
   const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredCustomers, 10);
 
   return (
-    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
+    <div className="md:h-full md:min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
       {/* Customers Summary KPIs */}
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full shrink-0">
         <KpiCard
@@ -95,7 +95,7 @@ export const AdminCustomersPage = () => {
       {customersLoading ? (
         <LoadingSpinner label="Loading customers..." />
       ) : (
-      <div className="flex-1 min-h-0 overflow-y-auto space-y-4">
+      <div className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: High-Density Customer Cards */}
         <div className="block md:hidden space-y-3">
           {filteredCustomers.length === 0 ? (
@@ -152,12 +152,12 @@ export const AdminCustomersPage = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Tier Status</th>
-                  <th className="p-4">Total Orders</th>
-                  <th className="p-4">Total Spent</th>
-                  <th className="p-4">Registered Date</th>
-                  <th className="p-4 text-right">Action</th>
+                  <th className="p-3">Customer</th>
+                  <th className="p-3">Tier Status</th>
+                  <th className="p-3">Total Orders</th>
+                  <th className="p-3">Total Spent</th>
+                  <th className="p-3">Registered Date</th>
+                  <th className="p-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
@@ -166,7 +166,7 @@ export const AdminCustomersPage = () => {
                 ) : (
                 paginated.map((c) => (
                   <tr key={c._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                    <td className="p-4">
+                    <td className="p-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center font-extrabold text-xs shrink-0">
                           {c.initials}
@@ -177,17 +177,17 @@ export const AdminCustomersPage = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="p-3">
                       <TierBadge tier={c.tier} />
                     </td>
-                    <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
+                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300">
                       {c.totalOrders} Orders
                     </td>
-                    <td className="p-4 font-mono font-extrabold text-slate-900 dark:text-white">
+                    <td className="p-3 font-mono font-extrabold text-slate-900 dark:text-white">
                       {formatMoney(c.totalSpent)}
                     </td>
-                    <td className="p-4 text-slate-500 font-medium">{c.registeredAt}</td>
-                    <td className="p-4 text-right">
+                    <td className="p-3 text-slate-500 font-medium">{c.registeredAt}</td>
+                    <td className="p-3 text-right">
                       <Button variant="blue" size="sm" onClick={() => setSelectedCustomer(c)}>View Profile</Button>
                     </td>
                   </tr>

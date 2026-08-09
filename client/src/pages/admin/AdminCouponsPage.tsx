@@ -131,7 +131,7 @@ export const AdminCouponsPage = () => {
   ];
 
   return (
-    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
+    <div className="md:h-full md:min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
       {/* Metrics Overview */}
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full shrink-0">
         <KpiCard
@@ -178,7 +178,7 @@ export const AdminCouponsPage = () => {
       {loading ? (
         <LoadingSpinner label="Loading coupons..." />
       ) : (
-        <section className="flex-1 min-h-0 overflow-y-auto space-y-4">
+        <section className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
           {/* Mobile View */}
           <div className="block md:hidden space-y-3">
             {filteredCoupons.length === 0 ? (
@@ -226,12 +226,12 @@ export const AdminCouponsPage = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    <th className="px-5 py-4">Coupon Code</th>
-                    <th className="px-5 py-4">Discount</th>
-                    <th className="px-5 py-4">Status</th>
-                    <th className="px-5 py-4">Usage</th>
-                    <th className="px-5 py-4">Created</th>
-                    <th className="px-5 py-4 text-right">Actions</th>
+                    <th className="px-5 py-3">Coupon Code</th>
+                    <th className="px-5 py-3">Discount</th>
+                    <th className="px-5 py-3">Status</th>
+                    <th className="px-5 py-3">Usage</th>
+                    <th className="px-5 py-3">Created</th>
+                    <th className="px-5 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
@@ -240,7 +240,7 @@ export const AdminCouponsPage = () => {
                   ) : (
                     paginated.map((coupon) => (
                       <tr key={coupon._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800">
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
                               <Icon name="loyalty" className="text-lg" />
@@ -248,10 +248,10 @@ export const AdminCouponsPage = () => {
                             <span className="font-mono font-extrabold text-slate-900 dark:text-white tracking-tight">{coupon.code}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3">
                           <DiscountBadge percent={coupon.discountPercent} />
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3">
                           <div className="flex items-center gap-2.5">
                             <ToggleSwitch checked={coupon.isActive} onChange={() => handleToggleActive(coupon)} disabled={togglingId !== null} loading={togglingId === coupon._id} />
                             <span className={`text-xs font-bold ${coupon.isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"}`}>
@@ -259,15 +259,15 @@ export const AdminCouponsPage = () => {
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3">
                           <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${coupon.usageCount > 0 ? "bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"}`}>
                             {coupon.usageCount} {coupon.usageCount === 1 ? "use" : "uses"}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-slate-500 dark:text-slate-400 text-xs font-medium">
+                        <td className="px-5 py-3 text-slate-500 dark:text-slate-400 text-xs font-medium">
                           {formatDate(coupon.createdAt, { month: "short", day: "numeric", year: "numeric" })}
                         </td>
-                        <td className="px-5 py-4 text-right">
+                        <td className="px-5 py-3 text-right">
                           <RowActions actions={getCouponActions(coupon)} />
                         </td>
                       </tr>

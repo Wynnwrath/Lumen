@@ -120,7 +120,7 @@ export const AdminProductsPage = () => {
   const { page, setPage, totalPages, totalItems, start, end, paginated } = usePagination(filteredProducts, 10);
 
   return (
-    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full font-sans">
+    <div className="md:h-full md:min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
       {/* Top Catalog KPI Cards */}
       <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 w-full shrink-0">
         {/* Total Products */}
@@ -211,7 +211,7 @@ export const AdminProductsPage = () => {
       {productsLoading ? (
         <LoadingSpinner label="Loading products..." />
       ) : (
-      <section className="flex-1 min-h-0 overflow-y-auto space-y-4">
+      <section className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredProducts.length === 0 ? (
@@ -266,12 +266,12 @@ export const AdminProductsPage = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  <th className="px-5 py-4">Product</th>
-                  <th className="px-5 py-4">Category</th>
-                  <th className="px-5 py-4">Price</th>
-                  <th className="px-5 py-4">Stock Units</th>
-                  <th className="px-5 py-4">Status</th>
-                  <th className="px-5 py-4 text-right">Actions</th>
+                  <th className="px-5 py-3">Product</th>
+                  <th className="px-5 py-3">Category</th>
+                  <th className="px-5 py-3">Price</th>
+                  <th className="px-5 py-3">Stock Units</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody id="products-tbody" className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
@@ -283,7 +283,7 @@ export const AdminProductsPage = () => {
                       key={product._id}
                       className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800"
                     >
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
                           <ProductImage
                             src={product.images[0]}
@@ -295,15 +295,15 @@ export const AdminProductsPage = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-3">
                         <span className="font-mono text-xs font-semibold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 capitalize">
                           {product.category}
                         </span>
                       </td>
-                      <td className="px-5 py-4 font-mono font-extrabold text-slate-900 dark:text-white">
+                      <td className="px-5 py-3 font-mono font-extrabold text-slate-900 dark:text-white">
                         {formatMoney(product.price)}
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-3">
                         {product.stock === 0 ? (
                           <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
                             0 units (Out)
@@ -318,7 +318,7 @@ export const AdminProductsPage = () => {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-3">
                         <button
                           onClick={() => handleToggleStatus(product)}
                           className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border transition ${product.status === "active"
@@ -329,7 +329,7 @@ export const AdminProductsPage = () => {
                           {product.status.toUpperCase()}
                         </button>
                       </td>
-                      <td className="px-5 py-4 text-right">
+                      <td className="px-5 py-3 text-right">
                         <RowActions actions={getProductActions(product)} />
                       </td>
                     </tr>

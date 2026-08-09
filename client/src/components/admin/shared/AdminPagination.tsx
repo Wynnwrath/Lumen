@@ -15,7 +15,7 @@ export const AdminPagination = ({ page, totalPages, totalItems, start, end, onCh
   if (totalPages <= 1) return null;
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+      <span className="hidden sm:block text-xs font-semibold text-slate-500 dark:text-slate-400">
         Showing <span className="font-extrabold text-slate-900 dark:text-white">{start}–{end}</span> of{" "}
         <span className="font-extrabold text-slate-900 dark:text-white">{totalItems}</span>
       </span>

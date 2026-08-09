@@ -158,7 +158,7 @@ export const AdminCategoriesPage = () => {
   ];
 
   return (
-    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
+    <div className="md:h-full md:min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
       {/* Metrics Overview Cards Section */}
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full shrink-0">
         {/* Total Categories Stat Card */}
@@ -211,7 +211,7 @@ export const AdminCategoriesPage = () => {
       {categoriesLoading ? (
         <LoadingSpinner label="Loading categories..." />
       ) : (
-      <section className="flex-1 min-h-0 overflow-y-auto space-y-4">
+      <section className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}
         <div className="block md:hidden space-y-3">
           {filteredCategories.length === 0 ? (
@@ -269,11 +269,11 @@ export const AdminCategoriesPage = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  <th className="px-5 py-4">Category Name</th>
-                  <th className="px-5 py-4">Identifier / Slug</th>
-                  <th className="px-5 py-4">Description</th>
-                  <th className="px-5 py-4">Assigned Products</th>
-                  <th className="px-5 py-4 text-right">Actions</th>
+                  <th className="px-5 py-3">Category Name</th>
+                  <th className="px-5 py-3">Identifier / Slug</th>
+                  <th className="px-5 py-3">Description</th>
+                  <th className="px-5 py-3">Assigned Products</th>
+                  <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dashed divide-slate-200 dark:divide-slate-800">
@@ -288,7 +288,7 @@ export const AdminCategoriesPage = () => {
                         key={cat._id}
                         className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800"
                       >
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
                               <Icon name={cat.icon || "category"} className="text-lg" />
@@ -298,15 +298,15 @@ export const AdminCategoriesPage = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3">
                           <span className="font-mono text-xs font-semibold px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                             {cat.slug}
                           </span>
                         </td>
-                        <td className="px-5 py-4 text-slate-600 dark:text-slate-400 text-xs font-medium max-w-xs truncate">
+                        <td className="px-5 py-3 text-slate-600 dark:text-slate-400 text-xs font-medium max-w-xs truncate">
                           {cat.description || "No description provided."}
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-3">
                           {count > 0 ? (
                             <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                               {count} products
@@ -317,7 +317,7 @@ export const AdminCategoriesPage = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-5 py-4 text-right">
+                        <td className="px-5 py-3 text-right">
                           <RowActions actions={getCategoryActions(cat)} />
                         </td>
                       </tr>

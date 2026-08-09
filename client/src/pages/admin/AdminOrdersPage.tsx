@@ -70,7 +70,7 @@ export const AdminOrdersPage = () => {
   const { totalRevenue, pendingCount: pendingOrdersCount } = useOrderMetrics(orders);
 
   return (
-    <div className="h-full min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
+    <div className="md:h-full md:min-h-0 flex flex-col gap-5 sm:gap-6 w-full">
       {/* Orders Summary KPIs */}
       <section className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5 w-full shrink-0">
         <KpiCard
@@ -148,7 +148,7 @@ export const AdminOrdersPage = () => {
       {loading ? (
         <LoadingSpinner label="Loading orders..." />
       ) : (
-      <div className="flex-1 min-h-0 overflow-y-auto space-y-4">
+      <div className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: High-Density Order Cards */}
         <div className="block md:hidden space-y-3">
           {filteredOrders.length === 0 ? (
@@ -215,14 +215,14 @@ export const AdminOrdersPage = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="sticky top-0 z-10 bg-slate-50 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  <th className="p-4">Order #</th>
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Order Date</th>
-                  <th className="p-4">Items Count</th>
-                  <th className="p-4">Payment</th>
-                  <th className="p-4">Total Amount</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Action</th>
+                  <th className="p-3">Order #</th>
+                  <th className="p-3">Customer</th>
+                  <th className="p-3">Order Date</th>
+                  <th className="p-3">Items Count</th>
+                  <th className="p-3">Payment</th>
+                  <th className="p-3">Total Amount</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
@@ -235,17 +235,17 @@ export const AdminOrdersPage = () => {
                 ) : (
                   paginated.map((ord) => (
                   <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                    <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">#{ord.orderNumber}</td>
-                    <td className="p-4">
+                    <td className="p-3 font-mono font-bold text-slate-900 dark:text-white">#{ord.orderNumber}</td>
+                    <td className="p-3">
                       <div>
                         <p className="font-bold text-slate-900 dark:text-white">{ord.customer.name}</p>
                         <p className="text-[11px] text-slate-500">{ord.customer.email}</p>
                       </div>
                     </td>
-                    <td className="p-4 font-medium text-slate-600 dark:text-slate-400">
+                    <td className="p-3 font-medium text-slate-600 dark:text-slate-400">
                       {formatDate(ord.createdAt)}
                     </td>
-                    <td className="p-4">
+                    <td className="p-3">
                       <div className="flex items-center gap-2.5">
                         <ProductImage
                           src={ord.items[0]?.image}
@@ -262,18 +262,18 @@ export const AdminOrdersPage = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="p-4 font-semibold text-slate-600 dark:text-slate-400">{ord.paymentMethod}</td>
-                    <td className="p-4 font-mono font-extrabold text-slate-900 dark:text-white">
+                    <td className="p-3 font-semibold text-slate-600 dark:text-slate-400">{ord.paymentMethod}</td>
+                    <td className="p-3 font-mono font-extrabold text-slate-900 dark:text-white">
                       {formatMoney(ord.total)}
                     </td>
-                    <td className="p-4">
+                    <td className="p-3">
                       <OrderStatusSelect
                         value={ord.status}
                         onChange={(st) => handleUpdateStatus(ord.orderNumber, st)}
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold outline-none border cursor-pointer ${getStatusClasses(ord.status)}`}
                       />
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-3 text-right">
                       <Button variant="outline" size="sm" onClick={() => { setSelectedItemIndex(0); setSelectedOrder(ord); }}>
                         View Invoice
                       </Button>

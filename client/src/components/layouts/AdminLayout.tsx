@@ -193,7 +193,7 @@ export const AdminLayout = () => {
         {/* key={pathname} remounts <main> per route so inner scroll resets on navigation */}
         <main
           key={location.pathname}
-          className={`p-4 sm:p-6 lg:p-8 flex-1 w-full min-w-0 min-h-0 ${isDashboard ? "overflow-y-auto" : "overflow-hidden"}`}
+          className={`p-4 sm:p-6 lg:p-8 flex-1 w-full min-w-0 min-h-0 ${isDashboard ? "overflow-y-auto" : "overflow-y-auto md:overflow-hidden"}`}
         >
           <Outlet />
         </main>
