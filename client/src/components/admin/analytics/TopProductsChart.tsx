@@ -1,4 +1,5 @@
 import { EmptyState } from "../../ui/EmptyState";
+import { Card } from "../../ui/Card";
 
 interface TopProductsChartProps {
   data: { name: string; units: number }[];
@@ -10,7 +11,7 @@ export const TopProductsChart = ({ data }: TopProductsChartProps) => {
   const maxUnits = data[0]?.units || 1;
 
   return (
-    <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm rounded-none">
+    <Card variant="admin" className="p-5 sm:p-6">
       <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Top Selling Products</h2>
       <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-4 font-medium">Units sold by product</p>
       {data.length === 0 ? (
@@ -45,6 +46,6 @@ export const TopProductsChart = ({ data }: TopProductsChartProps) => {
           })}
         </div>
       )}
-    </div>
+    </Card>
   );
 };

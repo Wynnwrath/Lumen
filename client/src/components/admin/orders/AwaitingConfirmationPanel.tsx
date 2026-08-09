@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { EmptyState } from "../../ui/EmptyState";
 import { Icon } from "../../ui/Icon";
+import { Card } from "../../ui/Card";
 import { formatMoney } from "../../../utils/format";
 import type { Order } from "../../../types";
 
@@ -28,7 +29,7 @@ export const AwaitingConfirmationPanel = ({ orders }: AwaitingConfirmationPanelP
   };
 
   return (
-    <div className="lg:col-span-12 bg-white dark:bg-slate-900 p-5 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm transition-colors duration-200 rounded-none">
+    <Card variant="admin" className="lg:col-span-12 p-5 sm:p-6 transition-colors duration-200">
       <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
         <div>
           <h2 className="text-base font-extrabold text-slate-900 dark:text-white tracking-tight">Awaiting Confirmation</h2>
@@ -73,6 +74,6 @@ export const AwaitingConfirmationPanel = ({ orders }: AwaitingConfirmationPanelP
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 };

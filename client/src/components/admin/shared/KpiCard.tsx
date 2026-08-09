@@ -1,5 +1,6 @@
 import React from "react";
 import { Icon } from "../../ui/Icon";
+import { Card } from "../../ui/Card";
 
 // Stat card for admin dashboards (label, big number, chip, icon).
 interface KpiCardProps {
@@ -28,7 +29,7 @@ export const KpiCard = ({
   className,
 }: KpiCardProps) => {
   return (
-    <div className={`bg-white dark:bg-slate-900 p-4 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 ${className || ""}`}>
+    <Card variant="admin" className={`p-4 sm:p-6 flex flex-col justify-between transition-colors duration-200 ${className || ""}`}>
       <div className="flex items-center justify-between mb-2 sm:mb-3">
         <span className="text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">{label}</span>
         {chip && (
@@ -46,6 +47,6 @@ export const KpiCard = ({
         </div>
         <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">{subtext}</p>
       </div>
-    </div>
+    </Card>
   );
 };

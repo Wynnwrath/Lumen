@@ -3,6 +3,7 @@ import { ProductImage } from "../../ui/ProductImage";
 import { Button } from "../../ui/Button";
 import { EmptyState } from "../../ui/EmptyState";
 import { Icon } from "../../ui/Icon";
+import { Card } from "../../ui/Card";
 import type { Product } from "../../../types";
 import { ADMIN_LOW_STOCK_THRESHOLD } from "../../../constants";
 
@@ -13,7 +14,7 @@ interface LowStockPanelProps {
 
 export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
   return (
-    <div className="lg:col-span-4 bg-white dark:bg-slate-900 p-5 sm:p-6 border border-slate-200 dark:border-slate-800/90 shadow-sm flex flex-col justify-between transition-colors duration-200 rounded-none">
+    <Card variant="admin" className="lg:col-span-4 p-5 sm:p-6 flex flex-col justify-between transition-colors duration-200">
       <div>
         <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
           <div>
@@ -72,6 +73,6 @@ export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
