@@ -52,8 +52,6 @@ export const AdminDashboardPage = () => {
     totalRevenue: totalSales,
     orderCount: totalOrdersCount,
     pendingCount: pendingOrdersCount,
-    completedCount: completedOrdersCount,
-    avgOrderValue,
     topProducts,
   } = useOrderMetrics(orders);
 

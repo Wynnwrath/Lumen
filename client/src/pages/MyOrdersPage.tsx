@@ -8,6 +8,7 @@ import { getErrorMessage } from "../api/client";
 import { useToast } from "../components/ui/ToastProvider";
 import type { Order } from "../types";
 import { Icon } from "../components/ui/Icon";
+import { Card } from "../components/ui/Card";
 import { ProductImage } from "../components/ui/ProductImage";
 import { StatusBadge } from "../components/ui/StatusBadge";
 import { EmptyState } from "../components/ui/EmptyState";
@@ -160,9 +161,9 @@ export const MyOrdersPage = () => {
       ) : (
         <div className="space-y-4">
           {filteredOrders.map((order) => (
-            <div
+            <Card
               key={order._id}
-              className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl border border-outline-variant/30 p-5 sm:p-6 shadow-xs hover:border-secondary/40 hover:shadow-sm transition"
+              className="p-5 sm:p-6 hover:border-secondary/40 hover:shadow-sm transition"
             >
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
                 <div className="flex items-center gap-3 min-w-0">
@@ -283,7 +284,7 @@ export const MyOrdersPage = () => {
                   View Details
                 </Button>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

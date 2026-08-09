@@ -1,5 +1,6 @@
 import { formatMoney } from "../../../utils/format";
 import { TAX_RATE } from "../../../constants";
+import { Card } from "../../ui/Card";
 
 // Shared price breakdown used across cart + checkout so the numbers never drift.
 interface PriceSummaryProps {
@@ -22,7 +23,7 @@ export const PriceSummary = ({
   grandTotal,
   title = "Price Details",
 }: PriceSummaryProps) => (
-  <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/30 space-y-3">
+  <Card className="p-4 sm:p-5 space-y-3">
     {title && (
       <h3 className="text-xs sm:text-sm font-extrabold text-on-surface border-b border-outline-variant/20 pb-2">
         {title}
@@ -54,5 +55,5 @@ export const PriceSummary = ({
         <span className="text-secondary dark:text-secondary-fixed">{formatMoney(grandTotal)}</span>
       </div>
     </div>
-  </div>
+  </Card>
 );

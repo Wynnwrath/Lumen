@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { isPendingStatus, isCompletedStatus } from "../constants";
+import { isPendingStatus } from "../constants";
 import type { Order } from "../types";
 
 // Shared admin order metrics (dashboard + orders page) so the math lives in
@@ -10,8 +10,6 @@ export function useOrderMetrics(orders: Order[]) {
     const totalRevenue = activeOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
     const orderCount = orders.length;
     const pendingCount = orders.filter((o) => isPendingStatus(o.status)).length;
-    const completedCount = orders.filter((o) => isCompletedStatus(o.status)).length;
-    const avgOrderValue = orderCount > 0 ? totalRevenue / orderCount : 0;
 
     // Top selling products: aggregate units sold per product name.
     const counts = new Map<string, number>();
@@ -23,6 +21,6 @@ export function useOrderMetrics(orders: Order[]) {
       .sort((a, b) => b.units - a.units)
       .slice(0, 5);
 
-    return { totalRevenue, orderCount, pendingCount, completedCount, avgOrderValue, topProducts };
+    return { totalRevenue, orderCount, pendingCount, topProducts };
   }, [orders]);
 }

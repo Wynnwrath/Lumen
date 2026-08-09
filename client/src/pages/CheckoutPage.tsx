@@ -14,6 +14,7 @@ import { PaymentMethodSelector } from "../components/customer/checkout/PaymentMe
 import { OrderConfirmationReceipt } from "../components/customer/checkout/OrderConfirmationReceipt";
 import { PriceSummary } from "../components/customer/checkout/PriceSummary";
 import { FormField } from "../components/ui/FormField";
+import { Card } from "../components/ui/Card";
 import { formatMoney } from "../utils/format";
 import { isValidPhone, PHONE_PATTERN } from "../utils/validation";
 
@@ -136,10 +137,7 @@ export const CheckoutPage = () => {
                   {/* Products list scrolls internally (like admin tables) */}
                   <div className="space-y-3 mt-3 max-h-[45vh] lg:max-h-none lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
                     {items.map(({ product, quantity }) => (
-                      <div
-                        key={product._id}
-                        className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-3 sm:p-4 shadow-xs border border-outline-variant/30 flex items-center gap-3 sm:gap-4"
-                      >
+                        <Card key={product._id} className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
                         <ProductImage
                           src={product.images[0]}
                           alt={product.name}
@@ -169,7 +167,7 @@ export const CheckoutPage = () => {
                             <Icon name="delete" className="text-base" />
                           </button>
                         </div>
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 </div>
@@ -341,7 +339,7 @@ export const CheckoutPage = () => {
 
                   {/* Persistent order summary so shoppers keep sight of what they're buying */}
                   <aside className="lg:col-span-5 space-y-4 lg:sticky lg:top-6">
-                    <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-xs border border-outline-variant/30 space-y-3">
+                    <Card className="p-4 sm:p-5 space-y-3">
                       <h3 className="text-xs sm:text-sm font-extrabold text-on-surface border-b border-outline-variant/20 pb-2">
                         Order Summary
                       </h3>
@@ -363,7 +361,7 @@ export const CheckoutPage = () => {
                           </div>
                         ))}
                       </div>
-                    </div>
+                    </Card>
 
                     <PriceSummary
                       subtotal={subtotalBeforeDiscount}

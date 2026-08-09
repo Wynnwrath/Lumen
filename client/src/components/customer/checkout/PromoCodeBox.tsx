@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import type { CouponMessage } from "../../../hooks/useCheckoutForm";
+import { Card } from "../../ui/Card";
 
 interface PromoCodeBoxProps {
   couponCode: string;
@@ -10,7 +11,7 @@ interface PromoCodeBoxProps {
 
 export const PromoCodeBox = ({ couponCode, onCouponChange, onApply, message }: PromoCodeBoxProps) => {
   return (
-    <div className="bg-surface-container-lowest dark:bg-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-xs border border-outline-variant/30 space-y-2">
+    <Card className="p-3.5 sm:p-4 space-y-2">
       <label className="block text-xs font-bold text-on-surface">Have a Discount Code?</label>
       <form onSubmit={onApply} className="flex gap-2">
         <input
@@ -36,6 +37,6 @@ export const PromoCodeBox = ({ couponCode, onCouponChange, onApply, message }: P
           {message.text}
         </p>
       )}
-    </div>
+    </Card>
   );
 };
