@@ -9,10 +9,11 @@ interface OrdersByStatusListProps {
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "#f59e0b",
-  processing: "#3b82f6",
+  confirmed: "#f97316",
+  preparing: "#3b82f6",
   shipped: "#8b5cf6",
-  delivered: "#10b981",
   completed: "#10b981",
+  received: "#06b6d4",
   cancelled: "#ef4444",
 };
 

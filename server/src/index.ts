@@ -13,7 +13,7 @@ async function start() {
     await runAllSeeds();
   }
 
-  // Auto-transition "Completed" orders to "Received" after 3 days. Runs hourly
+  // Auto-transition "C ompleted" orders to "Received" after 3 days. Runs hourly
   // so the dashboard stays accurate even with no traffic in between.
   setInterval(() => {
     void orderService.autoFinalizeReceived().catch((err) => console.error("Auto-receive sweep failed:", err));

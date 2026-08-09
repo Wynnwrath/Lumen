@@ -21,7 +21,7 @@ export const useWishlistStore = create<WishlistState>()(
             ? state.ids.filter((id) => id !== productId)
             : [...state.ids, productId],
         })),
-      has: (productId) => get().ids.includes(productId),
+      has: (productId) => get().ids.includes(productId), // helper getter id
       // Drop ids for products that no longer exist in the catalog.
       prune: (validIds) =>
         set((state) => {
