@@ -6,17 +6,28 @@ import { Icon } from "../components/ui/Icon";
 import { ProductCard, trackSpotlight } from "../components/customer/products/ProductCard";
 import { ProductGridSkeleton } from "../components/ui/skeletons";
 import { useToast } from "../components/ui/ToastProvider";
-import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_META } from "../constants/home";
+import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_CATALOG, CATEGORY_META } from "../constants/home";
 import { useAddToCart } from "../hooks/useAddToCart";
 import { useCatalogProducts } from "../hooks/useCatalogProducts";
 
 type DisplayCategory = { id: string; label: string; icon: string; bgColor: string };
 
 function mapCategories(cats: { slug: string; name: string; icon: string }[]): DisplayCategory[] {
-  return cats.map((c) => ({
+  // Dedupe by slug, then order by the canonical CATEGORY_CATALOG so the grid and
+  // ticker never reshuffle when the async fetch resolves.
+  const seen = new Set<string>();
+  const unique = cats.filter((c) => (seen.has(c.slug) ? false : (seen.add(c.slug), true)));
+  const bySlug = new Map(unique.map((c) => [c.slug, c]));
+
+  const catalogOrder = CATEGORY_CATALOG.map((c) => bySlug.get(c.id)).filter(
+    (c): c is NonNullable<typeof c> => !!c
+  );
+  const extras = unique.filter((c) => !CATEGORY_CATALOG.some((cat) => cat.id === c.slug));
+
+  return [...catalogOrder, ...extras].map((c) => ({
     id: c.slug,
-    label: c.name,
-    icon: c.icon || "category",
+    label: CATEGORY_META[c.slug]?.label || c.name,
+    icon: CATEGORY_META[c.slug]?.icon || c.icon || "category",
     bgColor: CATEGORY_META[c.slug]?.bgColor || "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
   }));
 }
