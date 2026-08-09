@@ -38,8 +38,8 @@ export const useCheckoutForm = () => {
   const [email, setEmail] = useState("");
   const [emailOffers, setEmailOffers] = useState(true);
   const [country, setCountry] = useState("Metro Manila");
-  const [firstName, setFirstName] = useState(user ? user.name.split(" ")[0] || "Juan" : "Juan");
-  const [lastName, setLastName] = useState(user ? user.name.split(" ").slice(1).join(" ") || "Dela Cruz" : "Dela Cruz");
+  const [firstName, setFirstName] = useState(user ? user.name.split(" ")[0] || "" : "");
+  const [lastName, setLastName] = useState(user ? user.name.split(" ").slice(1).join(" ") : "");
   const [address, setAddress] = useState("");
   const [showAptField, setShowAptField] = useState(false);
   const [apt, setApt] = useState("");
