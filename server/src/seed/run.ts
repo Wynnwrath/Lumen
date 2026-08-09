@@ -12,7 +12,8 @@ export async function runAllSeeds(): Promise<void> {
 }
 
 // Standalone entry for `npm run db:seed`. Refuses to run against production so
-// demo data can't be (re)seeded on a deployed environment.
+// demo data can't be (re)seeded on a deployed environment. Only runs when this
+// file is executed directly (npm run db:seed), NOT when imported by index.ts.
 async function run(): Promise<void> {
   if (process.env.NODE_ENV === "production") {
     console.error("Seeding is disabled in production. Run locally with NODE_ENV unset.");
@@ -22,7 +23,11 @@ async function run(): Promise<void> {
   console.log("Seeding complete.");
 }
 
-run().catch((err) => {
-  console.error("Seeding failed:", err);
-  process.exit(1);
-});
+// `require.main === module` is true only when this file is the entry point.
+// When index.ts imports runAllSeeds, this is false, so the guard doesn't fire.
+if (require.main === module) {
+  run().catch((err) => {
+    console.error("Seeding failed:", err);
+    process.exit(1);
+  });
+}
