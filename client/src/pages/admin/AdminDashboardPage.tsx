@@ -7,6 +7,7 @@ import { KpiCard } from "../../components/admin/shared/KpiCard";
 import { Modal } from "../../components/ui/Modal";
 import { Button } from "../../components/ui/Button";
 import { StatusBadge } from "../../components/ui/StatusBadge";
+import { DashboardSkeleton } from "../../components/ui/skeletons";
 import { OrderStatusSelect } from "../../components/admin/orders/OrderStatusSelect";
 import { useToast } from "../../components/ui/ToastProvider";
 import { useOrders } from "../../hooks/useOrders";
@@ -25,9 +26,9 @@ import { RestockModal } from "../../components/admin/products/RestockModal";
 
 // Admin overview: KPI cards, revenue/status charts, recent orders, low-stock alerts.
 export const AdminDashboardPage = () => {
-  const { orders, refresh: refreshOrders } = useOrders();
-  const { products, refresh: refreshProducts } = useProducts();
-  const { customers } = useCustomers();
+  const { orders, refresh: refreshOrders, loading: ordersLoading } = useOrders();
+  const { products, refresh: refreshProducts, loading: productsLoading } = useProducts();
+  const { customers, loading: customersLoading } = useCustomers();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [restockProduct, setRestockProduct] = useState<Product | null>(null);
   const { showToast } = useToast();
@@ -57,6 +58,10 @@ export const AdminDashboardPage = () => {
 
   // Low stock products (below the admin restock threshold)
   const lowStockProducts = useMemo(() => products.filter((p) => p.stock < ADMIN_LOW_STOCK_THRESHOLD), [products]);
+
+  if (ordersLoading || productsLoading || customersLoading) {
+    return <DashboardSkeleton />;
+  }
 
   const handleUpdateStatus = async (orderNumber: string, newStatus: OrderStatus) => {
     try {
