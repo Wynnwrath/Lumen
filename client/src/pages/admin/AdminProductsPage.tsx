@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/Button";
 import { KpiCard } from "../../components/admin/shared/KpiCard";
 import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { LoadingSpinner } from "../../components/ui/skeletons";
+import { AdminListSkeleton } from "../../components/ui/skeletons";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
 import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
 import { RowActions, type RowAction } from "../../components/admin/shared/RowActions";
@@ -209,7 +209,7 @@ export const AdminProductsPage = () => {
 
       {/* Products Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {productsLoading ? (
-        <LoadingSpinner label="Loading products..." />
+        <AdminListSkeleton rows={6} />
       ) : (
       <section className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: Refined Responsive Card Layout matching rounded-none style */}

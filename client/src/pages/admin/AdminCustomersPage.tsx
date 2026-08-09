@@ -5,7 +5,7 @@ import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { LoadingSpinner } from "../../components/ui/skeletons";
+import { AdminListSkeleton } from "../../components/ui/skeletons";
 import { ProductImage } from "../../components/ui/ProductImage";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
@@ -93,7 +93,7 @@ export const AdminCustomersPage = () => {
 
       {/* Customers Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {customersLoading ? (
-        <LoadingSpinner label="Loading customers..." />
+        <AdminListSkeleton rows={6} />
       ) : (
       <div className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: High-Density Customer Cards */}

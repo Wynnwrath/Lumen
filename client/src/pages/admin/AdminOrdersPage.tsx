@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { LoadingSpinner } from "../../components/ui/skeletons";
+import { AdminListSkeleton } from "../../components/ui/skeletons";
 import { ProductImage } from "../../components/ui/ProductImage";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
 import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
@@ -146,7 +146,7 @@ export const AdminOrdersPage = () => {
 
       {/* Orders Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {loading ? (
-        <LoadingSpinner label="Loading orders..." />
+        <AdminListSkeleton rows={6} />
       ) : (
       <div className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: High-Density Order Cards */}

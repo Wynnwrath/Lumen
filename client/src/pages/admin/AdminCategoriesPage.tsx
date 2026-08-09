@@ -8,7 +8,7 @@ import { KpiCard } from "../../components/admin/shared/KpiCard";
 import { Modal } from "../../components/ui/Modal";
 import { SearchInput } from "../../components/admin/shared/SearchInput";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { LoadingSpinner } from "../../components/ui/skeletons";
+import { AdminListSkeleton } from "../../components/ui/skeletons";
 import { AdminPagination } from "../../components/admin/shared/AdminPagination";
 import { AdminToolbar } from "../../components/admin/shared/AdminToolbar";
 import { RowActions, type RowAction } from "../../components/admin/shared/RowActions";
@@ -209,7 +209,7 @@ export const AdminCategoriesPage = () => {
 
       {/* Categories Content Section: Mobile Cards (screen < md) & Desktop Table (screen >= md) */}
       {categoriesLoading ? (
-        <LoadingSpinner label="Loading categories..." />
+        <AdminListSkeleton rows={6} />
       ) : (
       <section className="md:flex-1 md:min-h-0 md:overflow-y-auto space-y-4">
         {/* Mobile View: Flush Responsive Card Stack matching rounded-none style */}
