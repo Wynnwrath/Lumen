@@ -24,6 +24,8 @@ Captured from the local dev environment (desktop 1440×900, mobile 390×844).
 
 | Screen | Desktop | Mobile |
 | --- | --- | --- |
+| Customer Login | ![Customer Login (desktop)](screenshots/login-desktop.png) | ![Customer Login (mobile)](screenshots/login-mobile.png) |
+| Admin Login | ![Admin Login (desktop)](screenshots/admin-login-desktop.png) | ![Admin Login (mobile)](screenshots/admin-login-mobile.png) |
 | Home | ![Home (desktop)](screenshots/home-desktop.png) | ![Home (mobile)](screenshots/home-mobile.png) |
 | Products | ![Products (desktop)](screenshots/products-desktop.png) | ![Products (mobile)](screenshots/products-mobile.png) |
 | Product detail | ![Product detail (desktop)](screenshots/product-detail.png) | ![Product detail (mobile)](screenshots/product-detail-mobile.png) |
@@ -32,7 +34,10 @@ Captured from the local dev environment (desktop 1440×900, mobile 390×844).
 | My Orders | ![My Orders (desktop)](screenshots/my-orders.png) | ![My Orders (mobile)](screenshots/my-orders-mobile.png) |
 | Admin Dashboard | ![Admin Dashboard (desktop)](screenshots/admin-dashboard.png) | ![Admin Dashboard (mobile)](screenshots/admin-dashboard-mobile.png) |
 | Admin Products | ![Admin Products (desktop)](screenshots/admin-products.png) | ![Admin Products (mobile)](screenshots/admin-products-mobile.png) |
+| Admin Categories | ![Admin Categories (desktop)](screenshots/admin-categories-desktop.png) | ![Admin Categories (mobile)](screenshots/admin-categories-mobile.png) |
 | Admin Orders | ![Admin Orders (desktop)](screenshots/admin-orders.png) | ![Admin Orders (mobile)](screenshots/admin-orders-mobile.png) |
+| Admin Customers | ![Admin Customers (desktop)](screenshots/admin-customers-desktop.png) | ![Admin Customers (mobile)](screenshots/admin-customers-mobile.png) |
+| Admin Coupons | ![Admin Coupons (desktop)](screenshots/admin-coupons-desktop.png) | ![Admin Coupons (mobile)](screenshots/admin-coupons-mobile.png) |
 
 ## Tech Stack
 
