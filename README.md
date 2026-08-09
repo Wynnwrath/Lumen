@@ -2,7 +2,7 @@
 
 A full-stack e-commerce app — customers browse products, check out with coupons, and track orders, while admins manage the entire store from a dashboard.
 
-**Repository:** https://github.com/Wynnwrath/Lumen
+**Repository:** [https://github.com/Wynnwrath/Lumen](https://github.com/Wynnwrath/Lumen)
 
 ## Features
 
@@ -25,14 +25,14 @@ Captured from the local dev environment (desktop 1440×900, mobile 390×844).
 | Screen | Desktop | Mobile |
 | --- | --- | --- |
 | Home | ![Home (desktop)](screenshots/home-desktop.png) | ![Home (mobile)](screenshots/home-mobile.png) |
-| Products | ![Products (desktop)](screenshots/products-desktop.png) | |
-| Product detail | ![Product detail](screenshots/product-detail.png) | |
-| Cart | ![Cart](screenshots/cart.png) | |
-| Checkout | ![Checkout](screenshots/checkout.png) | |
-| My Orders | ![My Orders](screenshots/my-orders.png) | |
-| Admin Dashboard | ![Admin Dashboard](screenshots/admin-dashboard.png) | |
-| Admin Products | ![Admin Products](screenshots/admin-products.png) | |
-| Admin Orders | ![Admin Orders](screenshots/admin-orders.png) | |
+| Products | ![Products (desktop)](screenshots/products-desktop.png) | ![Products (mobile)](screenshots/products-mobile.png) |
+| Product detail | ![Product detail (desktop)](screenshots/product-detail.png) | ![Product detail (mobile)](screenshots/product-detail-mobile.png) |
+| Cart | ![Cart (desktop)](screenshots/cart.png) | ![Cart (mobile)](screenshots/cart-mobile.png) |
+| Checkout | ![Checkout (desktop)](screenshots/checkout.png) | ![Checkout (mobile)](screenshots/checkout-mobile.png) |
+| My Orders | ![My Orders (desktop)](screenshots/my-orders.png) | ![My Orders (mobile)](screenshots/my-orders-mobile.png) |
+| Admin Dashboard | ![Admin Dashboard (desktop)](screenshots/admin-dashboard.png) | |
+| Admin Products | ![Admin Products (desktop)](screenshots/admin-products.png) | |
+| Admin Orders | ![Admin Orders (desktop)](screenshots/admin-orders.png) | |
 
 ## Tech Stack
 
@@ -120,7 +120,7 @@ Then open http://localhost:5173.
 
 ### How It Works
 
-Lumen is a MERN-style store split into two halves: a React single-page app (Vite, Tailwind, Zustand) served at `:5173`, and an Express API with Prisma + PostgreSQL at `:5000`. The frontend talks to the API through a Vite proxy at `/api`, and every response comes back in a predictable `{ success, data }` envelope (ids show up as `_id`).
+Lumen is a MERN-style store split into two halves: a React single-page app (Vite, Tailwind, Zustand) served at `:5173`, and an Express API with Prisma + PostgreSQL at `:5000`. The frontend talks to the API through a Vite proxy at `/api`, and every response comes back in a predictable `{ success, data }` envelope.
 
 **The Customer Journey**
 1. **Browse.** Products load from the public `GET /api/products` endpoint. The server supports filters, sorting, and pagination, but the UI keeps things snappy by pulling up to 100 products and filtering/sorting them in the browser.
@@ -162,7 +162,7 @@ server/
   src/modules/    # feature folders: auth, products, categories, orders, coupons, customers, dashboard
   src/seed/       # idempotent starter-data scripts
   src/middleware/ # auth (protect/authorize), validate, errorHandler, asyncHandler
-  src/utils/      # toApi, signToken, calcDiscount, AppError, etc.
+  src/utils/      # signToken, calcDiscount, AppError, etc.
 ```
 
 Each server module follows: routes → middleware/validator → controller → service (Prisma).
