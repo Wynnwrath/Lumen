@@ -33,12 +33,6 @@ export const AdminLoginPage = () => {
       .catch(() => {});
   }, []);
 
-  const handleDemoAutofill = () => {
-    setLoginEmail("admin@lumen.com");
-    setLoginPassword("password123");
-    showToast("Demo admin credentials filled!", "info");
-  };
-
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setAlert(null);
@@ -331,19 +325,6 @@ export const AdminLoginPage = () => {
                     Sign In to Admin Portal
                   </Button>
                 </form>
-
-                {/* Quick Demo Fill Helper */}
-                <div className="pt-4 border-t border-outline-variant/20 flex items-center justify-between text-xs">
-                  <span className="text-outline font-medium">Testing as Demo Admin?</span>
-                  <button
-                    type="button"
-                    onClick={handleDemoAutofill}
-                    className="text-secondary font-bold hover:underline flex items-center gap-1"
-                  >
-                    <Icon name="auto_fix_high" className="text-sm" />
-                    <span>Fill Demo Admin Credentials</span>
-                  </button>
-                </div>
               </div>
             </div>
 
