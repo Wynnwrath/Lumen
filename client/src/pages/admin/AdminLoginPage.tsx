@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Icon } from "../../components/ui/Icon";
 import { Button } from "../../components/ui/Button";
 import { PasswordInput } from "../../components/ui/PasswordInput";
@@ -6,6 +6,8 @@ import { useToast } from "../../components/ui/ToastProvider";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
 import { useThemeStore } from "../../stores/theme.store";
+import { getPublicDashboardStats } from "../../api/dashboard";
+import { formatMoney } from "../../utils/format";
 import logo from "../../assets/logo.png";
 
 export const AdminLoginPage = () => {
@@ -21,6 +23,15 @@ export const AdminLoginPage = () => {
   // UI state
   const [alert, setAlert] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [rememberSession, setRememberSession] = useState(false);
+
+  // Live store metrics for the left showcase (real aggregate numbers).
+  const [stats, setStats] = useState({ totalSales: 0, totalOrders: 0, pendingOrders: 0, completedOrders: 0, totalProducts: 0, totalCustomers: 0, lowStockItems: 0 });
+
+  useEffect(() => {
+    getPublicDashboardStats()
+      .then(setStats)
+      .catch(() => {});
+  }, []);
 
   const handleDemoAutofill = () => {
     setLoginEmail("admin@lumen.com");
@@ -129,10 +140,10 @@ export const AdminLoginPage = () => {
                   <Icon name="payments" className="text-emerald-300 text-lg" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[11px] text-slate-300 font-medium">Monthly Gross Volume</div>
+                  <div className="text-[11px] text-slate-300 font-medium">Total Sales Volume</div>
                   <div className="text-sm font-extrabold text-white flex items-center justify-between">
-                    <span>$142,850.00</span>
-                    <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded">+18.4%</span>
+                    <span>{formatMoney(stats.totalSales)}</span>
+                    <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded">{stats.completedOrders} completed</span>
                   </div>
                 </div>
               </div>
@@ -143,10 +154,10 @@ export const AdminLoginPage = () => {
                   <Icon name="inventory_2" className="text-blue-300 text-lg" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[11px] text-slate-300 font-medium">Active Store Orders</div>
+                  <div className="text-[11px] text-slate-300 font-medium">Store Orders</div>
                   <div className="text-sm font-extrabold text-white flex items-center justify-between">
-                    <span>14,290 Orders</span>
-                    <span className="text-[11px] font-bold text-blue-300 bg-blue-950/60 px-1.5 py-0.5 rounded">99.8% On-Time</span>
+                    <span>{stats.totalOrders.toLocaleString()} Orders</span>
+                    <span className="text-[11px] font-bold text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded">{stats.pendingOrders} pending</span>
                   </div>
                 </div>
               </div>
@@ -154,30 +165,30 @@ export const AdminLoginPage = () => {
               {/* Live Real-time Activity Stream */}
               <div className="p-3 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 space-y-2">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                  <span>Recent Activity Feed</span>
+                  <span>Store Snapshot</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                 </div>
                 <div className="space-y-1.5 text-[11px]">
                   <div className="flex items-center justify-between text-slate-200">
                     <span className="flex items-center gap-1.5 truncate">
-                      <Icon name="check_circle" className="text-xs text-emerald-400" />
-                      <span>Order #8492 Processed ($249.00)</span>
+                      <Icon name="inventory" className="text-xs text-blue-400" />
+                      <span>Products in catalog</span>
                     </span>
-                    <span className="text-[10px] text-slate-400 shrink-0">2m ago</span>
+                    <span className="text-[10px] text-slate-400 shrink-0">{stats.totalProducts}</span>
                   </div>
                   <div className="flex items-center justify-between text-slate-200">
                     <span className="flex items-center gap-1.5 truncate">
-                      <Icon name="person_add" className="text-xs text-blue-400" />
-                      <span>New Customer Registered</span>
+                      <Icon name="group" className="text-xs text-blue-400" />
+                      <span>Registered customers</span>
                     </span>
-                    <span className="text-[10px] text-slate-400 shrink-0">12m ago</span>
+                    <span className="text-[10px] text-slate-400 shrink-0">{stats.totalCustomers}</span>
                   </div>
                   <div className="flex items-center justify-between text-slate-200">
                     <span className="flex items-center gap-1.5 truncate">
-                      <Icon name="inventory" className="text-xs text-amber-400" />
-                      <span>Inventory Restocked (+50)</span>
+                      <Icon name="warning" className="text-xs text-amber-400" />
+                      <span>Low stock items</span>
                     </span>
-                    <span className="text-[10px] text-slate-400 shrink-0">45m ago</span>
+                    <span className="text-[10px] text-slate-400 shrink-0">{stats.lowStockItems}</span>
                   </div>
                 </div>
               </div>

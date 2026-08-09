@@ -9,6 +9,11 @@ export const dashboardController = {
     res.json({ success: true, data: toApi(await dashboardService.stats()) });
   }),
 
+  // Public variant of `stats` for the unauthenticated admin login showcase.
+  publicStats: asyncHandler(async (_req, res: Response) => {
+    res.json({ success: true, data: toApi(await dashboardService.stats()) });
+  }),
+
   charts: asyncHandler(async (_req, res: Response) => {
     res.json({ success: true, data: toApi(await dashboardService.charts()) });
   }),
