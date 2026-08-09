@@ -75,48 +75,37 @@ export const HERO_SLIDES: HeroSlide[] = [
   },
 ];
 
-// Category metadata for the storefront, keyed consistently.
-export const CATEGORY_CATALOG: { id: string; label: string; icon: string; bgColor: string }[] = [
-  {
-    id: "electronics",
+// Styling metadata for known category slugs (label/icon/color). Categories
+// come from the API; this only adds a nicer look for the ones we know.
+export const CATEGORY_META: Record<string, { label: string; icon: string; bgColor: string }> = {
+  electronics: {
     label: "Electronics",
     icon: "devices",
     bgColor: "bg-blue-500/10 text-secondary dark:text-blue-400 border-blue-500/20",
   },
-  {
-    id: "fashion",
+  fashion: {
     label: "Fashion",
     icon: "apparel",
     bgColor: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
   },
-  {
-    id: "luxury",
+  luxury: {
     label: "Luxury",
     icon: "diamond",
     bgColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
   },
-  {
-    id: "home",
+  home: {
     label: "Home Decor",
     icon: "chair",
     bgColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
   },
-  {
-    id: "beauty",
+  beauty: {
     label: "Beauty",
     icon: "spa",
     bgColor: "bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20",
   },
-  {
-    id: "groceries",
+  groceries: {
     label: "Groceries",
     icon: "nutrition",
     bgColor: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
   },
-];
-
-export const CATEGORY_META: Record<string, { label: string; icon: string; bgColor: string }> =
-  Object.fromEntries(CATEGORY_CATALOG.map((c) => [c.id, { label: c.label, icon: c.icon, bgColor: c.bgColor }]));
-
-export const DEFAULT_CATEGORIES = CATEGORY_CATALOG;
-export const CATEGORY_COLORS = CATEGORY_META; // keep name for backwards-compat, now keyed by id
+};

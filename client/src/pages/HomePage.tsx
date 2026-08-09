@@ -3,33 +3,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { getCategories } from "../api/categories";
 import { useCartStore } from "../stores/cart.store";
 import { Icon } from "../components/ui/Icon";
+import { Skeleton } from "../components/ui/Skeleton";
 import { ProductCard, trackSpotlight } from "../components/customer/products/ProductCard";
 import { ProductGridSkeleton } from "../components/ui/skeletons";
 import { useToast } from "../components/ui/ToastProvider";
-import { HERO_SLIDES, DEFAULT_CATEGORIES, CATEGORY_CATALOG, CATEGORY_META } from "../constants/home";
+import { HERO_SLIDES, CATEGORY_META } from "../constants/home";
 import { useAddToCart } from "../hooks/useAddToCart";
 import { useCatalogProducts } from "../hooks/useCatalogProducts";
 
 type DisplayCategory = { id: string; label: string; icon: string; bgColor: string };
 
 function mapCategories(cats: { slug: string; name: string; icon: string }[]): DisplayCategory[] {
-  // Dedupe by slug, then order by the canonical CATEGORY_CATALOG so the grid and
-  // ticker never reshuffle when the async fetch resolves.
+  // Dedupe by slug, keep the API order, and pull styling (label/icon/color) from
+  // CATEGORY_META when a slug is known; unknown slugs get a neutral fallback.
   const seen = new Set<string>();
-  const unique = cats.filter((c) => (seen.has(c.slug) ? false : (seen.add(c.slug), true)));
-  const bySlug = new Map(unique.map((c) => [c.slug, c]));
-
-  const catalogOrder = CATEGORY_CATALOG.map((c) => bySlug.get(c.id)).filter(
-    (c): c is NonNullable<typeof c> => !!c
-  );
-  const extras = unique.filter((c) => !CATEGORY_CATALOG.some((cat) => cat.id === c.slug));
-
-  return [...catalogOrder, ...extras].map((c) => ({
-    id: c.slug,
-    label: CATEGORY_META[c.slug]?.label || c.name,
-    icon: CATEGORY_META[c.slug]?.icon || c.icon || "category",
-    bgColor: CATEGORY_META[c.slug]?.bgColor || "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
-  }));
+  return cats
+    .filter((c) => (seen.has(c.slug) ? false : (seen.add(c.slug), true)))
+    .map((c) => ({
+      id: c.slug,
+      label: CATEGORY_META[c.slug]?.label || c.name,
+      icon: CATEGORY_META[c.slug]?.icon || c.icon || "category",
+      bgColor: CATEGORY_META[c.slug]?.bgColor || "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
+    }));
 }
 
 // Storefront landing page: hero carousel, category chips, featured/new products.
@@ -40,7 +35,8 @@ export const HomePage = () => {
   const { showToast } = useToast();
   const { products: fetchedProducts, loading: productsLoading } = useCatalogProducts();
 
-  const [categories, setCategories] = useState<DisplayCategory[]>(DEFAULT_CATEGORIES);
+  const [categories, setCategories] = useState<DisplayCategory[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [sortBy, setSortBy] = useState<string>("featured");
 
   // Carousel Hero Banner States
@@ -49,10 +45,10 @@ export const HomePage = () => {
 
   useEffect(() => {
     getCategories()
-      .then((cats) => {
-        if (cats.length > 0) setCategories(mapCategories(cats));
-      })
-      .catch(() => {});
+      // Home only shows a taste of the catalog, so cap at 6.
+      .then((cats) => setCategories(mapCategories(cats).slice(0, 6)))
+      .catch(() => setCategories([]))
+      .finally(() => setCategoriesLoading(false));
   }, []);
 
   // Auto-play interval: 3 seconds per slide, sliding left with ease-in-out
@@ -256,7 +252,17 @@ export const HomePage = () => {
           </button>
         </div>
 
-        {/* 6 Category Box Grid matching original index.html */}
+        {/* 6 Category Box Grid (same layout as before, now fed by the real API) */}
+        {categoriesLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="category-card flex flex-col items-center gap-3 p-4 sm:p-5 rounded-2xl bg-surface-container-lowest dark:bg-slate-800 border border-outline-variant/40">
+                <Skeleton className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           {categories.map((cat) => {
             return (
@@ -277,6 +283,7 @@ export const HomePage = () => {
             );
           })}
         </div>
+        )}
       </section>
 
       {/* Featured Products Section with 2-Column Mobile Grid */}

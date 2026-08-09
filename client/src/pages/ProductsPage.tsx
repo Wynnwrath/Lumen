@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { useWishlistStore } from "../stores/wishlist.store";
 import { useCatalogProducts } from "../hooks/useCatalogProducts";
+import { useCategories } from "../hooks/useCategories";
+import { CATEGORY_META } from "../constants/home";
 import { Icon } from "../components/ui/Icon";
 import { ProductCard } from "../components/customer/products/ProductCard";
 import { ProductGridSkeleton } from "../components/ui/skeletons";
@@ -34,6 +36,7 @@ export const ProductsPage = () => {
   const PAGE_SIZE = 10;
 
   const { products, loading: productsLoading } = useCatalogProducts();
+  const { categories: apiCategories } = useCategories();
 
   // Prune stale wishlist ids that no longer match any product in the catalog
   useEffect(() => {
@@ -56,7 +59,8 @@ export const ProductsPage = () => {
     setPage(1);
   }, [urlCategory, urlSearch, urlSale, urlWishlist]);
 
-  // Categories list with counts and icons
+  // Categories list with counts and icons, derived from the real API so every
+  // category created in admin shows up in the filter.
   const categories = useMemo(() => {
     const counts: Record<string, number> = { all: products.length };
     products.forEach((p) => {
@@ -66,14 +70,14 @@ export const ProductsPage = () => {
 
     return [
       { slug: "all", label: "All Products", icon: "grid_view", count: counts.all || 0 },
-      { slug: "electronics", label: "Electronics", icon: "devices", count: counts.electronics || 0 },
-      { slug: "fashion", label: "Fashion", icon: "checkroom", count: counts.fashion || 0 },
-      { slug: "luxury", label: "Luxury", icon: "diamond", count: counts.luxury || 0 },
-      { slug: "home", label: "Home Decor", icon: "chair", count: counts.home || 0 },
-      { slug: "beauty", label: "Beauty", icon: "spa", count: counts.beauty || 0 },
-      { slug: "groceries", label: "Groceries", icon: "shopping_basket", count: counts.groceries || 0 },
+      ...apiCategories.map((c) => ({
+        slug: c.slug,
+        label: CATEGORY_META[c.slug]?.label || c.name,
+        icon: CATEGORY_META[c.slug]?.icon || c.icon || "category",
+        count: counts[c.slug] || 0,
+      })),
     ];
-  }, [products]);
+  }, [products, apiCategories]);
 
   // Filtering & Sorting Logic
   const filteredProducts = useMemo(() => {
