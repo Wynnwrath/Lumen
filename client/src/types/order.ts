@@ -16,9 +16,9 @@ export interface OrderItem {
 }
 
 export interface Order {
-  _id: string;
+  id: string;
   orderNumber: string;
-  customer: { _id: string; name: string; email: string };
+  customer: { id: string; name: string; email: string };
   items: OrderItem[];
   subtotal: number;
   tax: number;

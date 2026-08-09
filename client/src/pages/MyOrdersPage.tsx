@@ -75,11 +75,11 @@ export const MyOrdersPage = () => {
 
   const handleConfirmReceived = async (order: Order) => {
     if (confirmingId) return;
-    setConfirmingId(order._id);
+    setConfirmingId(order.id);
     try {
       const updated = await confirmOrderReceived(order.orderNumber);
-      setOrders((prev) => prev.map((o) => (o._id === order._id ? { ...o, ...updated } : o)));
-      if (selectedOrder && selectedOrder._id === order._id) {
+      setOrders((prev) => prev.map((o) => (o.id === order.id ? { ...o, ...updated } : o)));
+      if (selectedOrder && selectedOrder.id === order.id) {
         setSelectedOrder({ ...selectedOrder, ...updated });
       }
       showToast("Order marked as received. Thanks for confirming!", "success");
@@ -95,7 +95,7 @@ export const MyOrdersPage = () => {
   const handleReorder = (order: Order) => {
     let added = 0;
     order.items.forEach((item) => {
-      const product = catalogProducts.find((p) => p._id === item.productId);
+      const product = catalogProducts.find((p) => p.id === item.productId);
       if (product && product.stock > 0) {
         addItem(product, item.quantity);
         added += 1;
@@ -162,7 +162,7 @@ export const MyOrdersPage = () => {
         <div className="space-y-4">
           {filteredOrders.map((order) => (
             <Card
-              key={order._id}
+              key={order.id}
               className="p-5 sm:p-6 hover:border-secondary/40 hover:shadow-sm transition"
             >
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/20 pb-3">
@@ -204,11 +204,11 @@ export const MyOrdersPage = () => {
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[11px] font-bold text-outline uppercase tracking-wider">Order progress</p>
                   <button
-                    onClick={() => setExpandedOrderId(expandedOrderId === order._id ? null : order._id)}
+                    onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
                     className="text-xs font-bold text-secondary hover:underline flex items-center gap-0.5"
                   >
-                    <span>{expandedOrderId === order._id ? "Hide" : "Track order"}</span>
-                    <Icon name={expandedOrderId === order._id ? "expand_less" : "expand_more"} className="text-sm" />
+                    <span>{expandedOrderId === order.id ? "Hide" : "Track order"}</span>
+                    <Icon name={expandedOrderId === order.id ? "expand_less" : "expand_more"} className="text-sm" />
                   </button>
                 </div>
 
@@ -236,7 +236,7 @@ export const MyOrdersPage = () => {
                     : `${order.status} • Step ${Math.min(ORDER_TRACK_STEPS.indexOf(order.status) + 1, ORDER_TRACK_STEPS.length)} of ${ORDER_TRACK_STEPS.length}`}
                 </p>
 
-                {expandedOrderId === order._id && (
+                {expandedOrderId === order.id && (
                   <div className="mt-4 pt-4 border-t border-outline-variant/20 animate-fade-up">
                     <OrderStatusTimeline order={order} />
                   </div>
@@ -256,7 +256,7 @@ export const MyOrdersPage = () => {
                   </div>
                   <Button
                     variant="secondary"
-                    loading={confirmingId === order._id}
+                    loading={confirmingId === order.id}
                     onClick={() => handleConfirmReceived(order)}
                   >
                     Confirm Received

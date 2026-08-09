@@ -46,6 +46,14 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "lumen-auth",
+      version: 1,
+      // v0 stored the user with a legacy `_id` key; rename to `id`.
+      migrate: (persisted: unknown) => {
+        const state = persisted as { user: (Record<string, unknown> & { _id?: string }) | null; token: string | null };
+        if (!state.user) return { user: null, token: state.token ?? null };
+        const { _id, ...rest } = state.user;
+        return { user: { ...rest, id: _id }, token: state.token ?? null };
+      },
     }
   )
 );

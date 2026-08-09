@@ -82,7 +82,7 @@ export const AdminProductsPage = () => {
   const handleToggleStatus = async (p: Product) => {
     const newStatus = p.status === "active" ? "inactive" : "active";
     try {
-      await updateProduct(p._id, { status: newStatus });
+      await updateProduct(p.id, { status: newStatus });
       showToast(`Changed status of "${p.name}" to ${newStatus}`, "info");
       await refreshProducts();
     } catch (error) {
@@ -93,7 +93,7 @@ export const AdminProductsPage = () => {
   // Row actions shared by the mobile card and the desktop table.
   const getProductActions = (product: Product): RowAction[] => [
     { label: "Edit", icon: "edit", onClick: () => handleOpenEditModal(product) },
-    { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteProduct(product._id, product.name) },
+    { label: "Delete", icon: "delete", danger: true, onClick: () => handleDeleteProduct(product.id, product.name) },
   ];
 
   // Filtered Products
@@ -181,7 +181,7 @@ export const AdminProductsPage = () => {
               >
                 <option value="all">All Categories</option>
                 {categories.map((c) => (
-                  <option key={c._id} value={c.slug}>
+                  <option key={c.id} value={c.slug}>
                     {c.name}
                   </option>
                 ))}
@@ -221,7 +221,7 @@ export const AdminProductsPage = () => {
               const isStockActive = product.status === "active" && product.stock > 0;
               return (
                 <div
-                  key={product._id}
+                  key={product.id}
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 shadow-xs flex items-center gap-3.5 transition-colors rounded-none"
                 >
                   {/* Square Product Image */}
@@ -280,7 +280,7 @@ export const AdminProductsPage = () => {
                 ) : (
                   paginated.map((product) => (
                     <tr
-                      key={product._id}
+                      key={product.id}
                       className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800"
                     >
                       <td className="px-5 py-3">

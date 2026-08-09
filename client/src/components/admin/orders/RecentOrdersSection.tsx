@@ -72,7 +72,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
           ) : (
             paginated.map((ord) => (
               <div
-                key={ord._id}
+                key={ord.id}
                 className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 space-y-2.5 shadow-xs"
               >
                 <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-800 pb-2">
@@ -127,7 +127,7 @@ export const RecentOrdersSection = ({ orders, onOpenDetails, onUpdateStatus }: R
                 <EmptyState message="No orders recorded yet." colSpan={6} />
               ) : (
                 paginated.map((ord) => (
-                  <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-dashed border-slate-200 dark:border-slate-800">
+                  <tr key={ord.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-dashed border-slate-200 dark:border-slate-800">
                     <td className="px-5 py-4 font-bold text-slate-900 dark:text-slate-100 font-mono">
                       {ord.orderNumber}
                     </td>

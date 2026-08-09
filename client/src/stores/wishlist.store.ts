@@ -31,6 +31,11 @@ export const useWishlistStore = create<WishlistState>()(
         }),
       clear: () => set({ ids: [] }),
     }),
-    { name: "lumen-wishlist" }
+    {
+      name: "lumen-wishlist",
+      version: 1,
+      // v0 ids are plain product id strings; values unchanged, so identity migrate.
+      migrate: (persisted) => persisted as WishlistState,
+    }
   )
 );

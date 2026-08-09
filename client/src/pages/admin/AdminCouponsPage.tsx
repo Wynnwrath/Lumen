@@ -98,15 +98,15 @@ export const AdminCouponsPage = () => {
 
   const handleToggleActive = async (coupon: Coupon) => {
     if (togglingId) return;
-    setTogglingId(coupon._id);
+    setTogglingId(coupon.id);
     // Optimistic flip: update in place so the list doesn't reload/rearrange.
-    updateLocal((prev) => prev.map((c) => (c._id === coupon._id ? { ...c, isActive: !c.isActive } : c)));
+    updateLocal((prev) => prev.map((c) => (c.id === coupon.id ? { ...c, isActive: !c.isActive } : c)));
     try {
       await updateCoupon(coupon.code, { isActive: !coupon.isActive });
       showToast(`${coupon.code} ${coupon.isActive ? "deactivated" : "activated"}`, "info");
     } catch (error) {
       // Revert on failure.
-      updateLocal((prev) => prev.map((c) => (c._id === coupon._id ? { ...c, isActive: coupon.isActive } : c)));
+      updateLocal((prev) => prev.map((c) => (c.id === coupon.id ? { ...c, isActive: coupon.isActive } : c)));
       showToast(getErrorMessage(error), "error");
     } finally {
       setTogglingId(null);
@@ -186,7 +186,7 @@ export const AdminCouponsPage = () => {
             ) : (
               paginated.map((coupon) => (
                 <div
-                  key={coupon._id}
+                  key={coupon.id}
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-xs flex items-center gap-3.5 transition-colors rounded-none"
                 >
                   <div className="w-12 h-12 rounded-xl bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800/60">
@@ -208,7 +208,7 @@ export const AdminCouponsPage = () => {
                     </div>
                     <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-2">
-                        <ToggleSwitch checked={coupon.isActive} onChange={() => handleToggleActive(coupon)} disabled={togglingId !== null} loading={togglingId === coupon._id} />
+                        <ToggleSwitch checked={coupon.isActive} onChange={() => handleToggleActive(coupon)} disabled={togglingId !== null} loading={togglingId === coupon.id} />
                         <span className={`text-[11px] font-bold ${coupon.isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"}`}>
                           {coupon.isActive ? "Active" : "Inactive"}
                         </span>
@@ -239,7 +239,7 @@ export const AdminCouponsPage = () => {
                     <EmptyState message="No coupons found matching your search." colSpan={6} />
                   ) : (
                     paginated.map((coupon) => (
-                      <tr key={coupon._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800">
+                      <tr key={coupon.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800">
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-xl bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-bold">
@@ -253,7 +253,7 @@ export const AdminCouponsPage = () => {
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-2.5">
-                            <ToggleSwitch checked={coupon.isActive} onChange={() => handleToggleActive(coupon)} disabled={togglingId !== null} loading={togglingId === coupon._id} />
+                            <ToggleSwitch checked={coupon.isActive} onChange={() => handleToggleActive(coupon)} disabled={togglingId !== null} loading={togglingId === coupon.id} />
                             <span className={`text-xs font-bold ${coupon.isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"}`}>
                               {coupon.isActive ? "Active" : "Inactive"}
                             </span>

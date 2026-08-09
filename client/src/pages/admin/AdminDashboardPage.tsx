@@ -78,7 +78,7 @@ export const AdminDashboardPage = () => {
 
   const handleRestock = async (product: Product, newStock: number) => {
     try {
-      await updateProduct(product._id, { stock: newStock, status: newStock > 0 ? "active" : "out_of_stock" });
+      await updateProduct(product.id, { stock: newStock, status: newStock > 0 ? "active" : "out_of_stock" });
       await refreshData();
       showToast(`Stock updated to ${newStock} for ${product.name}`, "success");
     } catch (error) {

@@ -137,7 +137,7 @@ export const CheckoutPage = () => {
                   {/* Products list scrolls internally (like admin tables) */}
                   <div className="space-y-3 mt-3 max-h-[45vh] lg:max-h-none lg:flex-1 lg:min-h-0 lg:overflow-y-auto pr-1">
                     {items.map(({ product, quantity }) => (
-                        <Card key={product._id} className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
+                        <Card key={product.id} className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4">
                         <ProductImage
                           src={product.images[0]}
                           alt={product.name}
@@ -154,13 +154,13 @@ export const CheckoutPage = () => {
                         </div>
 
                         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                          <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product._id, q)} min={1} max={product.stock} />
+                          <QuantityStepper value={quantity} onChange={(q) => updateQuantity(product.id, q)} min={1} max={product.stock} />
                           <span className="text-xs sm:text-sm font-black text-on-surface w-14 sm:w-16 text-right">
                             {formatMoney(product.price * quantity)}
                           </span>
                           <button
                             type="button"
-                            onClick={() => removeItem(product._id)}
+                            onClick={() => removeItem(product.id)}
                             className="p-1 sm:p-1.5 text-outline hover:text-error rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition"
                             title="Remove Item"
                           >
@@ -345,7 +345,7 @@ export const CheckoutPage = () => {
                       </h3>
                       <div className="space-y-2.5">
                         {items.map(({ product, quantity }) => (
-                          <div key={product._id} className="flex items-center gap-3">
+                          <div key={product.id} className="flex items-center gap-3">
                             <ProductImage
                               src={product.images[0]}
                               alt={product.name}

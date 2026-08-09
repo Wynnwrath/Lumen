@@ -156,7 +156,7 @@ export const AdminOrdersPage = () => {
           ) : (
             paginated.map((ord) => (
               <div
-                key={ord._id}
+                key={ord.id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-3 shadow-xs rounded-none"
               >
                 <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
@@ -234,7 +234,7 @@ export const AdminOrdersPage = () => {
                   />
                 ) : (
                   paginated.map((ord) => (
-                  <tr key={ord._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                  <tr key={ord.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-3 font-mono font-bold text-slate-900 dark:text-white">#{ord.orderNumber}</td>
                     <td className="p-3">
                       <div>

@@ -64,7 +64,7 @@ export const CartPage = () => {
             <div className="bg-surface-container-lowest dark:bg-slate-900 rounded-2xl border border-outline-variant/30 divide-y divide-outline-variant/10 overflow-hidden shadow-xs">
               {items.map((item) => (
                 <CartItemRow
-                  key={item.product._id}
+                  key={item.product.id}
                   item={item}
                   onUpdateQuantity={updateQuantity}
                   onRemove={removeItem}

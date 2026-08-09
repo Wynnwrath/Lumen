@@ -8,9 +8,9 @@ export interface CouponValidation {
   discountAmount: number;
 }
 
-// Admin-managed coupon record (id -> _id via the server's toApi serializer).
+// Admin-managed coupon record.
 export interface Coupon {
-  _id: string;
+  id: string;
   code: string;
   discountPercent: number;
   isActive: boolean;

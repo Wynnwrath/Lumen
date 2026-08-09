@@ -206,7 +206,7 @@ export const ProductFormModal = ({
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-3">
                   <div>
                     <p className="text-xs font-bold text-slate-900 dark:text-white">New Arrival</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Show "New" badge</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Show &quot;New&quot; badge</p>
                   </div>
                   <ToggleSwitch checked={formArrival} onChange={() => setFormArrival((v) => !v)} />
                 </div>
@@ -272,7 +272,7 @@ export const ProductFormModal = ({
                   className={selectClass}
                 >
                   {categories.map((c) => (
-                    <option key={c._id} value={c.slug}>
+                    <option key={c.id} value={c.slug}>
                       {c.name}
                     </option>
                   ))}

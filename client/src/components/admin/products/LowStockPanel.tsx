@@ -42,7 +42,7 @@ export const LowStockPanel = ({ products, onRestock }: LowStockPanelProps) => {
             products.map((item) => {
               return (
                 <div
-                  key={item._id}
+                  key={item.id}
                   className="py-3 px-1 flex items-center justify-between gap-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">

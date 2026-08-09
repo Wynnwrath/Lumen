@@ -97,10 +97,10 @@ export const HeaderSearch = () => {
               <div className="p-2 space-y-1">
                 {liveSearchResults.slice(0, 5).map((product) => (
                   <button
-                    key={product._id}
+                    key={product.id}
                     onClick={() => {
                       setShowSearchDropdown(false);
-                      navigate(`/product/${product._id}`);
+                      navigate(`/product/${product.id}`);
                     }}
                     className="w-full flex items-center gap-3 p-2 hover:bg-surface-container dark:hover:bg-slate-700/70 rounded-xl transition text-left group"
                   >

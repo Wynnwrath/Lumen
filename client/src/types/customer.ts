@@ -1,5 +1,5 @@
 export interface CustomerApiRecord {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -10,7 +10,7 @@ export interface CustomerApiRecord {
 }
 
 export interface CustomerListItem {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   phone: string;

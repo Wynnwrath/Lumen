@@ -76,7 +76,7 @@ export const HeaderCartPreview = () => {
               <>
                 <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
                   {items.map((item) => (
-                    <CartItemRow key={item.product._id} item={item} variant="compact" onRemove={removeItem} />
+                    <CartItemRow key={item.product.id} item={item} variant="compact" onRemove={removeItem} />
                   ))}
                 </div>
 

@@ -24,7 +24,7 @@ interface ProductCardProps {
 export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductCardProps) => {
   const navigate = useNavigate();
   const { ids, toggle } = useWishlistStore();
-  const isWishlisted = ids.includes(product._id);
+  const isWishlisted = ids.includes(product.id);
   const isOutOfStock = product.stock <= 0;
 
   // the little status pill in the top-left corner
@@ -41,7 +41,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
 
   const wishlistButton = (
     <button
-      onClick={(e) => { e.stopPropagation(); toggle(product._id); }}
+      onClick={(e) => { e.stopPropagation(); toggle(product.id); }}
       className="absolute top-2 right-2 z-10 text-outline hover:text-red-500 transition-all bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-full p-1 sm:p-1.5 shadow-xs hover:scale-110"
       title="Wishlist"
     >
@@ -84,7 +84,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
     return (
       <div
         onMouseMove={trackSpotlight}
-        onClick={() => navigate(`/product/${product._id}`)}
+        onClick={() => navigate(`/product/${product.id}`)}
         className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl border border-outline-variant/30 p-3 sm:p-4 shadow-xs hover:shadow-lg transition-all flex flex-row items-center gap-3 sm:gap-4 group cursor-pointer"
       >
         <ProductImage
@@ -96,13 +96,13 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
           <div className="flex items-center justify-between gap-2">
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">{product.category}</span>
             <button
-              onClick={(e) => { e.stopPropagation(); toggle(product._id); }}
+              onClick={(e) => { e.stopPropagation(); toggle(product.id); }}
               className="text-outline hover:text-red-500"
             >
               <Icon name="favorite" filled={isWishlisted} className={`text-base sm:text-lg ${isWishlisted ? "text-red-500" : ""}`} />
             </button>
           </div>
-          <Link to={`/product/${product._id}`} onClick={(e) => e.stopPropagation()} className="font-bold text-xs sm:text-base text-on-surface group-hover:text-secondary transition-colors block line-clamp-1">
+          <Link to={`/product/${product.id}`} onClick={(e) => e.stopPropagation()} className="font-bold text-xs sm:text-base text-on-surface group-hover:text-secondary transition-colors block line-clamp-1">
             {product.name}
           </Link>
           <p className="text-[11px] text-outline line-clamp-1 font-normal hidden sm:block">{product.description}</p>
@@ -134,18 +134,18 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
     return (
       <div className="product-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-none shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group border border-outline-variant/30 overflow-hidden">
         <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
-          <Link to={`/product/${product._id}`} className="w-full h-full block">
+          <Link to={`/product/${product.id}`} className="w-full h-full block">
             <ProductImage src={product.images[0]} alt={product.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
           </Link>
         </div>
         <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between space-y-1.5 sm:space-y-2">
           <div>
             <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">{product.category}</span>
-            <Link to={`/product/${product._id}`} className="text-xs sm:text-sm font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5">{product.name}</Link>
+            <Link to={`/product/${product.id}`} className="text-xs sm:text-sm font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5">{product.name}</Link>
           </div>
           <div className="pt-1.5 flex items-center justify-between border-t border-outline-variant/20">
             <span className="text-xs sm:text-sm font-extrabold text-primary dark:text-white">{formatMoney(product.price)}</span>
-            <Link to={`/product/${product._id}`} className="bg-secondary/10 hover:bg-secondary text-secondary hover:text-white px-2 py-1 rounded-lg text-xs font-bold transition">View</Link>
+            <Link to={`/product/${product.id}`} className="bg-secondary/10 hover:bg-secondary text-secondary hover:text-white px-2 py-1 rounded-lg text-xs font-bold transition">View</Link>
           </div>
         </div>
       </div>
@@ -159,7 +159,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
       className="product-card spotlight-card bg-surface-container-lowest dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative border border-outline-variant/30 overflow-hidden"
     >
       <div className="relative w-full aspect-square bg-surface-container dark:bg-slate-700/50 overflow-hidden">
-        <Link to={`/product/${product._id}`} className="w-full h-full block">
+        <Link to={`/product/${product.id}`} className="w-full h-full block">
           <ProductImage src={product.images[0]} alt={product.name} className="product-card-img object-cover h-full w-full group-hover:scale-105 transition-transform duration-300" />
         </Link>
         <div className="absolute top-2 left-2 z-10">{statusBadge}</div>
@@ -168,7 +168,7 @@ export const ProductCard = ({ product, variant = "grid", onAddToCart }: ProductC
       <div className="p-2.5 sm:p-4 flex-grow flex flex-col justify-between space-y-1.5 sm:space-y-2">
         <div>
           <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-secondary">{product.category}</span>
-          <Link to={`/product/${product._id}`} className="text-xs sm:text-base font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5">{product.name}</Link>
+          <Link to={`/product/${product.id}`} className="text-xs sm:text-base font-bold text-on-surface line-clamp-2 leading-tight sm:leading-snug hover:text-secondary transition-colors block mt-0.5">{product.name}</Link>
           {ratingRow}
         </div>
         {priceRow}

@@ -15,9 +15,12 @@ async function start() {
 
   // Auto-transition "C ompleted" orders to "Received" after 3 days. Runs hourly
   // so the dashboard stays accurate even with no traffic in between.
+  const ONE_HOUR = 60 * 60 * 1000;
+
   setInterval(() => {
-    void orderService.autoFinalizeReceived().catch((err) => console.error("Auto-receive sweep failed:", err));
-  }, 60 * 60 * 1000);
+    orderService.autoFinalizeReceived()
+      .catch(err => console.error("Auto-receive sweep failed:", err));
+  }, ONE_HOUR);
 
   app.listen(config.port, () => {
     console.log(`Lumen API running on http://localhost:${config.port}`);

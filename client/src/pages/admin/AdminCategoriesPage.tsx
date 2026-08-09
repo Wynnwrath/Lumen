@@ -41,7 +41,7 @@ export const AdminCategoriesPage = () => {
     products.filter(
       (p) =>
         p.category === cat.slug ||
-        p.category === cat._id ||
+        p.category === cat.id ||
         (p.category && p.category.toLowerCase() === cat.name.toLowerCase()) ||
         (p.category && p.category.toLowerCase() === cat.slug.toLowerCase())
     );
@@ -56,27 +56,27 @@ export const AdminCategoriesPage = () => {
       for (const p of products) {
         if (
           p.category === cat.slug ||
-          p.category === cat._id ||
+          p.category === cat.id ||
           (p.category && p.category.toLowerCase() === cat.name.toLowerCase()) ||
           (p.category && p.category.toLowerCase() === cat.slug.toLowerCase())
         ) {
           count += 1;
         }
       }
-      counts.set(cat._id, count);
+      counts.set(cat.id, count);
     }
     return counts;
   }, [categories, products]);
 
   const totalCategorizedProducts = categories.reduce(
-    (sum, cat) => sum + (categoryCounts.get(cat._id) ?? 0),
+    (sum, cat) => sum + (categoryCounts.get(cat.id) ?? 0),
     0
   );
 
   let topCategoryName = "None";
   let maxCount = -1;
   for (const cat of categories) {
-    const count = categoryCounts.get(cat._id) ?? 0;
+    const count = categoryCounts.get(cat.id) ?? 0;
     if (count > maxCount) {
       topCategoryName = cat.name;
       maxCount = count;
@@ -218,10 +218,10 @@ export const AdminCategoriesPage = () => {
             <EmptyState message="No categories found matching your search." card />
           ) : (
             paginated.map((cat) => {
-              const count = categoryCounts.get(cat._id) ?? 0;
+              const count = categoryCounts.get(cat.id) ?? 0;
               return (
                 <div
-                  key={cat._id}
+                  key={cat.id}
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3.5 shadow-xs flex items-center gap-3.5 transition-colors rounded-none"
                 >
                   {/* Category Icon Box */}
@@ -281,11 +281,11 @@ export const AdminCategoriesPage = () => {
                     <EmptyState message="No categories found matching your search." colSpan={5} />
                   ) : (
                   paginated.map((cat) => {
-                    const count = categoryCounts.get(cat._id) ?? 0;
+                    const count = categoryCounts.get(cat.id) ?? 0;
 
                     return (
                       <tr
-                        key={cat._id}
+                        key={cat.id}
                         className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition text-xs sm:text-sm border-b border-dashed border-slate-200 dark:border-slate-800"
                       >
                         <td className="px-5 py-3">
@@ -420,7 +420,7 @@ export const AdminCategoriesPage = () => {
         ) : (
           <div className="max-h-[50vh] overflow-y-auto space-y-2 pr-1">
             {viewProducts.map((p) => (
-              <div key={p._id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <div key={p.id} className="flex items-center gap-3 p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
                 <ProductImage
                   src={p.images[0]}
                   alt={p.name}

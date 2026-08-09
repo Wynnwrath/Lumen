@@ -318,7 +318,7 @@ export const HomePage = () => {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
             {displayProducts.map((product) => (
-              <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
+              <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
             ))}
           </div>
         )}

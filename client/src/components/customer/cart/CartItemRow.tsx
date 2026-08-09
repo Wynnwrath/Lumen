@@ -35,7 +35,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
         </div>
         {onRemove && (
           <button
-            onClick={() => onRemove(product._id)}
+            onClick={() => onRemove(product.id)}
             className="text-outline hover:text-error p-1"
             title="Remove item"
           >
@@ -48,7 +48,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
 
   return (
     <div className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4 group">
-      <Link to={`/product/${product._id}`} className="shrink-0">
+      <Link to={`/product/${product.id}`} className="shrink-0">
         <ProductImage
           src={product.images[0]}
           alt={product.name}
@@ -61,7 +61,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
           {product.category}
         </span>
         <h3 className="text-xs sm:text-sm font-bold text-on-surface truncate">
-          <Link to={`/product/${product._id}`} className="hover:text-secondary">
+          <Link to={`/product/${product.id}`} className="hover:text-secondary">
             {product.name}
           </Link>
         </h3>
@@ -73,7 +73,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
       {onUpdateQuantity ? (
         <QuantityStepper
           value={quantity}
-          onChange={(q) => onUpdateQuantity(product._id, q)}
+          onChange={(q) => onUpdateQuantity(product.id, q)}
           min={1}
           max={product.stock}
         />
@@ -89,7 +89,7 @@ export const CartItemRow = ({ item, onUpdateQuantity, onRemove, showLineTotal = 
         )}
         {onRemove && (
           <button
-            onClick={() => onRemove(product._id)}
+            onClick={() => onRemove(product.id)}
             className="text-outline hover:text-red-500 p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition"
             title="Remove item"
           >

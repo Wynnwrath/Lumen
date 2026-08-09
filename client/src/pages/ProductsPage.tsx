@@ -41,7 +41,7 @@ export const ProductsPage = () => {
   // Prune stale wishlist ids that no longer match any product in the catalog
   useEffect(() => {
     if (products.length > 0 && wishlistIds.length > 0) {
-      const validIds = products.map((p) => p._id);
+      const validIds = products.map((p) => p.id);
       prune(validIds);
     }
   }, [products, wishlistIds, prune]);
@@ -101,7 +101,7 @@ export const ProductsPage = () => {
         // Sale filter
         if (onlySale && !p.isSale) return false;
         // Wishlist filter
-        if (onlyWishlist && !wishlistIds.includes(p._id)) return false;
+        if (onlyWishlist && !wishlistIds.includes(p.id)) return false;
         // In stock filter
         if (onlyInStock && p.stock <= 0) return false;
         // Price filter
@@ -494,14 +494,14 @@ export const ProductsPage = () => {
           ) : viewMode === "grid" ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
               {pagedProducts.map((product) => (
-                <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
+                <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
               ))}
             </div>
           ) : (
             /* List View */
             <div className="space-y-3">
               {pagedProducts.map((product) => (
-                <ProductCard key={product._id} product={product} variant="list" onAddToCart={handleAddToCart} />
+                <ProductCard key={product.id} product={product} variant="list" onAddToCart={handleAddToCart} />
               ))}
             </div>
           )}

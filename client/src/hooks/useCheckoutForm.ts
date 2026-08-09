@@ -131,7 +131,7 @@ export const useCheckoutForm = () => {
 
     try {
       const newOrder = await createOrder({
-        items: items.map((i) => ({ product: i.product._id, quantity: i.quantity })),
+        items: items.map((i) => ({ product: i.product.id, quantity: i.quantity })),
         address: `${address}${apt ? `, ${apt}` : ""}, ${city}, ${stateZip} (${country})`,
         paymentMethod,
         email: email.trim() || undefined,

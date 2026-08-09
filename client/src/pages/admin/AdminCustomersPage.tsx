@@ -28,7 +28,7 @@ export const AdminCustomersPage = () => {
   const customerOrders = useMemo(() => {
     if (!selectedCustomer) return [];
     return orders
-      .filter((o) => o.customer._id === selectedCustomer._id)
+      .filter((o) => o.customer.id === selectedCustomer.id)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [orders, selectedCustomer]);
 
@@ -103,7 +103,7 @@ export const AdminCustomersPage = () => {
           ) : (
             paginated.map((c) => (
               <div
-                key={c._id}
+                key={c.id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 space-y-3 shadow-xs rounded-none"
               >
                 <div className="flex items-center justify-between gap-3">
@@ -165,7 +165,7 @@ export const AdminCustomersPage = () => {
                   <EmptyState message="No customers found matching your search." colSpan={6} />
                 ) : (
                 paginated.map((c) => (
-                  <tr key={c._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                  <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
                     <td className="p-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center font-extrabold text-xs shrink-0">
@@ -274,7 +274,7 @@ export const AdminCustomersPage = () => {
               ) : (
                 <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">
                   {customerOrders.map((o) => (
-                    <div key={o._id} className="flex items-center gap-3 py-2.5 px-3">
+                    <div key={o.id} className="flex items-center gap-3 py-2.5 px-3">
                       <ProductImage
                         src={o.items[0]?.image}
                         alt={o.items[0]?.name || "Product"}

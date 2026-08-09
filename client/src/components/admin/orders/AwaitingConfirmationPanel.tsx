@@ -56,7 +56,7 @@ export const AwaitingConfirmationPanel = ({ orders }: AwaitingConfirmationPanelP
           {awaiting.slice(0, 6).map((o) => {
             const days = daysSince(o);
             return (
-              <div key={o._id} className="py-2.5 px-1 flex items-center justify-between gap-3 text-xs">
+              <div key={o.id} className="py-2.5 px-1 flex items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="font-mono font-bold text-slate-900 dark:text-white shrink-0">#{o.orderNumber}</span>
                   <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[140px]">{o.customer.name}</span>

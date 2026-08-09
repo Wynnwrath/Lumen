@@ -34,7 +34,7 @@ export const ProductDetailPage = () => {
   const relatedProducts = useMemo(
     () =>
       product
-        ? catalogProducts.filter((x) => x.category === product.category && x._id !== id).slice(0, 4)
+        ? catalogProducts.filter((x) => x.category === product.category && x.id !== id).slice(0, 4)
         : [],
     [catalogProducts, product, id]
   );
@@ -113,7 +113,7 @@ export const ProductDetailPage = () => {
     );
   }
 
-  const isWishlisted = wishlistIds.includes(product._id);
+  const isWishlisted = wishlistIds.includes(product.id);
   const isOutOfStock = product.stock <= 0;
   const currentImage = images[selectedImageIndex] || images[0];
 
@@ -138,7 +138,7 @@ export const ProductDetailPage = () => {
   };
 
   const handleWishlistToggle = () => {
-    toggleWishlist(product._id);
+    toggleWishlist(product.id);
     const nowSaved = !isWishlisted;
     showToast(nowSaved ? "Saved to wishlist!" : "Removed from wishlist", nowSaved ? "wishlist" : "info");
   };
@@ -393,7 +393,7 @@ export const ProductDetailPage = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
             {relatedProducts.map((rel) => (
-              <ProductCard key={rel._id} product={rel} variant="compact" />
+              <ProductCard key={rel.id} product={rel} variant="compact" />
             ))}
           </div>
         </section>

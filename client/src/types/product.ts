@@ -1,7 +1,7 @@
 export type ProductStatus = "active" | "out_of_stock" | "inactive";
 
 export interface Product {
-  _id: string;
+  id: string;
   name: string;
   category: string;
   price: number;
@@ -18,7 +18,7 @@ export interface Product {
 }
 
 export interface Category {
-  _id: string;
+  id: string;
   slug: string;
   name: string;
   icon: string;

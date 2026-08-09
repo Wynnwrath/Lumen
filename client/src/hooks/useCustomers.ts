@@ -18,8 +18,8 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-const toCustomerListItem = (r: { _id: string; name: string; email: string; phone: string; registeredAt: string; totalOrders: number; totalSpent: number; address: string }): CustomerListItem => ({
-  _id: r._id,
+const toCustomerListItem = (r: { id: string; name: string; email: string; phone: string; registeredAt: string; totalOrders: number; totalSpent: number; address: string }): CustomerListItem => ({
+  id: r.id,
   name: r.name,
   email: r.email,
   phone: r.phone || "",

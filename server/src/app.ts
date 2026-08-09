@@ -15,9 +15,9 @@ const app = express();
 
 // Trust the proxy so rate limiting sees real client IPs behind it.
 app.set("trust proxy", 1);
-app.use(helmet());
-app.use(cors({ origin: config.clientUrl, credentials: true }));
-app.use(express.json({ limit: "1mb" }));
+app.use(helmet()); // digital shield against common web attacks
+app.use(cors({ origin: config.clientUrl, credentials: true })); // cors security , credentials true is required for the cookie to be sent
+app.use(express.json({ limit: "1mb" })); // body parser
 
 // Simple health/liveness endpoint.
 app.get("/api", (_req, res) => {

@@ -94,7 +94,7 @@ export const useProductForm = (
 
     try {
       if (editingProduct) {
-        await updateProduct(editingProduct._id, payload);
+        await updateProduct(editingProduct.id, payload);
         showToast(`Updated product "${formName}"`, "success");
       } else {
         await createProduct(payload);

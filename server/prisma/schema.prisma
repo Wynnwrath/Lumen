@@ -8,12 +8,11 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Prisma forbids field names starting with "_", so the API-facing primary key
-// is named `id` in the client while the PostgreSQL column is mapped to `_id`.
-// A `toApi` serializer re-exposes it as `_id` in JSON responses.
+// Primary keys are plain `id` columns (Postgres convention); Prisma exposes
+// them as `id` and the API returns `id` directly.
 
 model User {
-  id        String   @id @default(cuid()) @map("_id")
+  id        String   @id @default(cuid())
   name      String
   email     String   @unique
   password  String
@@ -29,7 +28,7 @@ model User {
 }
 
 model Category {
-  id          String   @id @default(cuid()) @map("_id")
+  id          String   @id @default(cuid())
   slug        String   @unique
   name        String
   icon        String   @default("category")
@@ -41,7 +40,7 @@ model Category {
 }
 
 model Product {
-  id           String   @id @default(cuid()) @map("_id")
+  id           String   @id @default(cuid())
   name         String
   category     String
   price        Float
@@ -65,7 +64,7 @@ model Product {
 }
 
 model Coupon {
-  id              String   @id @default(cuid()) @map("_id")
+  id              String   @id @default(cuid())
   code            String   @unique
   discountPercent Float
   isActive        Boolean  @default(true)
@@ -77,7 +76,7 @@ model Coupon {
 }
 
 model Order {
-  id           String      @id @default(cuid()) @map("_id")
+  id           String      @id @default(cuid())
   orderNumber  String      @unique
   customerId   String
   customer     User        @relation(fields: [customerId], references: [id])
@@ -105,7 +104,7 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid()) @map("_id")
+  id        String  @id @default(cuid())
   orderId   String
   order     Order   @relation(fields: [orderId], references: [id])
   productId String

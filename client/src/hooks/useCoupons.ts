@@ -6,7 +6,7 @@ import type { Coupon } from "../api/coupons";
 function sortCoupons(list: Coupon[]): Coupon[] {
   return [...list].sort((a, b) => {
     if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
-    return a._id < b._id ? 1 : -1;
+    return a.id < b.id ? 1 : -1;
   });
 }
 
