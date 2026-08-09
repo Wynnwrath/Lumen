@@ -2,9 +2,10 @@ import axios from "axios";
 import { useAuthStore } from "../stores/auth.store";
 
 // One shared axios instance for all API calls.
-// baseURL is "/api" and Vite's dev proxy forwards it to the backend.
+// Uses VITE_API_URL in production (points at the deployed backend); falls back
+// to "/api" locally where Vite's dev proxy forwards to the Express server.
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_URL || "/api",
   headers: { "Content-Type": "application/json" },
 });
 
