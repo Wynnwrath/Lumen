@@ -10,7 +10,7 @@ import { ProductCard } from "../components/customer/products/ProductCard";
 import { QuantityStepper } from "../components/customer/cart/QuantityStepper";
 import { Skeleton } from "../components/ui/Skeleton";
 import { useToast } from "../components/ui/ToastProvider";
-import { FALLBACK_PRODUCT_IMAGE, FREE_SHIPPING_MIN, STORE_LOW_STOCK_THRESHOLD } from "../constants";
+import { FREE_SHIPPING_MIN, STORE_LOW_STOCK_THRESHOLD } from "../constants";
 import { formatMoney } from "../utils/format";
 import type { Product } from "../types";
 
@@ -59,10 +59,10 @@ export const ProductDetailPage = () => {
     };
   }, [id]);
 
-  // Normalize images array
+  // Normalize images array (ProductImage renders a placeholder when empty).
   const images = product?.images && product.images.length > 0 
     ? product.images 
-    : [FALLBACK_PRODUCT_IMAGE];
+    : [];
 
   useEffect(() => {
     setSelectedImageIndex(0);

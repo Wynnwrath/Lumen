@@ -3,7 +3,6 @@ import { createProduct, updateProduct } from "../api/products";
 import { uploadProductImage } from "../api/storage";
 import type { Category, Product, ProductStatus } from "../types";
 import { useToast } from "../components/ui/ToastProvider";
-import { FALLBACK_PRODUCT_IMAGE } from "../constants";
 
 // Add/edit product form state + save logic, so AdminProductsPage stays readable.
 export const useProductForm = (
@@ -39,7 +38,7 @@ export const useProductForm = (
     setFormStatus("active");
     setFormIsSale(false);
     setFormArrival(false);
-    setFormImage(FALLBACK_PRODUCT_IMAGE);
+    setFormImage("");
     setFormDescription("");
     setShowModal(true);
   };
@@ -89,7 +88,7 @@ export const useProductForm = (
       status: stockNum <= 0 && formStatus !== "inactive" ? "out_of_stock" : formStatus,
       isSale: formIsSale,
       arrival: formArrival,
-      images: [formImage || FALLBACK_PRODUCT_IMAGE],
+      images: formImage ? [formImage] : [],
       description: formDescription || "Product from Lumen catalog.",
     };
 
