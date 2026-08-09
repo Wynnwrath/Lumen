@@ -30,9 +30,9 @@ Captured from the local dev environment (desktop 1440×900, mobile 390×844).
 | Cart | ![Cart (desktop)](screenshots/cart.png) | ![Cart (mobile)](screenshots/cart-mobile.png) |
 | Checkout | ![Checkout (desktop)](screenshots/checkout.png) | ![Checkout (mobile)](screenshots/checkout-mobile.png) |
 | My Orders | ![My Orders (desktop)](screenshots/my-orders.png) | ![My Orders (mobile)](screenshots/my-orders-mobile.png) |
-| Admin Dashboard | ![Admin Dashboard (desktop)](screenshots/admin-dashboard.png) | |
-| Admin Products | ![Admin Products (desktop)](screenshots/admin-products.png) | |
-| Admin Orders | ![Admin Orders (desktop)](screenshots/admin-orders.png) | |
+| Admin Dashboard | ![Admin Dashboard (desktop)](screenshots/admin-dashboard.png) | ![Admin Dashboard (mobile)](screenshots/admin-dashboard-mobile.png) |
+| Admin Products | ![Admin Products (desktop)](screenshots/admin-products.png) | ![Admin Products (mobile)](screenshots/admin-products-mobile.png) |
+| Admin Orders | ![Admin Orders (desktop)](screenshots/admin-orders.png) | ![Admin Orders (mobile)](screenshots/admin-orders-mobile.png) |
 
 ## Tech Stack
 
@@ -118,33 +118,33 @@ Then open http://localhost:5173.
 
 ## System Flow
 
-### How It Works
+Lumen is a full-stack storefront: a React single-page app (Vite, Tailwind, Zustand) served at `:5173`, talking to an Express + Prisma + PostgreSQL API at `:5000`. The client reaches the API through a Vite proxy at `/api`, and every response uses a consistent `{ success, data }` envelope.
 
-Lumen is a MERN-style store split into two halves: a React single-page app (Vite, Tailwind, Zustand) served at `:5173`, and an Express API with Prisma + PostgreSQL at `:5000`. The frontend talks to the API through a Vite proxy at `/api`, and every response comes back in a predictable `{ success, data }` envelope.
+### The Customer Journey
 
-**The Customer Journey**
-1. **Browse.** Products load from the public `GET /api/products` endpoint. The server supports filters, sorting, and pagination, but the UI keeps things snappy by pulling up to 100 products and filtering/sorting them in the browser.
-2. **Shop.** Clicking a product opens a detail page, where items are added to a cart backed by a Zustand store persisted to `localStorage` (`lumen-cart`) — so each browser keeps its own cart.
-3. **Check out.** Checkout requires an account. It's a 3-step flow (review → details → confirmation), with an optional coupon step that validates against `POST /api/coupons/validate` (try `LUMEN10`).
-4. **Place the order.** `POST /api/orders` triggers a single Prisma `$transaction` that validates stock, snapshots each item's name/price/image, decrements stock (an item auto-flips to `out_of_stock` at zero), and computes money: free shipping over $100 (else $12), 8% tax, and any coupon discount. It generates an order number like `LMN-<4 chars><4 digits>`, writes the order plus its items, sends a confirmation email (via Resend, or logs it in dev when no API key is set), and clears the cart.
-5. **Track.** Under **My Orders**, customers watch their status timeline, confirm delivery once an order is `Completed`, and reorder — which re-adds the in-stock items to their cart.
+1. **Browse.** Products come from the public `GET /api/products` endpoint. The API supports filtering, sorting, and pagination, while the UI keeps the experience snappy by loading up to 100 products and filtering/sorting in the browser.
+2. **Shop.** A product's detail page offers the full picture — images, specs, pricing — and one click drops it into a cart. The cart is a Zustand store persisted to `localStorage` (`lumen-cart`), so each browser keeps its own selection.
+3. **Check out.** Checkout requires an account and walks through three steps (review → details → confirmation). An optional coupon step validates codes against `POST /api/coupons/validate` — try `LUMEN10`.
+4. **Place the order.** `POST /api/orders` runs inside a single Prisma `$transaction`: it validates stock, snapshots each item's name/price/image, decrements inventory (auto-flipping items to `out_of_stock` at zero), and computes totals — free shipping over $100 (otherwise $12), 8% tax, and any coupon discount. It issues an order number like `LMN-<4 chars><4 digits>`, persists the order and its items, sends a confirmation email (via Resend, or logs it in dev), and clears the cart.
+5. **Track.** Under **My Orders**, customers follow a status timeline, confirm delivery once an order is `Completed`, and reorder past purchases with one click.
 
-**Order Lifecycle**
+### Order Lifecycle
 
-Orders move through **Pending → Confirmed → Preparing → Shipped → Completed → Received** (or **Cancelled** at any stage). Admins advance orders with `PATCH /api/orders/:orderNumber/status`; customers confirm receipt via `POST .../confirm-received` (only when `Completed`); and a 1-hour server cron auto-marks orders as Received 3 days after completion.
+Orders progress through **Pending → Confirmed → Preparing → Shipped → Completed → Received** (or **Cancelled** at any point). Admins advance statuses with `PATCH /api/orders/:orderNumber/status`; customers confirm receipt via `POST .../confirm-received` (only once `Completed`); and an hourly server task auto-marks orders as Received 3 days after completion.
 
-**The Admin Journey**
+### The Admin Journey
 
-Admins work from `/admin` (role-gated, 6 pages) and manage the whole store:
+Admins work from `/admin` (role-gated, six pages) to run the whole store:
+
 - **Dashboard** — KPIs and charts from `GET /api/dashboard/charts`.
 - **Products & Categories** — full CRUD, with image uploads stored on Supabase.
 - **Coupons** — create and manage discount codes.
 - **Customers** — a browsable list from `GET /api/customers`.
 - **Orders** — manage every order and export CSV via `GET /api/orders/export`.
 
-**Auth in One Line**
+### Authentication
 
-Users register/login through `POST /api/auth/register`, `/api/auth/login`, and `/api/auth/admin/login` — a JWT (7-day expiry) is stored as `lumen-auth` in `localStorage`, and an axios interceptor attaches it as a `Bearer` token on every request. Server-side, the `protect` middleware checks the JWT and `authorize("admin")` gates admin routes — a 401 auto-logs the user out.
+Users register and log in through `POST /api/auth/register`, `/api/auth/login`, and `/api/auth/admin/login`. A JWT (7-day expiry) is stored as `lumen-auth` in `localStorage`, and an axios interceptor attaches it as a `Bearer` token on every request. Server-side, the `protect` middleware verifies the JWT while `authorize("admin")` gates admin routes — and any 401 auto-logs the user out.
 
 ## Project Structure
 
