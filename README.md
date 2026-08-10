@@ -2,8 +2,6 @@
 
 A full-stack e-commerce app — customers browse products, check out with coupons, and track orders, while admins manage the entire store from a dashboard.
 
-**Repository:** [https://github.com/Wynnwrath/Lumen](https://github.com/Wynnwrath/Lumen)
-
 **Live site:** [https://lumen-blue-one.vercel.app/](https://lumen-blue-one.vercel.app/)
 
 ## Features
