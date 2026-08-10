@@ -46,8 +46,9 @@ export const AdminProductsPage = () => {
     setFormStock,
     formStatus,
     setFormStatus,
-    formImage,
-    setFormImage,
+    formImages,
+    formImageUrl,
+    setFormImageUrl,
     imageUploading,
     formDescription,
     setFormDescription,
@@ -58,6 +59,8 @@ export const AdminProductsPage = () => {
     handleOpenAddModal,
     handleOpenEditModal,
     handleImageChange,
+    handleAddImageUrl,
+    handleRemoveImage,
     handleSaveProduct,
   } = useProductForm(categories, refreshProducts);
 
@@ -371,8 +374,9 @@ export const AdminProductsPage = () => {
         setFormStock={setFormStock}
         formStatus={formStatus}
         setFormStatus={setFormStatus}
-        formImage={formImage}
-        setFormImage={setFormImage}
+        formImages={formImages}
+        formImageUrl={formImageUrl}
+        setFormImageUrl={setFormImageUrl}
         imageUploading={imageUploading}
         formDescription={formDescription}
         setFormDescription={setFormDescription}
@@ -381,6 +385,8 @@ export const AdminProductsPage = () => {
         formArrival={formArrival}
         setFormArrival={setFormArrival}
         handleImageChange={handleImageChange}
+        handleAddImageUrl={handleAddImageUrl}
+        handleRemoveImage={handleRemoveImage}
         handleSaveProduct={handleSaveProduct}
       />
     </div>

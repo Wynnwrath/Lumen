@@ -47,8 +47,9 @@ interface ProductFormModalProps {
   setFormStock: React.Dispatch<React.SetStateAction<string>>;
   formStatus: ProductStatus;
   setFormStatus: React.Dispatch<React.SetStateAction<ProductStatus>>;
-  formImage: string;
-  setFormImage: React.Dispatch<React.SetStateAction<string>>;
+  formImages: string[];
+  formImageUrl: string;
+  setFormImageUrl: React.Dispatch<React.SetStateAction<string>>;
   imageUploading: boolean;
   formDescription: string;
   setFormDescription: React.Dispatch<React.SetStateAction<string>>;
@@ -57,6 +58,8 @@ interface ProductFormModalProps {
   formArrival: boolean;
   setFormArrival: React.Dispatch<React.SetStateAction<boolean>>;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleAddImageUrl: () => void;
+  handleRemoveImage: (index: number) => void;
   handleSaveProduct: (e: React.FormEvent) => void;
 }
 
@@ -77,8 +80,9 @@ export const ProductFormModal = ({
   setFormStock,
   formStatus,
   setFormStatus,
-  formImage,
-  setFormImage,
+  formImages,
+  formImageUrl,
+  setFormImageUrl,
   imageUploading,
   formDescription,
   setFormDescription,
@@ -87,6 +91,8 @@ export const ProductFormModal = ({
   formArrival,
   setFormArrival,
   handleImageChange,
+  handleAddImageUrl,
+  handleRemoveImage,
   handleSaveProduct,
 }: ProductFormModalProps) => {
   return (
@@ -217,21 +223,47 @@ export const ProductFormModal = ({
           {/* Right Column: Upload Image + Category */}
           <div className="lg:col-span-5 space-y-5">
             <SectionCard icon="image" title="Upload Image">
-              {/* Preview Canvas */}
-              <div className="relative w-full h-48 sm:h-52 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden flex items-center justify-center border border-dashed border-slate-300 dark:border-slate-700 group">
-                <ProductImage
-                  src={formImage}
-                  alt="Product Preview"
-                  className="w-full h-full object-cover rounded-xl transition duration-300"
-                />
-                {formImage && (
+              {/* Thumbnail strip: shows all added images with remove buttons */}
+              {formImages.length > 0 ? (
+                <div className="flex gap-2 overflow-x-auto pb-1 hide-scroll">
+                  {formImages.map((img, idx) => (
+                    <div key={img} className="relative w-20 h-20 shrink-0 group">
+                      <ProductImage
+                        src={img}
+                        alt={`Product Image ${idx + 1}`}
+                        className="w-full h-full object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(idx)}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-sm hover:bg-rose-700 transition"
+                        title={`Remove image ${idx + 1}`}
+                      >
+                        <Icon name="close" className="text-xs" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* Preview Canvas (empty state) */
+                <div className="relative w-full h-48 sm:h-52 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden flex items-center justify-center border border-dashed border-slate-300 dark:border-slate-700">
+                  <ProductImage
+                    src=""
+                    alt="Product Preview"
+                    className="w-full h-full object-cover rounded-xl transition duration-300"
+                  />
                   <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 backdrop-blur-xs">
                     <span className="px-3 py-1.5 bg-white/90 text-slate-900 text-xs font-extrabold rounded-lg shadow-sm">
                       Live Preview
                     </span>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* Image counter */}
+              <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                {formImages.length} of 4 images
+              </p>
 
               {/* Upload from device */}
               <div>
@@ -251,14 +283,29 @@ export const ProductFormModal = ({
 
               {/* Or paste a URL */}
               <div>
-                <label className={labelClass}>Image URL</label>
-                <input
-                  type="url"
-                  value={formImage}
-                  onChange={(e) => setFormImage(e.target.value)}
-                  placeholder="Paste an image URL (e.g. https://...)"
-                  className={inputClass}
-                />
+                <label className={labelClass}>Or Add Image URL</label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={formImageUrl}
+                    onChange={(e) => setFormImageUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddImageUrl();
+                      }
+                    }}
+                    placeholder="Paste an image URL (e.g. https://...)"
+                    className={inputClass}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddImageUrl}
+                    className="shrink-0 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition"
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
             </SectionCard>
 

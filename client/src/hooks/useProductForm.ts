@@ -4,6 +4,9 @@ import { uploadProductImage } from "../api/storage";
 import type { Category, Product, ProductStatus } from "../types";
 import { useToast } from "../components/ui/ToastProvider";
 
+// Max images a product can have in the form; the detail page gallery handles any count.
+const MAX_IMAGES = 4;
+
 // Add/edit product form state + save logic, so AdminProductsPage stays readable.
 export const useProductForm = (
   categories: Category[],
@@ -21,7 +24,8 @@ export const useProductForm = (
   const [formOriginalPrice, setFormOriginalPrice] = useState("");
   const [formStock, setFormStock] = useState("");
   const [formStatus, setFormStatus] = useState<ProductStatus>("active");
-  const [formImage, setFormImage] = useState("");
+  const [formImages, setFormImages] = useState<string[]>([]);
+  const [formImageUrl, setFormImageUrl] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
   const [formDescription, setFormDescription] = useState("");
   const [formIsSale, setFormIsSale] = useState(false);
@@ -38,7 +42,8 @@ export const useProductForm = (
     setFormStatus("active");
     setFormIsSale(false);
     setFormArrival(false);
-    setFormImage("");
+    setFormImages([]);
+    setFormImageUrl("");
     setFormDescription("");
     setShowModal(true);
   };
@@ -54,24 +59,50 @@ export const useProductForm = (
     setFormStatus(p.status || (p.stock > 0 ? "active" : "out_of_stock"));
     setFormIsSale(p.isSale);
     setFormArrival(p.arrival);
-    setFormImage(p.images[0] || "");
+    setFormImages(p.images?.slice(0, MAX_IMAGES) || []);
+    setFormImageUrl("");
     setFormDescription(p.description || "");
     setShowModal(true);
   };
 
-  // Upload a chosen image file to Supabase and use its URL.
+  // Upload a chosen image file to Supabase and append its URL.
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (formImages.length >= MAX_IMAGES) {
+      showToast(`Maximum of ${MAX_IMAGES} images per product`, "error");
+      return;
+    }
     setImageUploading(true);
     try {
       const url = await uploadProductImage(file);
-      setFormImage(url);
+      setFormImages((prev) => (prev.length >= MAX_IMAGES ? prev : [...prev, url]));
     } catch (error) {
       showToast("Image upload failed. Please try again.", "error");
     } finally {
       setImageUploading(false);
     }
+  };
+
+  // Add a pasted URL to the image list.
+  const handleAddImageUrl = () => {
+    const url = formImageUrl.trim();
+    if (!url) return;
+    if (formImages.length >= MAX_IMAGES) {
+      showToast(`Maximum of ${MAX_IMAGES} images per product`, "error");
+      return;
+    }
+    if (formImages.includes(url)) {
+      showToast("That image URL is already added", "info");
+      return;
+    }
+    setFormImages((prev) => [...prev, url]);
+    setFormImageUrl("");
+  };
+
+  // Remove an image from the list.
+  const handleRemoveImage = (index: number) => {
+    setFormImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Create or update, then refresh the list.
@@ -88,7 +119,7 @@ export const useProductForm = (
       status: stockNum <= 0 && formStatus !== "inactive" ? "out_of_stock" : formStatus,
       isSale: formIsSale,
       arrival: formArrival,
-      images: formImage ? [formImage] : [],
+      images: formImages,
       description: formDescription || "Product from Lumen catalog.",
     };
 
@@ -124,8 +155,10 @@ export const useProductForm = (
     setFormStock,
     formStatus,
     setFormStatus,
-    formImage,
-    setFormImage,
+    formImages,
+    setFormImages,
+    formImageUrl,
+    setFormImageUrl,
     imageUploading,
     formDescription,
     setFormDescription,
@@ -136,6 +169,8 @@ export const useProductForm = (
     handleOpenAddModal,
     handleOpenEditModal,
     handleImageChange,
+    handleAddImageUrl,
+    handleRemoveImage,
     handleSaveProduct,
   };
 };
