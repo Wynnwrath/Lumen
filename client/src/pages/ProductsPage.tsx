@@ -28,7 +28,7 @@ export const ProductsPage = () => {
   const [onlySale, setOnlySale] = useState(urlSale);
   const [onlyWishlist, setOnlyWishlist] = useState(urlWishlist);
   const [onlyInStock, setOnlyInStock] = useState(false);
-  const [maxPrice, setMaxPrice] = useState(1500);
+  const [maxPrice, setMaxPrice] = useState(0);
   const [sortBy, setSortBy] = useState<"rating" | "featured" | "price-asc" | "price-desc" | "newest">("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
@@ -104,8 +104,8 @@ export const ProductsPage = () => {
         if (onlyWishlist && !wishlistIds.includes(p.id)) return false;
         // In stock filter
         if (onlyInStock && p.stock <= 0) return false;
-        // Price filter
-        if (p.price > maxPrice) return false;
+        // Price filter (0 = no limit)
+        if (maxPrice > 0 && p.price > maxPrice) return false;
 
         return true;
       })
@@ -137,7 +137,7 @@ export const ProductsPage = () => {
     onlySale ||
     onlyWishlist ||
     onlyInStock ||
-    maxPrice < 1500;
+    maxPrice > 0;
 
   const handleResetFilters = () => {
     setPage(1);
@@ -146,7 +146,7 @@ export const ProductsPage = () => {
     setOnlySale(false);
     setOnlyWishlist(false);
     setOnlyInStock(false);
-    setMaxPrice(1500);
+    setMaxPrice(0);
     setSearchParams({});
   };
 
